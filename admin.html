@@ -601,14 +601,22 @@
       const has_playoffs = document.getElementById('modalHasPlayoffs').checked;
       const playoff_config = has_playoffs ? { count: parseInt(document.getElementById('modalPlayoffCount').value) || 4 } : null;
 
-      if (!name) return alert("Ingresa un nombre.");
+      if (!name) return alert("Ingresa un nombre para el torneo.");
 
       // Obtener el correo del usuario actual para asociarlo como dueño
       const { data: { session } } = await supabaseClient.auth.getSession();
       const userEmail = session ? session.user.email : null;
 
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, has_playoffs, playoff_config }).eq('id', id);
+        const { error } = await supabaseClient.from('torneos_data').update({ 
+          name, sport_type, tournament_type, max_teams, has_playoffs, playoff_config 
+        }).eq('id', id);
+
+        if (error) {
+          alert("Error al actualizar el torneo: " + error.message);
+          console.error(error);
+          return;
+        }
       } else {
         const newCat = { 
           id: 'cat_' + Date.now(), 
@@ -622,10 +630,28 @@
           fixture_type: tournament_type,
           owner_email: userEmail 
         };
-        await supabaseClient.from('torneos_data').insert([newCat]);
+
+        const { error } = await supabaseClient.from('torneos_data').insert([newCat]);
+
+        if (error) {
+          alert("Error de Supabase al crear el torneo: " + error.message + "\n\nAsegúrate de haber ejecutado el script SQL de permisos en Supabase.");
+          console.error(error);
+          return;
+        }
       }
+      
       closeModal('categoryModal');
-      loadAdminData();
+      await loadAdminData(); // Recargar datos de la base de datos
+
+      // Seleccionar automáticamente el torneo recién creado si es nuevo
+      if (!id && dbData.categories.length > 0) {
+        const newlyCreated = dbData.categories[dbData.categories.length - 1];
+        activeCategoryId = newlyCreated.id;
+        document.getElementById('globalCategorySelect').value = activeCategoryId;
+        renderActiveCategoryViews();
+      }
+
+      alert("¡Torneo guardado con éxito!");
     }
 
     async function deleteActiveCategory() {
