@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kancha Pro - Portada Oficial de Torneos</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            accent: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 custom-scrollbar">
+
+    <!-- HEADER / NAVEGACIÓN PRINCIPAL -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- LOGO KANCHA PRO -->
+            <a href="index.html" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight text-white">KANCHA<span class="text-brand-500">PRO</span></span>
+                    <span class="text-[10px] block text-slate-400 font-medium">Portal del Espectador</span>
+                </div>
+            </a>
+
+            <!-- BUSCADOR RÁPIDO DE TORNEOS -->
+            <div class="flex-1 max-w-md mx-4 hidden sm:block relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                <input type="text" id="searchInput" onkeyup="searchTournament(this.value)" placeholder="Buscar torneo, club o ciudad..." class="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
+                <div id="searchResults" class="hidden absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden divide-y divide-slate-800"></div>
+            </div>
+
+            <!-- BOTÓN ACCESO ORGANIZADORES -->
+            <a href="admin.html" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-2 transition shadow-lg shadow-brand-500/20">
+                <i class="fa-solid fa-user-shield"></i>
+                <span>Acceso Organizadores</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- SPONSOR BANNER PÚBLICO -->
+    <div class="bg-gradient-to-r from-slate-900 via-emerald-950/40 to-slate-900 border-b border-emerald-500/20 py-2 px-4 text-center text-xs">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-slate-300">
+            <span class="inline-flex items-center space-x-2">
+                <span class="bg-brand-500/20 text-brand-400 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">Sponsor Oficial</span>
+                <span class="text-xs">🔥 <strong>Deportes Total</strong>: 15% OFF en indumentaria para tu equipo con el código <strong>KANCHA15</strong></span>
+            </span>
+            <span class="text-slate-500 text-[11px] hidden md:inline"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Resultados en vivo</span>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- CABECERA DEL TORNEO ACTIVO -->
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-5 text-slate-100 text-9xl pointer-events-none">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-500 flex items-center justify-center text-3xl text-slate-950 font-black shadow-lg shadow-brand-500/20">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h1 id="tournamentTitle" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Copa Nocturna F5</h1>
+                            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">En Curso</span>
+                        </div>
+                        <p id="tournamentSub" class="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-3">
+                            <span><i class="fa-solid fa-location-dot text-slate-500 mr-1"></i> Predio San Martín</span>
+                            <span><i class="fa-solid fa-futbol text-slate-500 mr-1"></i> Fútbol 5 / Futsal</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- COMPARTIR POR WHATSAPP -->
+                <button onclick="shareWhatsApp()" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-2 transition shadow">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Compartir Torneo</span>
+                </button>
+            </div>
+
+            <!-- NAVEGACIÓN DE PESTAÑAS PÚBLICAS -->
+            <div class="flex space-x-2 mt-6 border-t border-slate-800 pt-4 overflow-x-auto custom-scrollbar">
+                <button onclick="switchTab('tabPosiciones')" id="btnTabPosiciones" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-brand-600 text-slate-950 whitespace-nowrap">
+                    <i class="fa-solid fa-list-ol"></i>
+                    <span>Tabla de Posiciones</span>
+                </button>
+                <button onclick="switchTab('tabFixture')" id="btnTabFixture" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Fixture & Marcadores</span>
+                </button>
+                <button onclick="switchTab('tabEstadisticas')" id="btnTabEstadisticas" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-award"></i>
+                    <span>Goleadores & Sanciones</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 1: TABLA DE POSICIONES -->
+        <div id="tabPosiciones" class="tab-content space-y-4">
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+                <div class="p-4 bg-slate-900/50 border-b border-slate-800 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-ranking-star text-amber-500"></i>
+                        <span>Tabla General de Posiciones</span>
+                    </h3>
+                    <span class="text-[11px] text-slate-400">Actualización en tiempo real</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-left">
+                        <thead class="text-[10px] uppercase bg-slate-950 text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="px-4 py-3">Pos</th>
+                                <th class="px-4 py-3">Equipo</th>
+                                <th class="px-2 py-3 text-center">PJ</th>
+                                <th class="px-2 py-3 text-center">PG</th>
+                                <th class="px-2 py-3 text-center">PE</th>
+                                <th class="px-2 py-3 text-center">PP</th>
+                                <th class="px-2 py-3 text-center">GF</th>
+                                <th class="px-2 py-3 text-center">GC</th>
+                                <th class="px-2 py-3 text-center">DG</th>
+                                <th class="px-4 py-3 text-center font-bold text-brand-500">PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="publicTableBody" class="divide-y divide-slate-800/60 font-medium">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: FIXTURE -->
+        <div id="tabFixture" class="tab-content hidden space-y-4">
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-calendar-check text-brand-500"></i>
+                        <span>Partidos y Resultados</span>
+                    </h3>
+                    <span class="text-xs text-brand-400 font-semibold">Fecha 3 de 7</span>
+                </div>
+                <div id="publicFixtureList" class="space-y-3">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: GOLEADORES Y SANCIONES -->
+        <div id="tabEstadisticas" class="tab-content hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+                <h3 class="text-sm font-bold text-white mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-award text-amber-500"></i>
+                    <span>Tabla de Goleadores</span>
+                </h3>
+                <div id="scorersList" class="space-y-2">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+                <h3 class="text-sm font-bold text-white mb-4 flex items-center space-x-2">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
+                    <span>Sanciones y Tarjetas</span>
+                </h3>
+                <div id="cardsList" class="space-y-2">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- BANNER DE CREA TU TORNEO -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-center space-y-2">
+            <p class="text-xs text-slate-400">¿Organizas torneos en tu complejo o club deportivo?</p>
+            <p class="text-sm font-bold text-white">Gestiona tu liga gratis y compártela en minutos con <span class="text-brand-500">Kancha Pro</span></p>
+            <a href="admin.html" class="mt-2 inline-flex items-center space-x-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs transition">
+                <i class="fa-solid fa-plus"></i>
+                <span>Crear Mi Torneo Gratis</span>
+            </a>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 Kancha Pro. La plataforma líder para gestión de fútbol amateur.</p>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // DATOS DEMO PÚBLICOS
+        const tournamentData = {
+            name: "Copa Nocturna F5",
+            venue: "Predio San Martín",
+            teams: [
+                { pos: 1, name: 'Los Galácticos FC', pj: 3, pg: 2, pe: 1, pp: 0, gf: 10, gc: 4, dg: 6, pts: 7 },
+                { pos: 2, name: 'Deportivo Tapita', pj: 3, pg: 2, pe: 0, pp: 1, gf: 8, gc: 5, dg: 3, pts: 6 },
+                { pos: 3, name: 'Atlético La Cantera', pj: 3, pg: 1, pe: 2, pp: 0, gf: 6, gc: 4, dg: 2, pts: 5 },
+                { pos: 4, name: 'Inter de Barrio', pj: 3, pg: 1, pe: 1, pp: 1, gf: 5, gc: 6, dg: -1, pts: 4 },
+                { pos: 5, name: 'Real Bañil', pj: 3, pg: 1, pe: 0, pp: 2, gf: 4, gc: 7, dg: -3, pts: 3 },
+                { pos: 6, name: 'LaSub21 FC', pj: 3, pg: 0, pe: 0, pp: 3, gf: 2, gc: 9, dg: -7, pts: 0 }
+            ],
+            matches: [
+                { home: 'Los Galácticos FC', away: 'Real Bañil', scoreHome: 3, scoreAway: 1, status: 'Finalizado' },
+                { home: 'Deportivo Tapita', away: 'Inter de Barrio', scoreHome: 2, scoreAway: 1, status: 'Finalizado' },
+                { home: 'Atlético La Cantera', away: 'LaSub21 FC', scoreHome: 2, scoreAway: 0, status: 'Finalizado' },
+                { home: 'Los Galácticos FC', away: 'Deportivo Tapita', scoreHome: null, scoreAway: null, status: 'Hoy 21:00 hs' }
+            ],
+            scorers: [
+                { name: 'Mateo Rossi', team: 'Los Galácticos FC', goals: 5 },
+                { name: 'Lucas Silva', team: 'Deportivo Tapita', goals: 4 },
+                { name: 'Gonzalo Pérez', team: 'Atlético La Cantera', goals: 3 }
+            ],
+            cards: [
+                { name: 'Carlos Gómez', team: 'Real Bañil', detail: '2 Amarillas (Aviso)' },
+                { name: 'Joaquín Benítez', team: 'LaSub21 FC', detail: 'Roja Directa (Suspendido 1 Fecha)' }
+            ]
+        };
+
+        window.onload = function() {
+            renderTable();
+            renderFixture();
+            renderStats();
+        };
+
+        function renderTable() {
+            const tbody = document.getElementById('publicTableBody');
+            tbody.innerHTML = tournamentData.teams.map((t, idx) => `
+                <tr class="hover:bg-slate-800/40 transition">
+                    <td class="px-4 py-3 font-bold text-slate-400">${t.pos}</td>
+                    <td class="px-4 py-3 font-bold text-white flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full ${idx < 2 ? 'bg-brand-500' : 'bg-slate-700'}"></span>
+                        <span>${t.name}</span>
+                    </td>
+                    <td class="px-2 py-3 text-center text-slate-300">${t.pj}</td>
+                    <td class="px-2 py-3 text-center text-slate-400">${t.pg}</td>
+                    <td class="px-2 py-3 text-center text-slate-400">${t.pe}</td>
+                    <td class="px-2 py-3 text-center text-slate-400">${t.pp}</td>
+                    <td class="px-2 py-3 text-center text-slate-400">${t.gf}</td>
+                    <td class="px-2 py-3 text-center text-slate-400">${t.gc}</td>
+                    <td class="px-2 py-3 text-center text-slate-300 font-semibold">${t.dg}</td>
+                    <td class="px-4 py-3 text-center font-extrabold text-brand-400 text-sm">${t.pts}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderFixture() {
+            const container = document.getElementById('publicFixtureList');
+            container.innerHTML = tournamentData.matches.map(m => `
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                    <div class="flex-1 text-right font-bold text-sm text-white">${m.home}</div>
+                    <div class="px-4 text-center">
+                        ${m.status === 'Finalizado' ? `
+                            <div class="text-base font-extrabold text-brand-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
+                                ${m.scoreHome} - ${m.scoreAway}
+                            </div>
+                            <span class="text-[10px] text-slate-500 uppercase font-semibold block mt-1">Finalizado</span>
+                        ` : `
+                            <div class="text-xs font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20">
+                                ${m.status}
+                            </div>
+                            <span class="text-[10px] text-slate-400 uppercase font-semibold block mt-1">Por Jugar</span>
+                        `}
+                    </div>
+                    <div class="flex-1 text-left font-bold text-sm text-white">${m.away}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderStats() {
+            document.getElementById('scorersList').innerHTML = tournamentData.scorers.map((s, i) => `
+                <div class="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-6 h-6 rounded-lg bg-slate-800 text-amber-400 font-bold text-xs flex items-center justify-center">${i+1}</span>
+                        <div>
+                            <p class="text-xs font-bold text-white">${s.name}</p>
+                            <p class="text-[10px] text-slate-400">${s.team}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/20">${s.goals} Goles</span>
+                </div>
+            `).join('');
+
+            document.getElementById('cardsList').innerHTML = tournamentData.cards.map(c => `
+                <div class="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl">
+                    <div>
+                        <p class="text-xs font-bold text-white">${c.name}</p>
+                        <p class="text-[10px] text-slate-400">${c.team}</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">${c.detail}</span>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            const tabs = ['tabPosiciones', 'tabFixture', 'tabEstadisticas'];
+            tabs.forEach(id => {
+                const btn = document.getElementById('btn' + id.charAt(0).toUpperCase() + id.slice(1));
+                if (id === tabId) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-brand-600 text-slate-950 whitespace-nowrap shadow";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-slate-800 text-slate-400 hover:text-white whitespace-nowrap";
+                }
+            });
+        }
+
+        function shareWhatsApp() {
+            const text = encodeURIComponent(`🏆 *${tournamentData.name}*\nSeguí los resultados y la tabla de posiciones en vivo aquí:\n${window.location.href}`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        function searchTournament(query) {
+            const resultsContainer = document.getElementById('searchResults');
+            if (!query.trim()) {
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+            resultsContainer.innerHTML = `
+                <div class="p-3 hover:bg-slate-800 cursor-pointer text-xs font-bold text-white flex justify-between">
+                    <span>${tournamentData.name}</span>
+                    <span class="text-slate-400">${tournamentData.venue}</span>
+                </div>
+            `;
+            resultsContainer.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

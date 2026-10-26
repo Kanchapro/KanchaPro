@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kancha Pro - Panel de Administración</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & QR Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100">
+
+    <!-- HEADER ADMIN -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-futbol"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight text-white">KANCHA<span class="text-brand-500">PRO</span></span>
+                    <span class="text-[10px] block text-brand-400 uppercase font-bold">Panel de Organizador</span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="openShareModal()" class="px-3 py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-2 transition shadow">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>Difundir Torneo</span>
+                </button>
+                <a href="index.html" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center space-x-2 border border-slate-700 transition">
+                    <i class="fa-solid fa-eye"></i>
+                    <span class="hidden sm:inline">Ver Portada Pública</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO ADMIN -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-white">Copa Nocturna F5</h1>
+                <p class="text-xs text-slate-400 mt-1">Carga resultados, sanciona e imprime planillas de juego</p>
+            </div>
+            <button onclick="alert('Torneo sincronizado con Supabase')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold rounded-xl text-xs border border-slate-700">
+                <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Estado: Sincronizado
+            </button>
+        </div>
+
+        <!-- MESA DE CONTROL -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- CARGA DE RESULTADOS -->
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
+                <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-pen-to-square text-brand-500"></i>
+                    <span>Planilla de Partidos (Fecha 3)</span>
+                </h2>
+                <div class="space-y-3">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-bold">Los Galácticos</span>
+                        <div class="flex items-center space-x-2">
+                            <input type="number" value="3" class="w-8 h-8 text-center bg-slate-900 border border-slate-700 rounded text-sm font-bold text-brand-400">
+                            <span class="text-xs text-slate-600">-</span>
+                            <input type="number" value="1" class="w-8 h-8 text-center bg-slate-900 border border-slate-700 rounded text-sm font-bold text-brand-400">
+                        </div>
+                        <span class="text-xs font-bold">Real Bañil</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DIFUSIÓN Y QR -->
+            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4 text-center">
+                <h2 class="text-base font-bold text-white flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-qrcode text-amber-500"></i>
+                    <span>Código QR del Torneo</span>
+                </h2>
+                <div id="qrcode" class="p-3 bg-white rounded-xl inline-block"></div>
+                <p class="text-xs text-slate-400">Los jugadores pueden escanear esto para ver las posiciones en `index.html`</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL DIFUSIÓN -->
+    <div id="shareModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 space-y-4 relative">
+            <button onclick="closeShareModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white text-center">Compartir Portal de Visitantes</h3>
+            <input type="text" readonly value="https://tu-usuario.github.io/kancha-pro/index.html" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-brand-400">
+            <button onclick="alert('Link copiado!')" class="w-full py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs">Copiar Link Público</button>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            new QRCode(document.getElementById("qrcode"), {
+                text: window.location.origin + "/index.html",
+                width: 128,
+                height: 128
+            });
+        };
+        function openShareModal() { document.getElementById('shareModal').classList.remove('hidden'); }
+        function closeShareModal() { document.getElementById('shareModal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
