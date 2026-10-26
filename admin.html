@@ -1,127 +1,103 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kancha Pro - Panel de Administración</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#ecfdf5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome & QR Library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kancha Pro - Panel de Administración</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0F172A; color: #F8FAFC; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+  </style>
 </head>
-<body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100">
+<body class="min-h-screen pb-12">
 
-    <!-- HEADER ADMIN -->
-    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-brand-500/20">
-                    <i class="fa-solid fa-futbol"></i>
-                </div>
-                <div>
-                    <span class="font-extrabold text-xl tracking-tight text-white">KANCHA<span class="text-brand-500">PRO</span></span>
-                    <span class="text-[10px] block text-brand-400 uppercase font-bold">Panel de Organizador</span>
-                </div>
-            </div>
-
-            <div class="flex items-center space-x-3">
-                <button onclick="openShareModal()" class="px-3 py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-2 transition shadow">
-                    <i class="fa-solid fa-share-nodes"></i>
-                    <span>Difundir Torneo</span>
-                </button>
-                <a href="index.html" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold flex items-center space-x-2 border border-slate-700 transition">
-                    <i class="fa-solid fa-eye"></i>
-                    <span class="hidden sm:inline">Ver Portada Pública</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- CONTENIDO ADMIN -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-white">Copa Nocturna F5</h1>
-                <p class="text-xs text-slate-400 mt-1">Carga resultados, sanciona e imprime planillas de juego</p>
-            </div>
-            <button onclick="alert('Torneo sincronizado con Supabase')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold rounded-xl text-xs border border-slate-700">
-                <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Estado: Sincronizado
-            </button>
-        </div>
-
-        <!-- MESA DE CONTROL -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- CARGA DE RESULTADOS -->
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4">
-                <h2 class="text-base font-bold text-white flex items-center space-x-2">
-                    <i class="fa-solid fa-pen-to-square text-brand-500"></i>
-                    <span>Planilla de Partidos (Fecha 3)</span>
-                </h2>
-                <div class="space-y-3">
-                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
-                        <span class="text-xs font-bold">Los Galácticos</span>
-                        <div class="flex items-center space-x-2">
-                            <input type="number" value="3" class="w-8 h-8 text-center bg-slate-900 border border-slate-700 rounded text-sm font-bold text-brand-400">
-                            <span class="text-xs text-slate-600">-</span>
-                            <input type="number" value="1" class="w-8 h-8 text-center bg-slate-900 border border-slate-700 rounded text-sm font-bold text-brand-400">
-                        </div>
-                        <span class="text-xs font-bold">Real Bañil</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DIFUSIÓN Y QR -->
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5 space-y-4 text-center">
-                <h2 class="text-base font-bold text-white flex items-center justify-center space-x-2">
-                    <i class="fa-solid fa-qrcode text-amber-500"></i>
-                    <span>Código QR del Torneo</span>
-                </h2>
-                <div id="qrcode" class="p-3 bg-white rounded-xl inline-block"></div>
-                <p class="text-xs text-slate-400">Los jugadores pueden escanear esto para ver las posiciones en `index.html`</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- MODAL DIFUSIÓN -->
-    <div id="shareModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 space-y-4 relative">
-            <button onclick="closeShareModal()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <h3 class="text-lg font-bold text-white text-center">Compartir Portal de Visitantes</h3>
-            <input type="text" readonly value="https://tu-usuario.github.io/kancha-pro/index.html" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-brand-400">
-            <button onclick="alert('Link copiado!')" class="w-full py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs">Copiar Link Público</button>
-        </div>
+  <!-- ==================== PANTALLA DE LOGIN ==================== -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass p-8 rounded-2xl max-w-md w-full text-center shadow-2xl border border-slate-700/50">
+      <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+        ⚽
+      </div>
+      <h1 class="text-3xl font-extrabold text-white mb-2">Kancha<span class="text-emerald-400">Pro</span></h1>
+      <p class="text-slate-400 text-sm mb-8">Panel de Control para Organizadores de Torneos</p>
+      
+      <button onclick="loginWithGoogle()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-xl border border-slate-600/50 transition flex items-center justify-center gap-3 shadow-lg">
+        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        Continuar con Google
+      </button>
     </div>
+  </div>
 
-    <script>
-        window.onload = function() {
-            new QRCode(document.getElementById("qrcode"), {
-                text: window.location.origin + "/index.html",
-                width: 128,
-                height: 128
-            });
-        };
-        function openShareModal() { document.getElementById('shareModal').classList.remove('hidden'); }
-        function closeShareModal() { document.getElementById('shareModal').classList.add('hidden'); }
-    </script>
+  <!-- ==================== PANEL DE CONTROL (Oculto hasta autenticar) ==================== -->
+  <div id="admin-panel" class="hidden">
+    <nav class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-40 backdrop-blur-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">⚽</span>
+          <span class="font-bold text-xl tracking-tight text-white">Kancha<span class="text-emerald-400">Pro</span> <span class="text-xs text-slate-400 ml-2 font-normal">Panel Admin</span></span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="logout()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition">
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+      <div class="glass rounded-2xl p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 id="tournament-title" class="text-2xl font-bold text-white">Cargando Torneo...</h2>
+          <p class="text-slate-400 text-sm">Gestiona resultados, equipos y comparte la tabla pública</p>
+        </div>
+        <button onclick="shareTournament()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+          🔗 Compartir con Jugadores
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ⚙️ REEMPLAZA ESTAS DOS LÍNEAS CON TUS CREDENCIALES DE SUPABASE:
+    const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+
+    let supabaseClient = null;
+
+    if (SUPABASE_URL !== "PEGA_AQUI_TU_PROJECT_URL" && typeof supabase !== 'undefined') {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    async function checkAuth() {
+      if (!supabaseClient) return;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        document.getElementById('tournament-title').innerText = "Mi Torneo Activo";
+      }
+    }
+
+    async function loginWithGoogle() {
+      if (!supabaseClient) {
+        alert("Por favor configura la SUPABASE_URL y SUPABASE_ANON_KEY en el código.");
+        return;
+      }
+      await supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href }
+      });
+    }
+
+    async function logout() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      window.location.reload();
+    }
+
+    checkAuth();
+  </script>
 </body>
 </html>
