@@ -1,23 +1,26 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KanchaPro - Portal Público del Torneo</title>
+  <title>Kanchapro - Portal Público de Torneos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #0F172A; color: #F8FAFC; }
-    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .card-yellow { background-color: #EAB308; }
-    .card-blue { background-color: #3B82F6; }
-    .card-red { background-color: #EF4444; }
+    body { font-family: 'Montserrat', sans-serif; background-color: #0b0f0d; color: #f0fdf4; }
+    .glass-card { background: rgba(13, 27, 18, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.15); }
+    .btn-green { background-color: #16a34a; transition: background 0.2s; }
+    .btn-green:hover { background-color: #15803d; }
+    .tab-active { border-bottom: 3px solid #22c55e; color: #4ade80; }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 3px; }
   </style>
 </head>
-<body class="min-h-screen pb-12">
+<body class="h-full flex flex-col overflow-auto">
 
-  <!-- ==================== CONFIGURACIÓN DE SUPABASE ==================== -->
+  <!-- ==================== CONFIGURACIÓN SUPABASE ==================== -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
@@ -27,295 +30,336 @@
     }
   </script>
 
-  <!-- NAVBAR VISTA PÚBLICA -->
-  <nav class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">⚽</span>
-        <span class="font-bold text-xl tracking-tight text-white">Kancha<span class="text-emerald-400">Pro</span></span>
-        <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">Portal de Consulta</span>
+  <!-- Header -->
+  <header class="bg-[#060a08]/95 border-b border-green-900/40 px-4 py-3 flex items-center justify-between sticky top-0 z-50 shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-green-600/20 border border-green-500/40 flex items-center justify-center text-xl">⚽</div>
+      <div>
+        <h1 class="text-base sm:text-lg font-black tracking-wide text-green-400">KANCHA<span class="text-white">PRO</span></h1>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400">Portal Público</p>
+      </div>
+    </div>
+    <div>
+      <a href="admin.html" class="text-xs px-3 py-2 bg-green-700/80 hover:bg-green-600 text-white rounded-lg transition font-semibold flex items-center gap-1.5 border border-green-500/30">
+        🔒 Panel Admin
+      </a>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 space-y-6">
+    
+    <!-- Buscador y Selector de Torneos / Categorías -->
+    <div class="glass-card rounded-2xl p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold text-green-300">🔍 Buscar Torneo o Categoría</h2>
+        <span class="text-xs bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20">En vivo</span>
       </div>
       <div>
-        <a href="admin.html" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
-          🔒 Acceso Organizadores
-        </a>
+        <input type="text" id="tournamentSearchInput" placeholder="Escribe el nombre del torneo..." class="w-full bg-[#0b0f0d] border border-green-900/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-green-500 text-sm">
       </div>
-    </div>
-  </nav>
-
-  <!-- VISTA PRINCIPAL DEL TORNEO -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
-    <div class="glass rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
-        <h1 id="public-tournament-title" class="text-2xl font-extrabold text-white">Cargando torneo...</h1>
-        <p id="public-tournament-subtitle" class="text-slate-400 text-sm">Información en tiempo real</p>
-      </div>
-      <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold">
-        🟢 Torneo Oficial
-      </span>
-    </div>
-
-    <!-- Navegación de Pestañas Públicas -->
-    <div class="flex border-b border-slate-800 gap-6 text-sm font-semibold overflow-x-auto pb-1">
-      <button onclick="switchTab('tab-posiciones', event)" class="tab-btn text-emerald-400 border-b-2 border-emerald-400 pb-2">📊 Tabla de Posiciones</button>
-      <button onclick="switchTab('tab-fixture', event)" class="tab-btn text-slate-400 border-b-2 border-transparent pb-2 hover:text-white">📅 Fixture / Partidos</button>
-      <button onclick="switchTab('tab-equipos', event)" class="tab-btn text-slate-400 border-b-2 border-transparent pb-2 hover:text-white">🛡️ Equipos y Planteles</button>
-      <button onclick="switchTab('tab-sanciones', event)" class="tab-btn text-slate-400 border-b-2 border-transparent pb-2 hover:text-white">🟨 Tarjetas y Sanciones</button>
-    </div>
-
-    <!-- Tab 1: Tabla de Posiciones -->
-    <div id="tab-posiciones" class="tab-content glass rounded-2xl p-6 overflow-x-auto">
-      <h3 class="text-lg font-bold text-white mb-4">Tabla General de Posiciones</h3>
-      <table class="w-full text-left text-sm text-slate-300">
-        <thead class="text-xs uppercase bg-slate-800/80 text-slate-400 border-b border-slate-700">
-          <tr>
-            <th class="p-3">#</th>
-            <th class="p-3">Equipo</th>
-            <th class="p-3 text-center">PTS</th>
-            <th class="p-3 text-center">PJ</th>
-            <th class="p-3 text-center">PG</th>
-            <th class="p-3 text-center">PE</th>
-            <th class="p-3 text-center">PP</th>
-            <th class="p-3 text-center">GF</th>
-            <th class="p-3 text-center">GC</th>
-            <th class="p-3 text-center">DG</th>
-            <th class="p-3 text-center">Tarjetas</th>
-          </tr>
-        </thead>
-        <tbody id="standings-table-body" class="divide-y divide-slate-800">
-          <!-- Carga Dinámica -->
-        </tbody>
-      </table>
-      <div class="mt-4 text-xs text-emerald-400 flex items-center gap-1.5">
-        <span>🟢</span> <span id="qualifier-text">Clasifican los mejores posicionados.</span>
+        <label class="block text-xs font-semibold text-slate-400 mb-1">O selecciona de la lista:</label>
+        <select id="tournamentSelect" class="w-full bg-[#0b0f0d] border border-green-900/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 text-sm">
+          <option value="">-- Selecciona un torneo --</option>
+        </select>
       </div>
     </div>
 
-    <!-- Tab 2: Fixture -->
-    <div id="tab-fixture" class="tab-content glass rounded-2xl p-6 hidden">
-      <h3 class="text-lg font-bold text-white mb-4">Próximos Partidos y Resultados</h3>
-      <div id="public-matches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Partidos -->
+    <!-- Contenedor de Estadísticas del Torneo Seleccionado -->
+    <div id="tournamentStatsContainer" class="hidden space-y-6">
+      
+      <!-- Info del Torneo -->
+      <div class="glass-card rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 id="selectedTournamentName" class="text-2xl font-black text-white">Nombre del Torneo</h2>
+          <p id="selectedTournamentDetails" class="text-sm text-green-400">Modalidad • Equipos</p>
+        </div>
       </div>
+
+      <!-- Pestañas de Estadísticas -->
+      <div class="flex overflow-x-auto gap-2 bg-[#0b0f0d] rounded-xl p-2 scrollbar-thin border border-green-900/30">
+        <button onclick="switchPublicTab('positions', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap tab-active font-semibold">📊 Posiciones</button>
+        <button onclick="switchPublicTab('fixture', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">📅 Fixture</button>
+        <button onclick="switchPublicTab('scorers', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">⚽ Goleadores</button>
+        <button onclick="switchPublicTab('cards', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">🟨 Tarjetas</button>
+        <button onclick="switchPublicTab('suspensions', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">🟥 Suspendidos</button>
+      </div>
+
+      <!-- Tab: Posiciones -->
+      <div id="pub-positions" class="public-tab-content glass-card rounded-2xl p-6 overflow-x-auto">
+        <h3 class="font-bold text-base mb-4 text-green-300">Tabla General de Posiciones</h3>
+        <table class="w-full text-sm">
+          <thead class="bg-[#0b0f0d] text-slate-400 text-xs uppercase">
+            <tr>
+              <th class="p-3 text-left">#</th>
+              <th class="p-3 text-left">Equipo</th>
+              <th class="p-3 text-center">PJ</th>
+              <th class="p-3 text-center">G</th>
+              <th class="p-3 text-center">E</th>
+              <th class="p-3 text-center">P</th>
+              <th class="p-3 text-center">GF</th>
+              <th class="p-3 text-center">GC</th>
+              <th class="p-3 text-center">DG</th>
+              <th class="p-3 text-center font-bold text-green-400">Pts</th>
+            </tr>
+          </thead>
+          <tbody id="pubPositionsBody" class="divide-y divide-green-900/20"></tbody>
+        </table>
+      </div>
+
+      <!-- Tab: Fixture -->
+      <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-4">
+        <h3 class="font-bold text-base mb-4 text-green-300">Fixture y Resultados</h3>
+        <div id="pubFixtureList" class="space-y-3"></div>
+      </div>
+
+      <!-- Tab: Goleadores -->
+      <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-3">
+        <h3 class="font-bold text-base mb-4 text-green-300">Tabla de Goleadores</h3>
+        <div id="pubScorersList" class="space-y-2"></div>
+      </div>
+
+      <!-- Tab: Tarjetas -->
+      <div id="pub-cards" class="public-tab-content glass-card rounded-2xl p-6 hidden">
+        <h3 class="font-bold text-base mb-4 text-green-300">Registro de Tarjetas</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30">
+            <h4 class="font-bold mb-3 text-yellow-400 text-sm">🟨 Tarjetas Amarillas</h4>
+            <div id="pubYellowCards" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin"></div>
+          </div>
+          <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30">
+            <h4 class="font-bold mb-3 text-red-400 text-sm">🟥 Tarjetas Rojas</h4>
+            <div id="pubRedCards" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Suspendidos -->
+      <div id="pub-suspensions" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-3">
+        <h3 class="font-bold text-base mb-4 text-green-300">Jugadores Suspendidos</h3>
+        <div id="pubSuspensionsList" class="space-y-3"></div>
+      </div>
+
     </div>
 
-    <!-- Tab 3: Equipos y Planteles -->
-    <div id="tab-equipos" class="tab-content glass rounded-2xl p-6 hidden">
-      <h3 class="text-lg font-bold text-white mb-6">Equipos Inscriptos y Fichas</h3>
-      <div id="public-teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Planteles -->
-      </div>
+    <!-- Mensaje inicial antes de seleccionar -->
+    <div id="noTournamentSelected" class="glass-card rounded-2xl p-12 text-center space-y-3">
+      <div class="text-5xl">🏆</div>
+      <h3 class="text-xl font-bold text-green-400">Selecciona un torneo para comenzar</h3>
+      <p class="text-sm text-slate-400">Usa el buscador superior o despliega la lista para consultar todas las estadísticas en tiempo real.</p>
     </div>
 
-    <!-- Tab 4: Tarjetas y Sanciones -->
-    <div id="tab-sanciones" class="tab-content glass rounded-2xl p-6 hidden">
-      <h3 class="text-lg font-bold text-white mb-4">Registro Disciplinario del Torneo</h3>
-      <div id="public-cards-list" class="space-y-3">
-        <!-- Tarjetas -->
-      </div>
-    </div>
-  </div>
+  </main>
 
-  <!-- SCRIPTS DE CARGA PÚBLICA -->
   <script>
-    let tournamentData = {
-      name: "Copa Verano KanchaPro",
-      type: "copa",
-      teamsCount: 8,
-      qualifiersCount: 2,
-      pointsConfig: { win: 3, draw: 1, loss: 0 },
-      teams: [
-        { name: "Galácticos FC", logo: "🛡️", dt: "Carlos Bianchi", dtDni: "22333444", players: [{ name: "Lionel Messi", dni: "33000111", shirt: 10, position: "Delantero" }] },
-        { name: "Deportivo Sur", logo: "⚡", dt: "Marcelo Gallardo", dtDni: "22444555", players: [] }
-      ],
-      matches: []
-    };
+    let globalCategories = [];
+    let globalTeams = [];
+    let globalPlayers = [];
+    let globalMatches = [];
+    let globalSuspensions = [];
+    let currentSelectedCategory = null;
 
-    window.addEventListener('DOMContentLoaded', async () => {
-      await loadFromSupabase();
-      renderAll();
-    });
-
-    async function loadFromSupabase() {
-      if (supabaseClient) {
-        try {
-          const { data, error } = await supabaseClient.from('torneos').select('datos').eq('id', 'torneo_principal').single();
-          if (data && data.datos) {
-            tournamentData = data.datos;
-            localStorage.setItem('kanchapro_data', JSON.stringify(tournamentData));
-            return;
-          }
-        } catch (e) {}
-      }
-      const saved = localStorage.getItem('kanchapro_data');
-      if (saved) {
-        try { tournamentData = JSON.parse(saved); } catch(e) {}
-      }
-    }
-
-    function renderAll() {
-      document.getElementById('public-tournament-title').innerText = tournamentData.name || "Copa Verano KanchaPro";
-      document.getElementById('public-tournament-subtitle').innerText = `${(tournamentData.type || 'copa').toUpperCase()} • ${tournamentData.teams ? tournamentData.teams.length : 0} Equipos`;
-      document.getElementById('qualifier-text').innerText = `Clasifican los primeros ${tournamentData.qualifiersCount || 2} equipos.`;
-
-      renderStandings();
-      renderPublicMatches();
-      renderTeamsAndRosters();
-      renderCardsList();
-    }
-
-    function renderStandings() {
-      const tbody = document.getElementById('standings-table-body');
-      tbody.innerHTML = "";
-
-      const teams = tournamentData.teams || [];
-      let stats = teams.map(t => ({
-        name: typeof t === 'object' ? t.name : t,
-        logo: typeof t === 'object' ? t.logo : '🛡️',
-        pts: 0, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, dg: 0, yellow: 0, blue: 0, red: 0
-      }));
-
-      const ptsWin = (tournamentData.pointsConfig && tournamentData.pointsConfig.win !== undefined) ? tournamentData.pointsConfig.win : 3;
-      const ptsDraw = (tournamentData.pointsConfig && tournamentData.pointsConfig.draw !== undefined) ? tournamentData.pointsConfig.draw : 1;
-      const ptsLoss = (tournamentData.pointsConfig && tournamentData.pointsConfig.loss !== undefined) ? tournamentData.pointsConfig.loss : 0;
-
-      (tournamentData.matches || []).forEach(m => {
-        let home = stats.find(s => s.name === m.home);
-        let away = stats.find(s => s.name === m.away);
-        if (!home || !away) return;
-
-        home.pj++; away.pj++;
-        home.gf += m.homeScore || 0; home.gc += m.awayScore || 0;
-        away.gf += m.awayScore || 0; away.gc += m.homeScore || 0;
-
-        home.yellow += m.yellowHome || 0; home.blue += m.blueHome || 0; home.red += m.redHome || 0;
-        away.yellow += m.yellowAway || 0; away.blue += m.blueAway || 0; away.red += m.redAway || 0;
-
-        if (m.homeScore > m.awayScore) { home.pg++; home.pts += ptsWin; away.pp++; away.pts += ptsLoss; }
-        else if (m.homeScore < m.awayScore) { away.pg++; away.pts += ptsWin; home.pp++; home.pts += ptsLoss; }
-        else { home.pe++; home.pts += ptsDraw; away.pe++; away.pts += ptsDraw; }
-      });
-
-      stats.forEach(s => s.dg = s.gf - s.gc);
-      stats.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
-
-      stats.forEach((s, idx) => {
-        const isQualified = idx < (tournamentData.qualifiersCount || 2);
-        const logoHtml = s.logo.startsWith('http') || s.logo.startsWith('data:') 
-          ? `<img src="${s.logo}" class="w-6 h-6 object-contain rounded">`
-          : `<span class="text-base">${s.logo}</span>`;
-
-        const row = document.createElement('tr');
-        row.className = isQualified ? "bg-emerald-500/5 hover:bg-slate-800/50" : "hover:bg-slate-800/50";
-        row.innerHTML = `
-          <td class="p-3 font-bold ${isQualified ? 'text-emerald-400' : 'text-slate-400'}">${idx + 1}</td>
-          <td class="p-3 font-semibold text-white flex items-center gap-2">
-            ${logoHtml} ${s.name} ${isQualified ? '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded">Clasificado</span>' : ''}
-          </td>
-          <td class="p-3 text-center font-bold text-emerald-400">${s.pts}</td>
-          <td class="p-3 text-center">${s.pj}</td>
-          <td class="p-3 text-center text-slate-300">${s.pg}</td>
-          <td class="p-3 text-center text-slate-300">${s.pe}</td>
-          <td class="p-3 text-center text-slate-300">${s.pp}</td>
-          <td class="p-3 text-center text-slate-300">${s.gf}</td>
-          <td class="p-3 text-center text-slate-300">${s.gc}</td>
-          <td class="p-3 text-center font-medium ${s.dg >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${s.dg > 0 ? '+' + s.dg : s.dg}</td>
-          <td class="p-3 text-center">
-            <span class="text-xs bg-slate-900 border border-slate-700 px-2 py-1 rounded">🟨 ${s.yellow} | 🟦 ${s.blue} | 🟥 ${s.red}</span>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    function renderPublicMatches() {
-      const container = document.getElementById('public-matches-list');
-      container.innerHTML = "";
-      if (!tournamentData.matches || tournamentData.matches.length === 0) {
-        container.innerHTML = "<p class='text-slate-500 text-xs'>No hay partidos cargados por el momento.</p>";
+    async function initPublicApp() {
+      if (!supabaseClient) {
+        alert("Error al inicializar Supabase.");
         return;
       }
-      tournamentData.matches.forEach(m => {
-        const card = document.createElement('div');
-        card.className = "bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-4";
-        card.innerHTML = `
-          <span class="font-bold text-white flex-1 text-right text-sm">${m.home}</span>
-          <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-extrabold text-base">
-            ${m.homeScore} - ${m.awayScore}
-          </div>
-          <span class="font-bold text-white flex-1 text-left text-sm">${m.away}</span>
-        `;
-        container.appendChild(card);
-      });
+      await fetchSupabaseData();
+      setupPublicEvents();
     }
 
-    function renderTeamsAndRosters() {
-      const container = document.getElementById('public-teams-grid');
-      container.innerHTML = "";
-      (tournamentData.teams || []).forEach(t => {
-        const teamObj = typeof t === 'object' ? t : { name: t, logo: '🛡️', dt: 'No especificado', players: [] };
-        const logoHtml = teamObj.logo && (teamObj.logo.startsWith('http') || teamObj.logo.startsWith('data:'))
-          ? `<img src="${teamObj.logo}" class="w-10 h-10 object-contain rounded-lg">`
-          : `<span class="text-3xl">${teamObj.logo || '🛡️'}</span>`;
+    async function fetchSupabaseData() {
+      try {
+        const [catRes, teamRes, playerRes, matchRes, suspRes] = await Promise.all([
+          supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'team'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'player'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'match'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'suspension')
+        ]);
 
-        let playersHtml = (teamObj.players && teamObj.players.length > 0)
-          ? teamObj.players.map(p => `<li class="flex justify-between text-xs py-1 border-b border-slate-800/50"><span>#${p.shirt} ${p.name}</span><span class="text-slate-500">${p.position}</span></li>`).join('')
-          : `<li class="text-xs text-slate-500">Sin jugadores inscriptos</li>`;
+        globalCategories = catRes.data || [];
+        globalTeams = teamRes.data || [];
+        globalPlayers = playerRes.data || [];
+        globalMatches = matchRes.data || [];
+        globalSuspensions = suspRes.data || [];
 
-        const card = document.createElement('div');
-        card.className = "bg-slate-900/80 border border-slate-800 p-5 rounded-xl space-y-3";
-        card.innerHTML = `
-          <div class="flex items-center gap-3">
-            ${logoHtml}
-            <div>
-              <h4 class="font-bold text-white text-base">${teamObj.name}</h4>
-              <p class="text-xs text-slate-400">DT: ${teamObj.dt || 'No asignado'}</p>
-            </div>
-          </div>
-          <div class="pt-2 border-t border-slate-800">
-            <span class="text-xs font-bold text-slate-400 block mb-2">Plantel Registrado (${(teamObj.players || []).length})</span>
-            <ul class="max-h-40 overflow-y-auto pr-1 space-y-1">
-              ${playersHtml}
-            </ul>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function renderCardsList() {
-      const container = document.getElementById('public-cards-list');
-      container.innerHTML = "";
-      (tournamentData.matches || []).forEach(m => {
-        if (m.yellowHome || m.blueHome || m.redHome || m.yellowAway || m.blueAway || m.redAway) {
-          const item = document.createElement('div');
-          item.className = "bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex justify-between items-center text-xs";
-          item.innerHTML = `
-            <span class="font-semibold text-slate-300">${m.home} vs ${m.away}</span>
-            <div class="flex gap-2">
-              <span class="text-yellow-400 font-bold">🟨 ${m.yellowHome + m.yellowAway}</span>
-              <span class="text-blue-400 font-bold">🟦 ${m.blueHome + m.blueAway}</span>
-              <span class="text-red-400 font-bold">🟥 ${m.redHome + m.redAway}</span>
-            </div>
-          `;
-          container.appendChild(item);
-        }
-      });
-
-      if (container.innerHTML === "") {
-        container.innerHTML = "<p class='text-xs text-slate-500'>No hay tarjetas registradas por el momento.</p>";
+        populateTournamentSelect(globalCategories);
+      } catch (err) {
+        console.error("Error cargando datos de Supabase:", err);
       }
     }
 
-    function switchTab(tabId, evt) {
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('text-emerald-400', 'border-emerald-400');
-        b.classList.add('text-slate-400', 'border-transparent');
-      });
-      document.getElementById(tabId).classList.remove('hidden');
-      evt.target.classList.add('text-emerald-400', 'border-emerald-400');
+    function populateTournamentSelect(categories, filterText = '') {
+      const select = document.getElementById('tournamentSelect');
+      const filtered = categories.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()));
+      
+      select.innerHTML = '<option value="">-- Selecciona un torneo --</option>' +
+        filtered.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
     }
+
+    function setupPublicEvents() {
+      const searchInput = document.getElementById('tournamentSearchInput');
+      searchInput.addEventListener('input', (e) => {
+        populateTournamentSelect(globalCategories, e.target.value);
+      });
+
+      const select = document.getElementById('tournamentSelect');
+      select.addEventListener('change', (e) => {
+        const catId = e.target.value;
+        if (!catId) {
+          document.getElementById('tournamentStatsContainer').classList.add('hidden');
+          document.getElementById('noTournamentSelected').classList.remove('hidden');
+          currentSelectedCategory = null;
+          return;
+        }
+        currentSelectedCategory = globalCategories.find(c => c.id === catId);
+        renderTournamentStats();
+      });
+    }
+
+    function switchPublicTab(tabKey, evt) {
+      document.querySelectorAll('.public-tab').forEach(t => {
+        t.classList.remove('tab-active', 'text-green-400');
+        t.classList.add('text-slate-400');
+      });
+      evt.target.classList.add('tab-active', 'text-green-400');
+      evt.target.classList.remove('text-slate-400');
+
+      document.querySelectorAll('.public-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`pub-${tabKey}`).classList.remove('hidden');
+    }
+
+    function renderTournamentStats() {
+      if (!currentSelectedCategory) return;
+      document.getElementById('noTournamentSelected').classList.add('hidden');
+      document.getElementById('tournamentStatsContainer').classList.remove('hidden');
+
+      document.getElementById('selectedTournamentName').textContent = currentSelectedCategory.name;
+      document.getElementById('selectedTournamentDetails').textContent = 
+        `${currentSelectedCategory.fixture_type === 'groups' ? 'Por Grupos' : 'Todos contra todos'} • ${globalTeams.filter(t => t.category_id === currentSelectedCategory.id).length} Equipos`;
+
+      renderPublicPositions();
+      renderPublicFixture();
+      renderPublicScorers();
+      renderPublicCards();
+      renderPublicSuspensions();
+    }
+
+    function renderPublicPositions() {
+      const teams = globalTeams.filter(t => t.category_id === currentSelectedCategory.id);
+      const matches = globalMatches.filter(m => m.category_id === currentSelectedCategory.id && m.played);
+
+      const stats = teams.map(team => {
+        let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+        matches.forEach(m => {
+          if (m.home_team === team.id) {
+            played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+            if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+          } else if (m.away_team === team.id) {
+            played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+            if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+          }
+        });
+        return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: won * 3 + drawn };
+      }).sort((a, b) => b.points - a.points || b.gd - a.gd || b.gf - a.gf);
+
+      const tbody = document.getElementById('pubPositionsBody');
+      tbody.innerHTML = stats.map((t, idx) => `
+        <tr class="hover:bg-green-950/20 ${idx < 3 ? 'bg-green-900/10' : ''}">
+          <td class="p-3 font-bold text-green-400">${idx + 1}</td>
+          <td class="p-3 font-semibold text-white flex items-center gap-2">
+            ${t.logo ? `<img src="${t.logo}" class="w-6 h-6 rounded-full object-cover border border-green-500/30">` : '🛡️'} ${t.name}
+          </td>
+          <td class="p-3 text-center">${t.played}</td>
+          <td class="p-3 text-center text-green-400">${t.won}</td>
+          <td class="p-3 text-center text-yellow-400">${t.drawn}</td>
+          <td class="p-3 text-center text-red-400">${t.lost}</td>
+          <td class="p-3 text-center">${t.gf}</td>
+          <td class="p-3 text-center">${t.gc}</td>
+          <td class="p-3 text-center ${t.gd >= 0 ? 'text-green-400' : 'text-red-400'}">${t.gd >= 0 ? '+' + t.gd : t.gd}</td>
+          <td class="p-3 text-center font-bold text-green-400 text-base">${t.points}</td>
+        </tr>
+      `).join('') || `<tr><td colspan="10" class="text-center p-4 text-slate-500">No hay equipos registrados.</td></tr>`;
+    }
+
+    function renderPublicFixture() {
+      const matches = globalMatches.filter(m => m.category_id === currentSelectedCategory.id);
+      const container = document.getElementById('pubFixtureList');
+      container.innerHTML = matches.map(m => {
+        const home = globalTeams.find(t => t.id === m.home_team) || { name: 'Local' };
+        const away = globalTeams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+        return `
+          <div class="bg-[#0b0f0d] border border-green-900/30 rounded-xl p-4 flex items-center justify-between gap-4">
+            <div class="flex-1 text-right font-semibold text-sm truncate">${home.name}</div>
+            <div class="bg-green-950/60 border border-green-600/30 px-4 py-1.5 rounded-lg text-green-400 font-extrabold text-sm">
+              ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
+            </div>
+            <div class="flex-1 text-left font-semibold text-sm truncate">${away.name}</div>
+          </div>
+        `;
+      }).join('') || `<p class="text-slate-500 text-center py-4">No hay partidos programados.</p>`;
+    }
+
+    function renderPublicScorers() {
+      const teamIds = globalTeams.filter(t => t.category_id === currentSelectedCategory.id).map(t => t.id);
+      const scorers = globalPlayers.filter(p => teamIds.includes(p.team_id) && (p.goals || 0) > 0)
+        .sort((a, b) => (b.goals || 0) - (a.goals || 0));
+
+      const container = document.getElementById('pubScorersList');
+      container.innerHTML = scorers.map((p, idx) => {
+        const team = globalTeams.find(t => t.id === p.team_id);
+        return `
+          <div class="bg-[#0b0f0d] border border-green-900/30 rounded-xl p-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-green-400 w-6">#${idx + 1}</span>
+              <div>
+                <div class="font-bold text-sm text-white">${p.name}</div>
+                <div class="text-xs text-slate-400">${team ? team.name : ''}</div>
+              </div>
+            </div>
+            <div class="text-green-400 font-extrabold text-base">⚽ ${p.goals}</div>
+          </div>
+        `;
+      }).join('') || `<p class="text-slate-500 text-center py-4">No hay goles registrados.</p>`;
+    }
+
+    function renderPublicCards() {
+      const teamIds = globalTeams.filter(t => t.category_id === currentSelectedCategory.id).map(t => t.id);
+      const players = globalPlayers.filter(p => teamIds.includes(p.team_id));
+
+      const yellows = players.filter(p => (p.yellow_cards || 0) > 0).sort((a,b) => b.yellow_cards - a.yellow_cards);
+      const reds = players.filter(p => (p.red_cards || 0) > 0).sort((a,b) => b.red_cards - a.red_cards);
+
+      document.getElementById('pubYellowCards').innerHTML = yellows.map(p => `
+        <div class="flex justify-between items-center bg-[#0b0f0d] p-2 rounded-lg text-xs">
+          <span>${p.name}</span> <span class="font-bold text-yellow-400">🟨 ${p.yellow_cards}</span>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs">Sin registros</p>';
+
+      document.getElementById('pubRedCards').innerHTML = reds.map(p => `
+        <div class="flex justify-between items-center bg-[#0b0f0d] p-2 rounded-lg text-xs">
+          <span>${p.name}</span> <span class="font-bold text-red-400">🟥 ${p.red_cards}</span>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs">Sin registros</p>';
+    }
+
+    function renderPublicSuspensions() {
+      const suspensions = globalSuspensions.filter(s => s.category_id === currentSelectedCategory.id);
+      const container = document.getElementById('pubSuspensionsList');
+      container.innerHTML = suspensions.map(s => `
+        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-3 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold text-white block">${s.player_name}</span>
+            <span class="text-slate-400">Motivo / Informe del Tribunal</span>
+          </div>
+          <span class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded-lg font-bold">Suspendido</span>
+        </div>
+      `).join('') || `<p class="text-slate-500 text-center py-4">No hay jugadores suspendidos.</p>`;
+    }
+
+    initPublicApp();
   </script>
 </body>
 </html>
