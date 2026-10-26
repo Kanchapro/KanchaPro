@@ -77,7 +77,7 @@
     <!-- Pestañas (Incluye Playoffs) -->
     <div class="flex overflow-x-auto gap-1.5 glass-card rounded-xl p-1.5 border border-green-900/30 scrollbar-thin">
       <button onclick="switchAdminTab('teams', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap tab-active font-semibold">🛡️ Equipos</button>
-      <button onclick="switchAdminTab('players', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Jugadores</button>
+      <button onclick="switchAdminTab('players', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Planteles</button>
       <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture</button>
       <button onclick="switchAdminTab('standings', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones</button>
       <button onclick="switchAdminTab('playoffs', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🏆 Playoffs / Llaves</button>
@@ -96,13 +96,16 @@
       <div id="adminTeamsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
     </div>
 
-    <!-- Tab 2: Jugadores -->
+    <!-- Tab 2: Planteles (Actualizado con vista desplegable de equipos y jugadores) -->
     <div id="adm-players" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-green-300">Planteles</h3>
+        <div>
+          <h3 class="text-sm font-bold text-green-300">Planteles por Equipo</h3>
+          <p class="text-[10px] text-slate-400">Haz clic en un equipo para ver sus jugadores y en un jugador para ver sus estadísticas</p>
+        </div>
         <button onclick="openPlayerModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Jugador</button>
       </div>
-      <div id="adminPlayersList" class="space-y-2 max-h-[400px] overflow-y-auto scrollbar-thin"></div>
+      <div id="adminRostersContainer" class="space-y-3 max-h-[450px] overflow-y-auto scrollbar-thin pr-1"></div>
     </div>
 
     <!-- Tab 3: Fixture -->
@@ -148,7 +151,7 @@
 
   <!-- ==================== MODALES ==================== -->
 
-  <!-- Modal Torneo (Con opción de Playoffs y Cruces) -->
+  <!-- Modal Torneo -->
   <div id="categoryModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 my-auto text-xs">
       <h3 id="catModalTitle" class="text-sm font-bold text-green-400">Crear Torneo</h3>
@@ -235,6 +238,32 @@
       <div class="flex justify-end gap-2 pt-2 border-t border-green-900/40">
         <button onclick="closeModal('matchDetailModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs">Cancelar</button>
         <button onclick="saveMatchDetail()" class="btn-green px-4 py-1.5 text-white rounded-lg text-xs font-bold">Guardar Planilla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Estadísticas del Jugador -->
+  <div id="playerStatsModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3">
+    <div class="glass-card p-5 rounded-2xl max-w-xs w-full space-y-4 border border-green-500/30 text-xs">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <h3 class="text-sm font-bold text-green-400">Estadísticas del Jugador</h3>
+        <button onclick="closeModal('playerStatsModal')" class="text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-center">
+        <div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-full flex items-center justify-center mx-auto text-xl border border-green-500/30">👤</div>
+        <div>
+          <h4 id="statPlayerName" class="text-sm font-bold text-white">Nombre</h4>
+          <p id="statPlayerTeam" class="text-[10px] text-slate-400">Equipo</p>
+        </div>
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex justify-around items-center">
+          <div>
+            <span class="text-[10px] text-slate-400 block">Goles Totales</span>
+            <span id="statPlayerGoals" class="text-lg font-black text-green-400">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end pt-2">
+        <button onclick="closeModal('playerStatsModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg font-semibold">Cerrar</button>
       </div>
     </div>
   </div>
@@ -375,7 +404,7 @@
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'}`;
 
-      // Equipos
+      // Equipos (Tab 1)
       document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
         <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
           <span class="font-bold text-white truncate">${t.name}</span>
@@ -383,24 +412,8 @@
         </div>
       `).join('') || '<p class="text-slate-500 text-xs">No hay equipos.</p>';
 
-      // Jugadores
-      const teamIds = teams.map(t => t.id);
-      const players = dbData.players.filter(p => teamIds.includes(p.team_id));
-      document.getElementById('adminPlayersList').innerHTML = players.map(p => {
-        const team = teams.find(t => t.id === p.team_id);
-        return `
-          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex items-center justify-between text-xs">
-            <div>
-              <div class="font-bold text-white">${p.name}</div>
-              <div class="text-[10px] text-slate-400">${team ? team.name : ''}</div>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-green-400 font-bold">⚽ ${p.goals || 0}</span>
-              <button onclick="deleteRecord('${p.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded">🗑️</button>
-            </div>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-xs">No hay jugadores.</p>';
+      // Planteles interactivos (Tab 2)
+      renderRostersView(teams);
 
       // Fixture agrupado por fechas
       const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
@@ -408,7 +421,6 @@
       if (matches.length === 0) {
         document.getElementById('adminMatchesList').innerHTML = '<p class="text-slate-500 text-xs">No hay partidos de liga.</p>';
       } else {
-        // Agrupar partidos por round_name (ej: Fecha 1, Fecha 2...)
         let roundsMap = {};
         matches.forEach(m => {
           let rName = m.round_name || 'Partidos';
@@ -456,6 +468,74 @@
           <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
         </div>
       `).join('') || '<p class="text-slate-500 text-xs">Sin sanciones.</p>';
+    }
+
+    // Renderizar planteles interactivos (Equipos -> Jugadores)
+    function renderRostersView(teams) {
+      const container = document.getElementById('adminRostersContainer');
+      if (teams.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-xs">No hay equipos registrados.</p>';
+        return;
+      }
+
+      container.innerHTML = teams.map(team => {
+        const teamPlayers = dbData.players.filter(p => p.team_id === team.id);
+        return `
+          <div class="bg-[#0b0f0d] border border-green-900/40 rounded-xl overflow-hidden">
+            <!-- Cabecera del Equipo (Click para desplegar/colapsar) -->
+            <div onclick="toggleTeamRoster('${team.id}')" class="p-3 bg-green-950/20 flex justify-between items-center cursor-pointer hover:bg-green-900/20 transition">
+              <div class="flex items-center gap-2">
+                <span class="text-green-400 font-bold">🛡️</span>
+                <span class="font-bold text-white text-xs">${team.name}</span>
+                <span class="text-[10px] bg-black/40 px-2 py-0.5 rounded text-slate-400 border border-green-900/30">${teamPlayers.length} jugadores</span>
+              </div>
+              <span id="icon_team_${team.id}" class="text-green-400 font-bold text-xs">▼</span>
+            </div>
+
+            <!-- Lista de Jugadores (Oculta por defecto) -->
+            <div id="roster_team_${team.id}" class="hidden p-2.5 space-y-1.5 border-t border-green-900/30 bg-[#060a08]">
+              ${teamPlayers.length > 0 ? teamPlayers.map(p => `
+                <div onclick="openPlayerStatsModal('${p.id}')" class="p-2 rounded-lg bg-[#0b0f0d] border border-green-900/20 flex justify-between items-center cursor-pointer hover:border-green-500/50 transition">
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-400 text-xs">⚽</span>
+                    <span class="font-semibold text-white text-xs">${p.name}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-green-400 text-[11px] font-bold">Goles: ${p.goals || 0}</span>
+                    <button onclick="event.stopPropagation(); deleteRecord('${p.id}')" class="text-red-400 hover:text-red-300 text-[10px] px-1.5 py-0.5">🗑️</button>
+                  </div>
+                </div>
+              `).join('') : '<p class="text-slate-500 text-[11px] text-center py-2">No hay jugadores registrados en este equipo.</p>'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Alternar visibilidad del plantel de un equipo
+    function toggleTeamRoster(teamId) {
+      const rosterDiv = document.getElementById(`roster_team_${teamId}`);
+      const iconSpan = document.getElementById(`icon_team_${teamId}`);
+      if (rosterDiv.classList.contains('hidden')) {
+        rosterDiv.classList.remove('hidden');
+        iconSpan.textContent = '▲';
+      } else {
+        rosterDiv.classList.add('hidden');
+        iconSpan.textContent = '▼';
+      }
+    }
+
+    // Abrir modal de estadísticas de un jugador específico
+    function openPlayerStatsModal(playerId) {
+      const player = dbData.players.find(p => p.id === playerId);
+      if (!player) return;
+      const team = dbData.teams.find(t => t.id === player.team_id);
+
+      document.getElementById('statPlayerName').textContent = player.name;
+      document.getElementById('statPlayerTeam').textContent = team ? team.name : 'Sin equipo';
+      document.getElementById('statPlayerGoals').textContent = player.goals || 0;
+
+      openModal('playerStatsModal');
     }
 
     function renderStandingsView(teams, matches, cat) {
@@ -535,7 +615,6 @@
       const count = cat.playoff_config?.count || 4;
       if (teams.length < count) return alert(`Se necesitan al menos ${count} equipos para armar las llaves.`);
 
-      // Calcular posiciones actuales de la tabla para los cruces automáticos (1° vs 4°, 2° vs 3°)
       const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff && m.played);
       const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
 
@@ -553,16 +632,13 @@
         return { ...team, points: (won * winPoints) + drawn, gd: gf - gc };
       }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
-      // Borrar llaves anteriores si existían
       const oldPlayoffs = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff);
       for (let op of oldPlayoffs) {
         await supabaseClient.from('torneos_data').delete().eq('id', op.id);
       }
 
-      // Generar cruces según cantidad
       let newBrackets = [];
       if (count === 4) {
-        // Semifinales: 1° vs 4° y 2° vs 3°
         newBrackets.push(
           { id: 'play_' + Date.now() + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Semifinal 1', home_team: stats[0]?.id, away_team: stats[3]?.id, home_score: 0, away_score: 0, played: false },
           { id: 'play_' + Date.now() + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Semifinal 2', home_team: stats[1]?.id, away_team: stats[2]?.id, home_score: 0, away_score: 0, played: false },
@@ -623,7 +699,6 @@
 
       if (!name) return alert("Ingresa un nombre para el torneo.");
 
-      // Obtener el correo del usuario actual para asociarlo como dueño
       const { data: { session } } = await supabaseClient.auth.getSession();
       const userEmail = session ? session.user.email : null;
 
@@ -654,16 +729,15 @@
         const { error } = await supabaseClient.from('torneos_data').insert([newCat]);
 
         if (error) {
-          alert("Error de Supabase al crear el torneo: " + error.message + "\n\nAsegúrate de haber ejecutado el script SQL de permisos en Supabase.");
+          alert("Error de Supabase al crear el torneo: " + error.message);
           console.error(error);
           return;
         }
       }
       
       closeModal('categoryModal');
-      await loadAdminData(); // Recargar datos de la base de datos
+      await loadAdminData();
 
-      // Seleccionar automáticamente el torneo recién creado si es nuevo
       if (!id && dbData.categories.length > 0) {
         const newlyCreated = dbData.categories[dbData.categories.length - 1];
         activeCategoryId = newlyCreated.id;
@@ -781,9 +855,25 @@
         match_details: { playerStats }
       }).eq('id', matchId);
 
+      // Actualizar también el acumulado de goles en cada registro de jugador en la base de datos
+      for (let pId in playerStats) {
+        const currentP = dbData.players.find(x => x.id === pId);
+        if (currentP) {
+          // Recalcular goles totales sumando de todos los partidos jugados
+          let totalGoalsForPlayer = 0;
+          dbData.matches.forEach(m => {
+            if (m.match_details && m.match_details.playerStats && m.match_details.playerStats[pId]) {
+              totalGoalsForPlayer += (m.match_details.playerStats[pId].goals || 0);
+            }
+          });
+          // Si este partido recién guardado tiene datos nuevos que no estaban en el acumulado global de la iteración previa:
+          await supabaseClient.from('torneos_data').update({ goals: playerStats[pId].goals }).eq('id', pId);
+        }
+      }
+
       closeModal('matchDetailModal');
       loadAdminData();
-      alert("¡Resultado de llave guardado!");
+      alert("¡Planilla y estadísticas guardadas con éxito!");
     }
 
     function openMatchModal() {
@@ -805,7 +895,6 @@
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       if (teams.length < 2) return alert("Se necesitan al menos 2 equipos para generar el fixture.");
       
-      // 1. Confirmar si desea sobreescribir fixture anterior de liga
       const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
       if (existingLeagueMatches.length > 0) {
         if (!confirm("Ya existe un fixture de liga. ¿Deseas borrarlo y generar uno nuevo por fechas?")) return;
@@ -814,17 +903,14 @@
         }
       }
 
-      // 2. Algoritmo de Round-Robin (Todos contra todos por fechas)
       let list = [...teams];
-      let hasBye = false;
       if (list.length % 2 !== 0) {
         list.push({ id: 'BYE', name: 'LIBRE' });
-        hasBye = true;
       }
 
       const numTeams = list.length;
-      const totalRounds = numTeams - 1;       // Total de fechas
-      const matchesPerRound = numTeams / 2;   // Partidos por fecha
+      const totalRounds = numTeams - 1;
+      const matchesPerRound = numTeams / 2;
 
       let fixtureRounds = [];
 
@@ -848,7 +934,6 @@
         list.splice(1, 0, temp);
       }
 
-      // 3. Guardar las fechas generadas en Supabase
       let timestamp = Date.now();
       let counter = 0;
 
