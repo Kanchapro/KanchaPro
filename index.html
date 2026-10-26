@@ -1,360 +1,321 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kancha Pro - Portada Oficial de Torneos</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#ecfdf5',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            accent: '#f59e0b'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KanchaPro - Portal Público del Torneo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0F172A; color: #F8FAFC; }
+    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .card-yellow { background-color: #EAB308; }
+    .card-blue { background-color: #3B82F6; }
+    .card-red { background-color: #EF4444; }
+  </style>
 </head>
-<body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 custom-scrollbar">
+<body class="min-h-screen pb-12">
 
-    <!-- HEADER / NAVEGACIÓN PRINCIPAL -->
-    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            
-            <!-- LOGO KANCHA PRO -->
-            <a href="index.html" class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-brand-500/20">
-                    <i class="fa-solid fa-futbol"></i>
-                </div>
-                <div>
-                    <span class="font-extrabold text-xl tracking-tight text-white">KANCHA<span class="text-brand-500">PRO</span></span>
-                    <span class="text-[10px] block text-slate-400 font-medium">Portal del Espectador</span>
-                </div>
-            </a>
+  <!-- ==================== CONFIGURACIÓN DE SUPABASE ==================== -->
+  <script>
+    const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    let supabaseClient = null;
+    if (typeof supabase !== 'undefined') {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  </script>
 
-            <!-- BUSCADOR RÁPIDO DE TORNEOS -->
-            <div class="flex-1 max-w-md mx-4 hidden sm:block relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
-                <input type="text" id="searchInput" onkeyup="searchTournament(this.value)" placeholder="Buscar torneo, club o ciudad..." class="w-full pl-9 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-500 transition">
-                <div id="searchResults" class="hidden absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden divide-y divide-slate-800"></div>
-            </div>
+  <!-- NAVBAR VISTA PÚBLICA -->
+  <nav class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">⚽</span>
+        <span class="font-bold text-xl tracking-tight text-white">Kancha<span class="text-emerald-400">Pro</span></span>
+        <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">Portal de Consulta</span>
+      </div>
+      <div>
+        <a href="admin.html" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+          🔒 Acceso Organizadores
+        </a>
+      </div>
+    </div>
+  </nav>
 
-            <!-- BOTÓN ACCESO ORGANIZADORES -->
-            <a href="admin.html" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs flex items-center space-x-2 transition shadow-lg shadow-brand-500/20">
-                <i class="fa-solid fa-user-shield"></i>
-                <span>Acceso Organizadores</span>
-            </a>
-        </div>
-    </header>
-
-    <!-- SPONSOR BANNER PÚBLICO -->
-    <div class="bg-gradient-to-r from-slate-900 via-emerald-950/40 to-slate-900 border-b border-emerald-500/20 py-2 px-4 text-center text-xs">
-        <div class="max-w-7xl mx-auto flex items-center justify-between text-slate-300">
-            <span class="inline-flex items-center space-x-2">
-                <span class="bg-brand-500/20 text-brand-400 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">Sponsor Oficial</span>
-                <span class="text-xs">🔥 <strong>Deportes Total</strong>: 15% OFF en indumentaria para tu equipo con el código <strong>KANCHA15</strong></span>
-            </span>
-            <span class="text-slate-500 text-[11px] hidden md:inline"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Resultados en vivo</span>
-        </div>
+  <!-- VISTA PRINCIPAL DEL TORNEO -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+    <div class="glass rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div>
+        <h1 id="public-tournament-title" class="text-2xl font-extrabold text-white">Cargando torneo...</h1>
+        <p id="public-tournament-subtitle" class="text-slate-400 text-sm">Información en tiempo real</p>
+      </div>
+      <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold">
+        🟢 Torneo Oficial
+      </span>
     </div>
 
-    <!-- MAIN CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <!-- Navegación de Pestañas Públicas -->
+    <div class="flex border-b border-slate-800 gap-6 text-sm font-semibold overflow-x-auto pb-1">
+      <button onclick="switchTab('tab-posiciones', event)" class="tab-btn text-emerald-400 border-b-2 border-emerald-400 pb-2">📊 Tabla de Posiciones</button>
+      <button onclick="switchTab('tab-fixture', event)" class="tab-btn text-slate-400 border-b-2 border-transparent pb-2 hover:text-white">📅 Fixture / Partidos</button>
+      <button onclick="switchTab('tab-equipos', event)" class="tab-btn text-slate-400 border-b-2 border-transparent pb-2 hover:text-white">🛡️ Equipos y Planteles</button>
+      <button onclick="switchTab('tab-sanciones', event)" class="tab-btn text-slate-400 border-b-2 border-transparent pb-2 hover:text-white">🟨 Tarjetas y Sanciones</button>
+    </div>
 
-        <!-- CABECERA DEL TORNEO ACTIVO -->
-        <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 relative overflow-hidden">
-            <div class="absolute -right-10 -bottom-10 opacity-5 text-slate-100 text-9xl pointer-events-none">
-                <i class="fa-solid fa-trophy"></i>
+    <!-- Tab 1: Tabla de Posiciones -->
+    <div id="tab-posiciones" class="tab-content glass rounded-2xl p-6 overflow-x-auto">
+      <h3 class="text-lg font-bold text-white mb-4">Tabla General de Posiciones</h3>
+      <table class="w-full text-left text-sm text-slate-300">
+        <thead class="text-xs uppercase bg-slate-800/80 text-slate-400 border-b border-slate-700">
+          <tr>
+            <th class="p-3">#</th>
+            <th class="p-3">Equipo</th>
+            <th class="p-3 text-center">PTS</th>
+            <th class="p-3 text-center">PJ</th>
+            <th class="p-3 text-center">PG</th>
+            <th class="p-3 text-center">PE</th>
+            <th class="p-3 text-center">PP</th>
+            <th class="p-3 text-center">GF</th>
+            <th class="p-3 text-center">GC</th>
+            <th class="p-3 text-center">DG</th>
+            <th class="p-3 text-center">Tarjetas</th>
+          </tr>
+        </thead>
+        <tbody id="standings-table-body" class="divide-y divide-slate-800">
+          <!-- Carga Dinámica -->
+        </tbody>
+      </table>
+      <div class="mt-4 text-xs text-emerald-400 flex items-center gap-1.5">
+        <span>🟢</span> <span id="qualifier-text">Clasifican los mejores posicionados.</span>
+      </div>
+    </div>
+
+    <!-- Tab 2: Fixture -->
+    <div id="tab-fixture" class="tab-content glass rounded-2xl p-6 hidden">
+      <h3 class="text-lg font-bold text-white mb-4">Próximos Partidos y Resultados</h3>
+      <div id="public-matches-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Partidos -->
+      </div>
+    </div>
+
+    <!-- Tab 3: Equipos y Planteles -->
+    <div id="tab-equipos" class="tab-content glass rounded-2xl p-6 hidden">
+      <h3 class="text-lg font-bold text-white mb-6">Equipos Inscriptos y Fichas</h3>
+      <div id="public-teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Planteles -->
+      </div>
+    </div>
+
+    <!-- Tab 4: Tarjetas y Sanciones -->
+    <div id="tab-sanciones" class="tab-content glass rounded-2xl p-6 hidden">
+      <h3 class="text-lg font-bold text-white mb-4">Registro Disciplinario del Torneo</h3>
+      <div id="public-cards-list" class="space-y-3">
+        <!-- Tarjetas -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS DE CARGA PÚBLICA -->
+  <script>
+    let tournamentData = {
+      name: "Copa Verano KanchaPro",
+      type: "copa",
+      teamsCount: 8,
+      qualifiersCount: 2,
+      pointsConfig: { win: 3, draw: 1, loss: 0 },
+      teams: [
+        { name: "Galácticos FC", logo: "🛡️", dt: "Carlos Bianchi", dtDni: "22333444", players: [{ name: "Lionel Messi", dni: "33000111", shirt: 10, position: "Delantero" }] },
+        { name: "Deportivo Sur", logo: "⚡", dt: "Marcelo Gallardo", dtDni: "22444555", players: [] }
+      ],
+      matches: []
+    };
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadFromSupabase();
+      renderAll();
+    });
+
+    async function loadFromSupabase() {
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient.from('torneos').select('datos').eq('id', 'torneo_principal').single();
+          if (data && data.datos) {
+            tournamentData = data.datos;
+            localStorage.setItem('kanchapro_data', JSON.stringify(tournamentData));
+            return;
+          }
+        } catch (e) {}
+      }
+      const saved = localStorage.getItem('kanchapro_data');
+      if (saved) {
+        try { tournamentData = JSON.parse(saved); } catch(e) {}
+      }
+    }
+
+    function renderAll() {
+      document.getElementById('public-tournament-title').innerText = tournamentData.name || "Copa Verano KanchaPro";
+      document.getElementById('public-tournament-subtitle').innerText = `${(tournamentData.type || 'copa').toUpperCase()} • ${tournamentData.teams ? tournamentData.teams.length : 0} Equipos`;
+      document.getElementById('qualifier-text').innerText = `Clasifican los primeros ${tournamentData.qualifiersCount || 2} equipos.`;
+
+      renderStandings();
+      renderPublicMatches();
+      renderTeamsAndRosters();
+      renderCardsList();
+    }
+
+    function renderStandings() {
+      const tbody = document.getElementById('standings-table-body');
+      tbody.innerHTML = "";
+
+      const teams = tournamentData.teams || [];
+      let stats = teams.map(t => ({
+        name: typeof t === 'object' ? t.name : t,
+        logo: typeof t === 'object' ? t.logo : '🛡️',
+        pts: 0, pj: 0, pg: 0, pe: 0, pp: 0, gf: 0, gc: 0, dg: 0, yellow: 0, blue: 0, red: 0
+      }));
+
+      const ptsWin = (tournamentData.pointsConfig && tournamentData.pointsConfig.win !== undefined) ? tournamentData.pointsConfig.win : 3;
+      const ptsDraw = (tournamentData.pointsConfig && tournamentData.pointsConfig.draw !== undefined) ? tournamentData.pointsConfig.draw : 1;
+      const ptsLoss = (tournamentData.pointsConfig && tournamentData.pointsConfig.loss !== undefined) ? tournamentData.pointsConfig.loss : 0;
+
+      (tournamentData.matches || []).forEach(m => {
+        let home = stats.find(s => s.name === m.home);
+        let away = stats.find(s => s.name === m.away);
+        if (!home || !away) return;
+
+        home.pj++; away.pj++;
+        home.gf += m.homeScore || 0; home.gc += m.awayScore || 0;
+        away.gf += m.awayScore || 0; away.gc += m.homeScore || 0;
+
+        home.yellow += m.yellowHome || 0; home.blue += m.blueHome || 0; home.red += m.redHome || 0;
+        away.yellow += m.yellowAway || 0; away.blue += m.blueAway || 0; away.red += m.redAway || 0;
+
+        if (m.homeScore > m.awayScore) { home.pg++; home.pts += ptsWin; away.pp++; away.pts += ptsLoss; }
+        else if (m.homeScore < m.awayScore) { away.pg++; away.pts += ptsWin; home.pp++; home.pts += ptsLoss; }
+        else { home.pe++; home.pts += ptsDraw; away.pe++; away.pts += ptsDraw; }
+      });
+
+      stats.forEach(s => s.dg = s.gf - s.gc);
+      stats.sort((a, b) => b.pts - a.pts || b.dg - a.dg || b.gf - a.gf);
+
+      stats.forEach((s, idx) => {
+        const isQualified = idx < (tournamentData.qualifiersCount || 2);
+        const logoHtml = s.logo.startsWith('http') || s.logo.startsWith('data:') 
+          ? `<img src="${s.logo}" class="w-6 h-6 object-contain rounded">`
+          : `<span class="text-base">${s.logo}</span>`;
+
+        const row = document.createElement('tr');
+        row.className = isQualified ? "bg-emerald-500/5 hover:bg-slate-800/50" : "hover:bg-slate-800/50";
+        row.innerHTML = `
+          <td class="p-3 font-bold ${isQualified ? 'text-emerald-400' : 'text-slate-400'}">${idx + 1}</td>
+          <td class="p-3 font-semibold text-white flex items-center gap-2">
+            ${logoHtml} ${s.name} ${isQualified ? '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded">Clasificado</span>' : ''}
+          </td>
+          <td class="p-3 text-center font-bold text-emerald-400">${s.pts}</td>
+          <td class="p-3 text-center">${s.pj}</td>
+          <td class="p-3 text-center text-slate-300">${s.pg}</td>
+          <td class="p-3 text-center text-slate-300">${s.pe}</td>
+          <td class="p-3 text-center text-slate-300">${s.pp}</td>
+          <td class="p-3 text-center text-slate-300">${s.gf}</td>
+          <td class="p-3 text-center text-slate-300">${s.gc}</td>
+          <td class="p-3 text-center font-medium ${s.dg >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${s.dg > 0 ? '+' + s.dg : s.dg}</td>
+          <td class="p-3 text-center">
+            <span class="text-xs bg-slate-900 border border-slate-700 px-2 py-1 rounded">🟨 ${s.yellow} | 🟦 ${s.blue} | 🟥 ${s.red}</span>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function renderPublicMatches() {
+      const container = document.getElementById('public-matches-list');
+      container.innerHTML = "";
+      if (!tournamentData.matches || tournamentData.matches.length === 0) {
+        container.innerHTML = "<p class='text-slate-500 text-xs'>No hay partidos cargados por el momento.</p>";
+        return;
+      }
+      tournamentData.matches.forEach(m => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-4";
+        card.innerHTML = `
+          <span class="font-bold text-white flex-1 text-right text-sm">${m.home}</span>
+          <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-extrabold text-base">
+            ${m.homeScore} - ${m.awayScore}
+          </div>
+          <span class="font-bold text-white flex-1 text-left text-sm">${m.away}</span>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderTeamsAndRosters() {
+      const container = document.getElementById('public-teams-grid');
+      container.innerHTML = "";
+      (tournamentData.teams || []).forEach(t => {
+        const teamObj = typeof t === 'object' ? t : { name: t, logo: '🛡️', dt: 'No especificado', players: [] };
+        const logoHtml = teamObj.logo && (teamObj.logo.startsWith('http') || teamObj.logo.startsWith('data:'))
+          ? `<img src="${teamObj.logo}" class="w-10 h-10 object-contain rounded-lg">`
+          : `<span class="text-3xl">${teamObj.logo || '🛡️'}</span>`;
+
+        let playersHtml = (teamObj.players && teamObj.players.length > 0)
+          ? teamObj.players.map(p => `<li class="flex justify-between text-xs py-1 border-b border-slate-800/50"><span>#${p.shirt} ${p.name}</span><span class="text-slate-500">${p.position}</span></li>`).join('')
+          : `<li class="text-xs text-slate-500">Sin jugadores inscriptos</li>`;
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-900/80 border border-slate-800 p-5 rounded-xl space-y-3";
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            ${logoHtml}
+            <div>
+              <h4 class="font-bold text-white text-base">${teamObj.name}</h4>
+              <p class="text-xs text-slate-400">DT: ${teamObj.dt || 'No asignado'}</p>
             </div>
+          </div>
+          <div class="pt-2 border-t border-slate-800">
+            <span class="text-xs font-bold text-slate-400 block mb-2">Plantel Registrado (${(teamObj.players || []).length})</span>
+            <ul class="max-h-40 overflow-y-auto pr-1 space-y-1">
+              ${playersHtml}
+            </ul>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
-                <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-500 flex items-center justify-center text-3xl text-slate-950 font-black shadow-lg shadow-brand-500/20">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <h1 id="tournamentTitle" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Copa Nocturna F5</h1>
-                            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase">En Curso</span>
-                        </div>
-                        <p id="tournamentSub" class="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-3">
-                            <span><i class="fa-solid fa-location-dot text-slate-500 mr-1"></i> Predio San Martín</span>
-                            <span><i class="fa-solid fa-futbol text-slate-500 mr-1"></i> Fútbol 5 / Futsal</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- COMPARTIR POR WHATSAPP -->
-                <button onclick="shareWhatsApp()" class="w-full sm:w-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center justify-center space-x-2 transition shadow">
-                    <i class="fa-brands fa-whatsapp text-base"></i>
-                    <span>Compartir Torneo</span>
-                </button>
+    function renderCardsList() {
+      const container = document.getElementById('public-cards-list');
+      container.innerHTML = "";
+      (tournamentData.matches || []).forEach(m => {
+        if (m.yellowHome || m.blueHome || m.redHome || m.yellowAway || m.blueAway || m.redAway) {
+          const item = document.createElement('div');
+          item.className = "bg-slate-900/60 border border-slate-800 p-3 rounded-xl flex justify-between items-center text-xs";
+          item.innerHTML = `
+            <span class="font-semibold text-slate-300">${m.home} vs ${m.away}</span>
+            <div class="flex gap-2">
+              <span class="text-yellow-400 font-bold">🟨 ${m.yellowHome + m.yellowAway}</span>
+              <span class="text-blue-400 font-bold">🟦 ${m.blueHome + m.blueAway}</span>
+              <span class="text-red-400 font-bold">🟥 ${m.redHome + m.redAway}</span>
             </div>
-
-            <!-- NAVEGACIÓN DE PESTAÑAS PÚBLICAS -->
-            <div class="flex space-x-2 mt-6 border-t border-slate-800 pt-4 overflow-x-auto custom-scrollbar">
-                <button onclick="switchTab('tabPosiciones')" id="btnTabPosiciones" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-brand-600 text-slate-950 whitespace-nowrap">
-                    <i class="fa-solid fa-list-ol"></i>
-                    <span>Tabla de Posiciones</span>
-                </button>
-                <button onclick="switchTab('tabFixture')" id="btnTabFixture" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
-                    <i class="fa-solid fa-calendar-days"></i>
-                    <span>Fixture & Marcadores</span>
-                </button>
-                <button onclick="switchTab('tabEstadisticas')" id="btnTabEstadisticas" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
-                    <i class="fa-solid fa-award"></i>
-                    <span>Goleadores & Sanciones</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 1: TABLA DE POSICIONES -->
-        <div id="tabPosiciones" class="tab-content space-y-4">
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
-                <div class="p-4 bg-slate-900/50 border-b border-slate-800 flex items-center justify-between">
-                    <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                        <i class="fa-solid fa-ranking-star text-amber-500"></i>
-                        <span>Tabla General de Posiciones</span>
-                    </h3>
-                    <span class="text-[11px] text-slate-400">Actualización en tiempo real</span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-left">
-                        <thead class="text-[10px] uppercase bg-slate-950 text-slate-400 border-b border-slate-800">
-                            <tr>
-                                <th class="px-4 py-3">Pos</th>
-                                <th class="px-4 py-3">Equipo</th>
-                                <th class="px-2 py-3 text-center">PJ</th>
-                                <th class="px-2 py-3 text-center">PG</th>
-                                <th class="px-2 py-3 text-center">PE</th>
-                                <th class="px-2 py-3 text-center">PP</th>
-                                <th class="px-2 py-3 text-center">GF</th>
-                                <th class="px-2 py-3 text-center">GC</th>
-                                <th class="px-2 py-3 text-center">DG</th>
-                                <th class="px-4 py-3 text-center font-bold text-brand-500">PTS</th>
-                            </tr>
-                        </thead>
-                        <tbody id="publicTableBody" class="divide-y divide-slate-800/60 font-medium">
-                            <!-- Injected by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 2: FIXTURE -->
-        <div id="tabFixture" class="tab-content hidden space-y-4">
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-bold text-white flex items-center space-x-2">
-                        <i class="fa-solid fa-calendar-check text-brand-500"></i>
-                        <span>Partidos y Resultados</span>
-                    </h3>
-                    <span class="text-xs text-brand-400 font-semibold">Fecha 3 de 7</span>
-                </div>
-                <div id="publicFixtureList" class="space-y-3">
-                    <!-- Injected by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN 3: GOLEADORES Y SANCIONES -->
-        <div id="tabEstadisticas" class="tab-content hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
-                <h3 class="text-sm font-bold text-white mb-4 flex items-center space-x-2">
-                    <i class="fa-solid fa-award text-amber-500"></i>
-                    <span>Tabla de Goleadores</span>
-                </h3>
-                <div id="scorersList" class="space-y-2">
-                    <!-- Injected by JS -->
-                </div>
-            </div>
-
-            <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
-                <h3 class="text-sm font-bold text-white mb-4 flex items-center space-x-2">
-                    <i class="fa-solid fa-triangle-exclamation text-rose-500"></i>
-                    <span>Sanciones y Tarjetas</span>
-                </h3>
-                <div id="cardsList" class="space-y-2">
-                    <!-- Injected by JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- BANNER DE CREA TU TORNEO -->
-        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-center space-y-2">
-            <p class="text-xs text-slate-400">¿Organizas torneos en tu complejo o club deportivo?</p>
-            <p class="text-sm font-bold text-white">Gestiona tu liga gratis y compártela en minutos con <span class="text-brand-500">Kancha Pro</span></p>
-            <a href="admin.html" class="mt-2 inline-flex items-center space-x-2 px-4 py-2 bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold rounded-xl text-xs transition">
-                <i class="fa-solid fa-plus"></i>
-                <span>Crear Mi Torneo Gratis</span>
-            </a>
-        </div>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 Kancha Pro. La plataforma líder para gestión de fútbol amateur.</p>
-    </footer>
-
-    <!-- LÓGICA JAVASCRIPT -->
-    <script>
-        // DATOS DEMO PÚBLICOS
-        const tournamentData = {
-            name: "Copa Nocturna F5",
-            venue: "Predio San Martín",
-            teams: [
-                { pos: 1, name: 'Los Galácticos FC', pj: 3, pg: 2, pe: 1, pp: 0, gf: 10, gc: 4, dg: 6, pts: 7 },
-                { pos: 2, name: 'Deportivo Tapita', pj: 3, pg: 2, pe: 0, pp: 1, gf: 8, gc: 5, dg: 3, pts: 6 },
-                { pos: 3, name: 'Atlético La Cantera', pj: 3, pg: 1, pe: 2, pp: 0, gf: 6, gc: 4, dg: 2, pts: 5 },
-                { pos: 4, name: 'Inter de Barrio', pj: 3, pg: 1, pe: 1, pp: 1, gf: 5, gc: 6, dg: -1, pts: 4 },
-                { pos: 5, name: 'Real Bañil', pj: 3, pg: 1, pe: 0, pp: 2, gf: 4, gc: 7, dg: -3, pts: 3 },
-                { pos: 6, name: 'LaSub21 FC', pj: 3, pg: 0, pe: 0, pp: 3, gf: 2, gc: 9, dg: -7, pts: 0 }
-            ],
-            matches: [
-                { home: 'Los Galácticos FC', away: 'Real Bañil', scoreHome: 3, scoreAway: 1, status: 'Finalizado' },
-                { home: 'Deportivo Tapita', away: 'Inter de Barrio', scoreHome: 2, scoreAway: 1, status: 'Finalizado' },
-                { home: 'Atlético La Cantera', away: 'LaSub21 FC', scoreHome: 2, scoreAway: 0, status: 'Finalizado' },
-                { home: 'Los Galácticos FC', away: 'Deportivo Tapita', scoreHome: null, scoreAway: null, status: 'Hoy 21:00 hs' }
-            ],
-            scorers: [
-                { name: 'Mateo Rossi', team: 'Los Galácticos FC', goals: 5 },
-                { name: 'Lucas Silva', team: 'Deportivo Tapita', goals: 4 },
-                { name: 'Gonzalo Pérez', team: 'Atlético La Cantera', goals: 3 }
-            ],
-            cards: [
-                { name: 'Carlos Gómez', team: 'Real Bañil', detail: '2 Amarillas (Aviso)' },
-                { name: 'Joaquín Benítez', team: 'LaSub21 FC', detail: 'Roja Directa (Suspendido 1 Fecha)' }
-            ]
-        };
-
-        window.onload = function() {
-            renderTable();
-            renderFixture();
-            renderStats();
-        };
-
-        function renderTable() {
-            const tbody = document.getElementById('publicTableBody');
-            tbody.innerHTML = tournamentData.teams.map((t, idx) => `
-                <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-4 py-3 font-bold text-slate-400">${t.pos}</td>
-                    <td class="px-4 py-3 font-bold text-white flex items-center space-x-2">
-                        <span class="w-2 h-2 rounded-full ${idx < 2 ? 'bg-brand-500' : 'bg-slate-700'}"></span>
-                        <span>${t.name}</span>
-                    </td>
-                    <td class="px-2 py-3 text-center text-slate-300">${t.pj}</td>
-                    <td class="px-2 py-3 text-center text-slate-400">${t.pg}</td>
-                    <td class="px-2 py-3 text-center text-slate-400">${t.pe}</td>
-                    <td class="px-2 py-3 text-center text-slate-400">${t.pp}</td>
-                    <td class="px-2 py-3 text-center text-slate-400">${t.gf}</td>
-                    <td class="px-2 py-3 text-center text-slate-400">${t.gc}</td>
-                    <td class="px-2 py-3 text-center text-slate-300 font-semibold">${t.dg}</td>
-                    <td class="px-4 py-3 text-center font-extrabold text-brand-400 text-sm">${t.pts}</td>
-                </tr>
-            `).join('');
+          `;
+          container.appendChild(item);
         }
+      });
 
-        function renderFixture() {
-            const container = document.getElementById('publicFixtureList');
-            container.innerHTML = tournamentData.matches.map(m => `
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
-                    <div class="flex-1 text-right font-bold text-sm text-white">${m.home}</div>
-                    <div class="px-4 text-center">
-                        ${m.status === 'Finalizado' ? `
-                            <div class="text-base font-extrabold text-brand-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800">
-                                ${m.scoreHome} - ${m.scoreAway}
-                            </div>
-                            <span class="text-[10px] text-slate-500 uppercase font-semibold block mt-1">Finalizado</span>
-                        ` : `
-                            <div class="text-xs font-bold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20">
-                                ${m.status}
-                            </div>
-                            <span class="text-[10px] text-slate-400 uppercase font-semibold block mt-1">Por Jugar</span>
-                        `}
-                    </div>
-                    <div class="flex-1 text-left font-bold text-sm text-white">${m.away}</div>
-                </div>
-            `).join('');
-        }
+      if (container.innerHTML === "") {
+        container.innerHTML = "<p class='text-xs text-slate-500'>No hay tarjetas registradas por el momento.</p>";
+      }
+    }
 
-        function renderStats() {
-            document.getElementById('scorersList').innerHTML = tournamentData.scorers.map((s, i) => `
-                <div class="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl">
-                    <div class="flex items-center space-x-3">
-                        <span class="w-6 h-6 rounded-lg bg-slate-800 text-amber-400 font-bold text-xs flex items-center justify-center">${i+1}</span>
-                        <div>
-                            <p class="text-xs font-bold text-white">${s.name}</p>
-                            <p class="text-[10px] text-slate-400">${s.team}</p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/20">${s.goals} Goles</span>
-                </div>
-            `).join('');
-
-            document.getElementById('cardsList').innerHTML = tournamentData.cards.map(c => `
-                <div class="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl">
-                    <div>
-                        <p class="text-xs font-bold text-white">${c.name}</p>
-                        <p class="text-[10px] text-slate-400">${c.team}</p>
-                    </div>
-                    <span class="text-[10px] font-bold px-2 py-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">${c.detail}</span>
-                </div>
-            `).join('');
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-
-            const tabs = ['tabPosiciones', 'tabFixture', 'tabEstadisticas'];
-            tabs.forEach(id => {
-                const btn = document.getElementById('btn' + id.charAt(0).toUpperCase() + id.slice(1));
-                if (id === tabId) {
-                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-brand-600 text-slate-950 whitespace-nowrap shadow";
-                } else {
-                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-2 bg-slate-800 text-slate-400 hover:text-white whitespace-nowrap";
-                }
-            });
-        }
-
-        function shareWhatsApp() {
-            const text = encodeURIComponent(`🏆 *${tournamentData.name}*\nSeguí los resultados y la tabla de posiciones en vivo aquí:\n${window.location.href}`);
-            window.open(`https://wa.me/?text=${text}`, '_blank');
-        }
-
-        function searchTournament(query) {
-            const resultsContainer = document.getElementById('searchResults');
-            if (!query.trim()) {
-                resultsContainer.classList.add('hidden');
-                return;
-            }
-            resultsContainer.innerHTML = `
-                <div class="p-3 hover:bg-slate-800 cursor-pointer text-xs font-bold text-white flex justify-between">
-                    <span>${tournamentData.name}</span>
-                    <span class="text-slate-400">${tournamentData.venue}</span>
-                </div>
-            `;
-            resultsContainer.classList.remove('hidden');
-        }
-    </script>
+    function switchTab(tabId, evt) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('text-emerald-400', 'border-emerald-400');
+        b.classList.add('text-slate-400', 'border-transparent');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+      evt.target.classList.add('text-emerald-400', 'border-emerald-400');
+    }
+  </script>
 </body>
 </html>
