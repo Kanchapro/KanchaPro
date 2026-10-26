@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kancha Pro - Panel de Administración</title>
+  <title>Kancha Pro - Panel de Administración Total</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <!-- ==================== PANEL DE CONTROL COMPLETO ==================== -->
+  <!-- ==================== PANEL DE ADMINISTRACIÓN COMPLETO ==================== -->
   <div id="admin-panel" class="hidden">
     <nav class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-40 backdrop-blur-md">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -62,74 +62,84 @@
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
       
-      <!-- Cabecera de Torneo y Acciones -->
-      <div class="glass rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Gestión Activa</span>
-          <h2 id="tournament-title" class="text-2xl font-bold text-white mt-1">Copa Nocturna F5</h2>
-          <p class="text-slate-400 text-sm">Administra resultados en vivo, inscripciones y difusión pública.</p>
-        </div>
-        <div class="flex items-center gap-3">
-          <button onclick="openShareModal()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
-            🔗 Compartir Torneo
-          </button>
+      <!-- Sección 1: Crear o Configurar Torneo y Categoría -->
+      <div class="glass rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <span>🏆</span> Configuración del Torneo y Categoría
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Nombre del Torneo</label>
+            <input type="text" id="input-tournament-name" placeholder="Ej. Copa Verano 2026" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Categoría / Modalidad</label>
+            <input type="text" id="input-category" placeholder="Ej. Fútbol 5 - Libre Masc." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500">
+          </div>
+          <div class="flex items-end">
+            <button onclick="saveTournamentConfig()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition text-sm shadow-lg shadow-emerald-500/20">
+              Guardar Configuración
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Secciones Operativas del Torneo -->
+      <!-- Grid Principal de Gestión -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <!-- Columna Izquierda: Carga de Equipos y Partidos -->
+        <!-- Columna Izquierda: Equipos y Partidos -->
         <div class="lg:col-span-2 space-y-6">
           
-          <!-- Registrar Equipo -->
+          <!-- Gestión de Equipos -->
           <div class="glass rounded-2xl p-6">
             <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <span>🛡️</span> Agregar Equipo al Torneo
+              <span>🛡️</span> Gestión de Equipos
             </h3>
-            <div class="flex gap-3">
+            <div class="flex gap-3 mb-4">
               <input type="text" id="new-team-name" placeholder="Nombre del equipo (ej. Los Galácticos)" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-emerald-500">
-              <button onclick="addTeam()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold px-5 py-2.5 rounded-xl border border-slate-600 transition text-sm">Agregar</button>
+              <button onclick="addTeam()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold px-5 py-2.5 rounded-xl border border-slate-600 transition text-sm">Añadir Equipo</button>
             </div>
-            <div id="teams-list" class="mt-4 flex flex-wrap gap-2">
-              <!-- Se listan los equipos dinámicamente -->
+            <div id="teams-list" class="flex flex-wrap gap-2">
+              <!-- Los equipos se cargan aquí -->
+              <span class="text-xs text-slate-500">No hay equipos agregados todavía.</span>
             </div>
           </div>
 
-          <!-- Planilla de Partidos -->
+          <!-- Planilla de Partidos y Resultados -->
           <div class="glass rounded-2xl p-6">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                <span>📝</span> Planilla de Partidos y Resultados
+                <span>📝</span> Planilla de Partidos (Fixture)
               </h3>
-              <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">Sincronizado</span>
+              <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">En vivo</span>
             </div>
 
             <div class="space-y-3" id="matches-container">
               <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl flex items-center justify-between gap-4">
-                <span class="font-medium text-white flex-1 text-right">Los Galácticos</span>
+                <span class="font-medium text-white flex-1 text-right">Equipo A</span>
                 <div class="flex items-center gap-2">
-                  <input type="number" value="3" class="w-12 text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-white font-bold">
+                  <input type="number" value="0" class="w-12 text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-white font-bold">
                   <span class="text-slate-500">-</span>
-                  <input type="number" value="1" class="w-12 text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-white font-bold">
+                  <input type="number" value="0" class="w-12 text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-white font-bold">
                 </div>
-                <span class="font-medium text-white flex-1 text-left">Real Bañil</span>
+                <span class="font-medium text-white flex-1 text-left">Equipo B</span>
               </div>
             </div>
           </div>
 
         </div>
 
-        <!-- Columna Derecha: Código QR y Accesos -->
+        <!-- Columna Derecha: Código QR y Compartir -->
         <div class="space-y-6">
           <div class="glass rounded-2xl p-6 text-center">
             <h3 class="text-lg font-bold text-white mb-2 flex items-center justify-center gap-2">
               <span>📱</span> Código QR del Torneo
             </h3>
-            <p class="text-slate-400 text-xs mb-4">Los jugadores escanean esto para ver la tabla pública en el portal.</p>
+            <p class="text-slate-400 text-xs mb-4">Comparte este código con los jugadores para que vean las tablas en tiempo real.</p>
             <div id="qrcode" class="bg-white p-4 rounded-xl inline-block shadow-md mb-3"></div>
             <div>
-              <button onclick="downloadQR()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-xl border border-slate-700 transition">Descargar QR</button>
+              <button onclick="openShareModal()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-500/20 mb-2">🔗 Obtener Enlace Público</button>
+              <button onclick="downloadQR()" class="w-full text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-xl border border-slate-700 transition">Descargar Imagen QR</button>
             </div>
           </div>
         </div>
@@ -142,7 +152,7 @@
   <div id="share-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="glass p-6 rounded-2xl max-w-md w-full border border-slate-700">
       <h3 class="text-xl font-bold text-white mb-2">Compartir Torneo</h3>
-      <p class="text-slate-400 text-sm mb-4">Copia el enlace público para enviarlo a los equipos y espectadores.</p>
+      <p class="text-slate-400 text-sm mb-4">Copia el enlace público para enviarlo por WhatsApp o redes sociales.</p>
       
       <div class="flex gap-2 mb-6">
         <input type="text" id="public-link" readonly class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300">
@@ -155,7 +165,6 @@
 
   <!-- ==================== SCRIPTS DE GESTIÓN ==================== -->
   <script>
-    // Configurar URL pública en el modal
     const publicUrl = window.location.href.replace('admin.html', 'index.html');
     document.getElementById('public-link').value = publicUrl;
 
@@ -218,9 +227,20 @@
       const img = document.querySelector('#qrcode img');
       if (!img) return;
       const link = document.createElement('a');
-      link.download = 'qr-torneo-kanchapro.png';
+      link.download = 'qr-kanchapro.png';
       link.href = img.src;
       link.click();
+    }
+
+    // Funciones de gestión interactiva
+    function saveTournamentConfig() {
+      const name = document.getElementById('input-tournament-name').value;
+      const category = document.getElementById('input-category').value;
+      if (!name || !category) {
+        alert("Por favor completa el nombre del torneo y la categoría.");
+        return;
+      }
+      alert(`¡Torneo "${name}" (${category}) guardado con éxito!`);
     }
 
     function addTeam() {
@@ -229,6 +249,10 @@
       if (!name) return;
       
       const list = document.getElementById('teams-list');
+      if (list.querySelector('.text-slate-500')) {
+        list.innerHTML = ""; // Limpiar texto inicial
+      }
+
       const badge = document.createElement('span');
       badge.className = "bg-slate-800 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-2";
       badge.innerHTML = `${name} <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-300 font-bold">&times;</button>`;
