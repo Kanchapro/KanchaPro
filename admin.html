@@ -402,25 +402,45 @@
         `;
       }).join('') || '<p class="text-slate-500 text-xs">No hay jugadores.</p>';
 
-      // Fixture
+      // Fixture agrupado por fechas
       const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
-      document.getElementById('adminMatchesList').innerHTML = matches.map(m => {
-        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
-        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
-        return `
-          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
-            <div class="flex items-center justify-between gap-1 text-xs">
-              <span class="flex-1 font-semibold text-white truncate text-right">${hTeam.name}</span>
-              <span class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</span>
-              <span class="flex-1 font-semibold text-white truncate text-left">${aTeam.name}</span>
-            </div>
-            <div class="flex justify-between items-center pt-1 border-t border-green-900/30">
-              <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[11px] px-3 py-1 rounded font-semibold">⚙️ Cargar Goles</button>
-              <button onclick="deleteRecord('${m.id}')" class="text-red-400 text-xs">🗑️</button>
+      
+      if (matches.length === 0) {
+        document.getElementById('adminMatchesList').innerHTML = '<p class="text-slate-500 text-xs">No hay partidos de liga.</p>';
+      } else {
+        // Agrupar partidos por round_name (ej: Fecha 1, Fecha 2...)
+        let roundsMap = {};
+        matches.forEach(m => {
+          let rName = m.round_name || 'Partidos';
+          if (!roundsMap[rName]) roundsMap[rName] = [];
+          roundsMap[rName].push(m);
+        });
+
+        document.getElementById('adminMatchesList').innerHTML = Object.keys(roundsMap).map(roundName => `
+          <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2">
+            <h4 class="text-xs font-black text-green-400 uppercase tracking-wider border-b border-green-900/40 pb-1">${roundName}</h4>
+            <div class="space-y-2">
+              ${roundsMap[roundName].map(m => {
+                const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+                const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+                return `
+                  <div class="bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 space-y-1.5">
+                    <div class="flex items-center justify-between gap-1 text-xs">
+                      <span class="flex-1 font-semibold text-white truncate text-right">${hTeam.name}</span>
+                      <span class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</span>
+                      <span class="flex-1 font-semibold text-white truncate text-left">${aTeam.name}</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-green-900/30">
+                      <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[11px] px-3 py-1 rounded font-semibold">⚙️ Cargar Goles</button>
+                      <button onclick="deleteRecord('${m.id}')" class="text-red-400 text-xs">🗑️</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
             </div>
           </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-xs">No hay partidos de liga.</p>';
+        `).join('');
+      }
 
       renderStandingsView(teams, matches, cat);
       renderPlayoffsView(cat, teams);
@@ -783,20 +803,80 @@
 
     async function generateAutomaticFixture() {
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
+      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos para generar el fixture.");
       
-      for (let i = 0; i < teams.length; i++) {
-        for (let j = i + 1; j < teams.length; j++) {
-          await supabaseClient.from('torneos_data').insert([{
-            id: 'match_' + Date.now() + '_' + i + '_' + j,
-            type: 'match', category_id: activeCategoryId,
-            home_team: teams[i].id, away_team: teams[j].id,
-            home_score: 0, away_score: 0, played: false, is_playoff: false
-          }]);
+      // 1. Confirmar si desea sobreescribir fixture anterior de liga
+      const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
+      if (existingLeagueMatches.length > 0) {
+        if (!confirm("Ya existe un fixture de liga. ¿Deseas borrarlo y generar uno nuevo por fechas?")) return;
+        for (let m of existingLeagueMatches) {
+          await supabaseClient.from('torneos_data').delete().eq('id', m.id);
         }
       }
-      loadAdminData();
-      alert("¡Fixture de Liga generado!");
+
+      // 2. Algoritmo de Round-Robin (Todos contra todos por fechas)
+      let list = [...teams];
+      let hasBye = false;
+      if (list.length % 2 !== 0) {
+        list.push({ id: 'BYE', name: 'LIBRE' });
+        hasBye = true;
+      }
+
+      const numTeams = list.length;
+      const totalRounds = numTeams - 1;       // Total de fechas
+      const matchesPerRound = numTeams / 2;   // Partidos por fecha
+
+      let fixtureRounds = [];
+
+      for (let round = 0; round < totalRounds; round++) {
+        let roundMatches = [];
+        for (let i = 0; i < matchesPerRound; i++) {
+          let home = list[i];
+          let away = list[numTeams - 1 - i];
+
+          if (home.id !== 'BYE' && away.id !== 'BYE') {
+            if (round % 2 === 1 && i === 0) {
+              roundMatches.push({ home: away, away: home });
+            } else {
+              roundMatches.push({ home: home, away: away });
+            }
+          }
+        }
+        fixtureRounds.push(roundMatches);
+
+        let temp = list.pop();
+        list.splice(1, 0, temp);
+      }
+
+      // 3. Guardar las fechas generadas en Supabase
+      let timestamp = Date.now();
+      let counter = 0;
+
+      for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
+        let roundNumber = rIndex + 1;
+        let matchesInRound = fixtureRounds[rIndex];
+
+        for (let m of matchesInRound) {
+          counter++;
+          const newMatch = {
+            id: `match_${timestamp}_${counter}`,
+            type: 'match',
+            category_id: activeCategoryId,
+            home_team: m.home.id,
+            away_team: m.away.id,
+            home_score: 0,
+            away_score: 0,
+            played: false,
+            is_playoff: false,
+            round_name: `Fecha ${roundNumber}`
+          };
+
+          await supabaseClient.from('torneos_data').insert([newMatch]);
+        }
+      }
+
+      await loadAdminData();
+      alert(`¡Fixture generado con éxito en ${totalRounds} fechas sin cruces repetidos por jornada!`);
     }
 
     function openSuspensionModal() {
