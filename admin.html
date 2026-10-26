@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KanchaPro - Panel de Administración</title>
+  <title>Kanchapro - Panel de Administración</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #0F172A; color: #F8FAFC; }
-    .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    body { font-family: 'Montserrat', sans-serif; background-color: #0b0f0d; color: #f0fdf4; }
+    .glass-card { background: rgba(13, 27, 18, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.15); }
+    .btn-green { background-color: #16a34a; transition: background 0.2s; }
+    .btn-green:hover { background-color: #15803d; }
+    .tab-active { border-bottom: 3px solid #22c55e; color: #4ade80; }
   </style>
 </head>
-<body class="min-h-screen pb-12">
+<body class="h-full flex flex-col overflow-auto">
 
-  <!-- ==================== CONFIGURACIÓN DE SUPABASE ==================== -->
+  <!-- ==================== CONFIGURACIÓN SUPABASE ==================== -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
@@ -25,565 +27,186 @@
     }
   </script>
 
-  <!-- NAVBAR ADMIN -->
-  <nav class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl">⚽</span>
-        <span class="font-bold text-xl tracking-tight text-white">Kancha<span class="text-emerald-400">Pro</span></span>
-        <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">Panel Admin</span>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <a href="index.html" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
-          👁️ Ver Portal Público
-        </a>
-        <button id="btn-logout" onclick="logout()" class="hidden text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition">
-          Cerrar Sesión
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- PANTALLA DE LOGIN GOOGLE -->
-  <div id="login-screen" class="min-h-[80vh] flex items-center justify-center p-4">
-    <div class="glass p-8 rounded-2xl max-w-md w-full text-center shadow-2xl border border-slate-700/50">
-      <div class="w-16 h-16 bg-emerald-500/15 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 text-2xl">
-        🔑
-      </div>
-      <h1 class="text-2xl font-extrabold text-white mb-2">Ingreso de Organizadores</h1>
-      <p class="text-slate-400 text-sm mb-6">Inicia sesión con tu cuenta de Google para administrar tus torneos en KanchaPro.</p>
-      
-      <button onclick="loginWithGoogle()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-xl border border-slate-600/50 transition flex items-center justify-center gap-3 shadow-lg">
-        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        Continuar con Google
-      </button>
-
-      <button onclick="guestAdminAccess()" class="mt-4 text-xs text-slate-400 hover:text-emerald-400 underline">
-        Acceso en Modo Demostración
-      </button>
+  <!-- Login Modal / Pantalla -->
+  <div id="loginScreen" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
+    <div class="glass-card p-8 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
+      <div class="w-14 h-14 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-green-500/30">🔐</div>
+      <h2 class="text-xl font-bold text-white">Acceso Organizadores</h2>
+      <input type="password" id="adminPasswordInput" placeholder="Contraseña de admin" class="w-full bg-[#0b0f0d] border border-green-900/50 rounded-xl px-4 py-3 text-white text-center focus:outline-none focus:border-green-500">
+      <button onclick="verifyAdminLogin()" class="w-full btn-green text-white font-bold py-3 rounded-xl shadow-lg">Ingresar</button>
+      <p id="loginError" class="text-red-400 text-xs hidden">Contraseña incorrecta (Prueba: 104289)</p>
     </div>
   </div>
 
-  <!-- PANEL DE ADMINISTRACIÓN COMPLETO -->
-  <div id="admin-panel" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+  <!-- Header Admin -->
+  <header class="bg-[#060a08]/95 border-b border-green-900/40 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center gap-3">
+      <h1 class="text-base font-black text-green-400">KANCHA<span class="text-white">PRO</span> <span class="text-xs text-slate-400 font-normal">| Admin</span></h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="index.html" class="text-xs px-3 py-2 bg-slate-800 hover:bg-slate-700 text-green-400 rounded-lg font-semibold border border-green-500/20">👁️ Ver Portal</a>
+      <button onclick="logoutAdmin()" class="text-xs px-3 py-2 bg-red-900/40 hover:bg-red-900/60 text-red-300 rounded-lg font-semibold border border-red-500/30">Salir</button>
+    </div>
+  </header>
+
+  <!-- Panel Principal Administrador -->
+  <main id="adminMainPanel" class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-6 hidden">
     
-    <!-- Configuración del Torneo y Puntuación -->
-    <div class="glass rounded-2xl p-6">
-      <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-        <span>🏆</span> Configuración General y Puntuación
-      </h3>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Nombre del Torneo</label>
-          <input type="text" id="input-tournament-name" value="Copa Verano KanchaPro" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm">
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Modalidad</label>
-          <select id="input-tournament-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm">
-            <option value="copa">Copa (Fase de Grupos + Playoffs)</option>
-            <option value="liga">Liga (Todos contra todos)</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Cantidad de Equipos</label>
-          <input type="number" id="input-teams-count" value="8" min="2" max="32" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm">
-        </div>
-
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Clasificados por Grupo</label>
-          <input type="number" id="input-qualifiers-count" value="2" min="1" max="8" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm">
-        </div>
-      </div>
-
-      <!-- Configuración de Puntuación -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Puntos por Victoria (PG)</label>
-          <input type="number" id="input-pts-win" value="3" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm font-bold text-emerald-400">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Puntos por Empate (PE)</label>
-          <input type="number" id="input-pts-draw" value="1" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm font-bold text-emerald-400">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Puntos por Derrota (PP)</label>
-          <input type="number" id="input-pts-loss" value="0" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm font-bold text-slate-400">
-        </div>
-      </div>
-
-      <button onclick="saveTournamentConfig()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition text-sm shadow-lg shadow-emerald-500/20">
-        Guardar Configuración en Supabase
-      </button>
+    <!-- Pestañas de Administración -->
+    <div class="flex overflow-x-auto gap-2 glass-card rounded-xl p-2 border border-green-900/30">
+      <button onclick="switchAdminTab('categories', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap tab-active font-semibold">🏆 Torneos / Categorías</button>
+      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">🛡️ Equipos</button>
+      <button onclick="switchAdminTab('matches', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">⚽ Partidos y Resultados</button>
+      <button onclick="switchAdminTab('players', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">👥 Jugadores</button>
     </div>
 
-    <!-- Grid Principal -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- Columna Izquierda: Equipos, Escudos y Planteles -->
-      <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Gestión de Equipos -->
-        <div class="glass rounded-2xl p-6">
-          <h3 class="text-lg font-bold text-white mb-4 flex items-center justify-between">
-            <span>🛡️ Registrar Equipos y Escudos</span>
-            <span class="text-xs text-slate-400">Haz clic en un equipo para agregarle jugadores o escudo</span>
-          </h3>
-          <div class="flex gap-3 mb-4">
-            <input type="text" id="new-team-name" placeholder="Nombre del nuevo equipo" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm">
-            <button onclick="addTeam()" class="bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold px-5 py-2.5 rounded-xl border border-slate-600 text-sm">Añadir Equipo</button>
-          </div>
-          
-          <div id="admin-teams-list" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <!-- Equipos Registrados con Escudos -->
-          </div>
-        </div>
-
-        <!-- Planilla de Partidos -->
-        <div class="glass rounded-2xl p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-bold text-white flex items-center gap-2">
-              <span>📝</span> Planilla de Partidos en Vivo
-            </h3>
-            <button onclick="generateAutoFixture()" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 px-3 py-1.5 rounded-lg font-semibold">
-              🔄 Generar Fixture Automático
-            </button>
-          </div>
-
-          <div class="space-y-4" id="admin-matches-container">
-            <!-- Partidos Cargados -->
-          </div>
-        </div>
-
+    <!-- Tab 1: Torneos / Categorías -->
+    <div id="adm-categories" class="admin-tab-content glass-card rounded-2xl p-6 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-green-300">Gestión de Torneos</h3>
+        <button onclick="openNewCategoryModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Nuevo Torneo</button>
       </div>
-
-      <!-- Columna Derecha: QR y Estado de Base de Datos -->
-      <div class="space-y-6">
-        <div class="glass rounded-2xl p-6 text-center">
-          <h3 class="text-lg font-bold text-white mb-2 flex items-center justify-center gap-2">
-            <span>📱</span> Código QR del Torneo
-          </h3>
-          <p class="text-slate-400 text-xs mb-4">Comparte este código con los jugadores para consultar las tablas.</p>
-          <div id="qrcode" class="bg-white p-4 rounded-xl inline-block shadow-md mb-4"></div>
-          <div class="space-y-2">
-            <button onclick="copyPublicLink()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-lg shadow-emerald-500/20">🔗 Copiar Enlace Público (index.html)</button>
-          </div>
-        </div>
-
-        <div class="glass rounded-2xl p-6">
-          <h3 class="text-sm font-bold text-white mb-2 flex items-center gap-2">
-            <span>☁️</span> Supabase Sync Status
-          </h3>
-          <div id="sync-status" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 p-2.5 rounded-xl text-xs flex items-center justify-between font-medium">
-            <span>● Supabase Conectado</span>
-            <button onclick="saveTournamentData()" class="text-slate-200 hover:text-white underline text-[10px]">Guardar Ahora</button>
-          </div>
-        </div>
-      </div>
-
+      <div id="adminCategoriesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </div>
-  </div>
 
-  <!-- MODAL DE EDICIÓN DE EQUIPO, ESCUDO Y PLANTELES -->
-  <div id="team-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="glass p-6 rounded-2xl max-w-2xl w-full border border-slate-700 max-h-[90vh] overflow-y-auto space-y-6">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 id="modal-team-title" class="text-xl font-bold text-white">Editar Equipo y Plantel</h3>
-        <button onclick="closeTeamModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+    <!-- Tab 2: Equipos -->
+    <div id="adm-teams" class="admin-tab-content glass-card rounded-2xl p-6 space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-green-300">Equipos Registrados</h3>
+        <button onclick="openNewTeamModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Nuevo Equipo</button>
       </div>
-
-      <!-- Carga de Escudo -->
-      <div class="space-y-3">
-        <label class="block text-xs font-bold text-slate-300">Escudo del Equipo</label>
-        <div class="flex items-center gap-4">
-          <div id="modal-logo-preview" class="w-16 h-16 bg-slate-900 border border-slate-700 rounded-xl flex items-center justify-center text-3xl">🛡️</div>
-          <div class="flex-1 space-y-2">
-            <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-semibold px-4 py-2.5 rounded-xl border border-slate-700 inline-block">
-              📁 Cargar imagen desde dispositivo
-              <input type="file" id="file-logo-input" accept="image/*" onchange="handleLogoUpload(event)" class="hidden">
-            </label>
-            <p class="text-[11px] text-slate-500">Subida directa a Supabase Storage bucket 'escudos'.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Datos del Cuerpo Técnico -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-800 pt-4">
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">Director Técnico (DT)</label>
-          <input type="text" id="modal-team-dt" placeholder="Nombre completo" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
-        </div>
-        <div>
-          <label class="block text-xs text-slate-400 mb-1">DNI del DT</label>
-          <input type="text" id="modal-team-dt-dni" placeholder="N° Documento" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
-        </div>
-      </div>
-
-      <!-- Lista de Jugadores -->
-      <div class="border-t border-slate-800 pt-4 space-y-3">
-        <h4 class="text-sm font-bold text-white">Registrar Jugador</h4>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
-          <input type="text" id="new-player-name" placeholder="Nombre y Apellido" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs">
-          <input type="text" id="new-player-dni" placeholder="DNI" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs">
-          <input type="number" id="new-player-shirt" placeholder="N° Camiseta" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs">
-          <select id="new-player-pos" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
-            <option>Delantero</option>
-            <option>Mediocampista</option>
-            <option>Defensor</option>
-            <option>Arquero</option>
-          </select>
-        </div>
-        <button onclick="addPlayerToTeam()" class="w-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold py-2 rounded-xl text-xs hover:bg-emerald-500/20 transition">
-          + Agregar Jugador a la Plantilla
-        </button>
-
-        <div class="max-h-48 overflow-y-auto space-y-2 mt-3">
-          <div id="modal-players-list" class="space-y-1">
-            <!-- Jugadores cargados -->
-          </div>
-        </div>
-      </div>
-
-      <div class="flex gap-3 border-t border-slate-800 pt-4">
-        <button onclick="saveModalTeamData()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition">Guardar Cambios del Equipo</button>
-      </div>
+      <div id="adminTeamsList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </div>
-  </div>
 
-  <!-- LOGICA ADMIN COMPLETA -->
+    <!-- Tab 3: Partidos -->
+    <div id="adm-matches" class="admin-tab-content glass-card rounded-2xl p-6 space-y-4 hidden">
+      <h3 class="text-lg font-bold text-green-300">Fixture y Carga de Marcadores</h3>
+      <div id="adminMatchesList" class="space-y-3"></div>
+    </div>
+
+    <!-- Tab 4: Jugadores -->
+    <div id="adm-players" class="admin-tab-content glass-card rounded-2xl p-6 space-y-4 hidden">
+      <h3 class="text-lg font-bold text-green-300">Gestión de Planteles y Goles</h3>
+      <div id="adminPlayersList" class="space-y-3"></div>
+    </div>
+
+  </main>
+
+  <!-- Script de Lógica de Administración con Supabase -->
   <script>
-    let tournamentData = {
-      name: "Copa Verano KanchaPro",
-      type: "copa",
-      teamsCount: 8,
-      qualifiersCount: 2,
-      pointsConfig: { win: 3, draw: 1, loss: 0 },
-      teams: [
-        { name: "Galácticos FC", logo: "🛡️", dt: "Carlos Bianchi", dtDni: "22333444", players: [{ name: "Lionel Messi", dni: "33000111", shirt: 10, position: "Delantero" }] },
-        { name: "Deportivo Sur", logo: "⚡", dt: "Marcelo Gallardo", dtDni: "22444555", players: [] }
-      ],
-      matches: []
-    };
+    const ADMIN_PASSWORD = '104289';
+    let dbData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
 
-    let activeEditingIndex = null;
-
-    window.addEventListener('DOMContentLoaded', async () => {
-      await loadFromSupabase();
-      renderAll();
-      setupQR();
-      checkAuth();
-    });
-
-    async function loadFromSupabase() {
-      if (supabaseClient) {
-        try {
-          const { data } = await supabaseClient.from('torneos').select('datos').eq('id', 'torneo_principal').single();
-          if (data && data.datos) {
-            tournamentData = data.datos;
-            localStorage.setItem('kanchapro_data', JSON.stringify(tournamentData));
-            return;
-          }
-        } catch (e) {}
-      }
-      const saved = localStorage.getItem('kanchapro_data');
-      if (saved) {
-        try { tournamentData = JSON.parse(saved); } catch(e) {}
-      }
-    }
-
-    async function saveTournamentData() {
-      localStorage.setItem('kanchapro_data', JSON.stringify(tournamentData));
-      if (supabaseClient) {
-        try {
-          await supabaseClient.from('torneos').upsert({
-            id: 'torneo_principal',
-            nombre: tournamentData.name,
-            tipo: tournamentData.type,
-            datos: tournamentData,
-            updated_at: new Date()
-          });
-        } catch (e) {}
-      }
-    }
-
-    function renderAll() {
-      document.getElementById('input-tournament-name').value = tournamentData.name || "Copa Verano KanchaPro";
-      document.getElementById('input-tournament-type').value = tournamentData.type || "copa";
-      document.getElementById('input-teams-count').value = tournamentData.teamsCount || 8;
-      document.getElementById('input-qualifiers-count').value = tournamentData.qualifiersCount || 2;
-      document.getElementById('input-pts-win').value = (tournamentData.pointsConfig && tournamentData.pointsConfig.win !== undefined) ? tournamentData.pointsConfig.win : 3;
-      document.getElementById('input-pts-draw').value = (tournamentData.pointsConfig && tournamentData.pointsConfig.draw !== undefined) ? tournamentData.pointsConfig.draw : 1;
-      document.getElementById('input-pts-loss').value = (tournamentData.pointsConfig && tournamentData.pointsConfig.loss !== undefined) ? tournamentData.pointsConfig.loss : 0;
-
-      renderAdminTeams();
-      renderAdminMatches();
-    }
-
-    function renderAdminTeams() {
-      const container = document.getElementById('admin-teams-list');
-      container.innerHTML = "";
-      (tournamentData.teams || []).forEach((t, idx) => {
-        const teamObj = typeof t === 'object' ? t : { name: t, logo: '🛡️', dt: '', players: [] };
-        const logoHtml = teamObj.logo && (teamObj.logo.startsWith('http') || teamObj.logo.startsWith('data:'))
-          ? `<img src="${teamObj.logo}" class="w-8 h-8 object-contain rounded">`
-          : `<span class="text-2xl">${teamObj.logo || '🛡️'}</span>`;
-
-        const badge = document.createElement('div');
-        badge.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between cursor-pointer hover:border-slate-700 transition";
-        badge.innerHTML = `
-          <div class="flex items-center gap-3" onclick="openTeamModal(${idx})">
-            ${logoHtml}
-            <div>
-              <span class="font-bold text-white text-sm block">${teamObj.name}</span>
-              <span class="text-xs text-slate-400">${(teamObj.players || []).length} Jugadores</span>
-            </div>
-          </div>
-          <button onclick="removeTeam(${idx})" class="text-rose-400 hover:text-rose-300 font-bold px-2 py-1">&times;</button>
-        `;
-        container.appendChild(badge);
-      });
-    }
-
-    function renderAdminMatches() {
-      const container = document.getElementById('admin-matches-container');
-      container.innerHTML = "";
-      (tournamentData.matches || []).forEach((m, idx) => {
-        const row = document.createElement('div');
-        row.className = "bg-slate-900/80 border border-slate-700/60 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4";
-        row.innerHTML = `
-          <span class="font-bold text-white flex-1 text-right text-sm">${m.home}</span>
-          <div class="flex items-center gap-2">
-            <input type="number" value="${m.homeScore || 0}" min="0" onchange="updateScore(${idx}, 'homeScore', this.value)" class="w-12 text-center bg-slate-950 border border-slate-700 rounded-lg py-1 text-white font-bold text-sm">
-            <span class="text-slate-500 font-bold">-</span>
-            <input type="number" value="${m.awayScore || 0}" min="0" onchange="updateScore(${idx}, 'awayScore', this.value)" class="w-12 text-center bg-slate-950 border border-slate-700 rounded-lg py-1 text-white font-bold text-sm">
-          </div>
-          <span class="font-bold text-white flex-1 text-left text-sm">${m.away}</span>
-
-          <div class="flex gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
-            <button onclick="addCard(${idx}, 'yellowHome')" class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded">🟨 ${m.yellowHome || 0}</button>
-            <button onclick="addCard(${idx}, 'blueHome')" class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">🟦 ${m.blueHome || 0}</button>
-            <button onclick="addCard(${idx}, 'redHome')" class="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded">🟥 ${m.redHome || 0}</button>
-          </div>
-        `;
-        container.appendChild(row);
-      });
-    }
-
-    function openTeamModal(idx) {
-      activeEditingIndex = idx;
-      const t = tournamentData.teams[idx];
-      const teamObj = typeof t === 'object' ? t : { name: t, logo: '🛡️', dt: '', dtDni: '', players: [] };
-
-      document.getElementById('modal-team-title').innerText = `Editar ${teamObj.name}`;
-      document.getElementById('modal-team-dt').value = teamObj.dt || "";
-      document.getElementById('modal-team-dt-dni').value = teamObj.dtDni || "";
-
-      updateModalLogoPreview(teamObj.logo || '🛡️');
-      renderModalPlayersList(teamObj.players || []);
-
-      document.getElementById('team-modal').classList.remove('hidden');
-      document.getElementById('team-modal').classList.add('flex');
-    }
-
-    function closeTeamModal() {
-      document.getElementById('team-modal').classList.add('hidden');
-      document.getElementById('team-modal').classList.remove('flex');
-    }
-
-    async function handleLogoUpload(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      if (supabaseClient) {
-        try {
-          const fileExt = file.name.split('.').pop();
-          const fileName = `escudo_${Date.now()}.${fileExt}`;
-          const { data, error } = await supabaseClient.storage.from('escudos').upload(fileName, file);
-
-          if (!error) {
-            const { data: publicData } = supabaseClient.storage.from('escudos').getPublicUrl(fileName);
-            updateModalLogoPreview(publicData.publicUrl);
-            return;
-          }
-        } catch (err) {}
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        updateModalLogoPreview(evt.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function updateModalLogoPreview(src) {
-      const container = document.getElementById('modal-logo-preview');
-      if (src.startsWith('http') || src.startsWith('data:')) {
-        container.innerHTML = `<img src="${src}" class="w-full h-full object-contain rounded-xl" id="modal-temp-logo-url" data-url="${src}">`;
+    function verifyAdminLogin() {
+      const pass = document.getElementById('adminPasswordInput').value;
+      if (pass === ADMIN_PASSWORD) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('adminMainPanel').classList.remove('hidden');
+        loadAdminData();
       } else {
-        container.innerHTML = `<span class="text-3xl" id="modal-temp-logo-url" data-url="${src}">${src}</span>`;
+        document.getElementById('loginError').classList.remove('hidden');
       }
     }
 
-    function renderModalPlayersList(players) {
-      const container = document.getElementById('modal-players-list');
-      container.innerHTML = "";
-      players.forEach((p, idx) => {
-        const item = document.createElement('div');
-        item.className = "flex justify-between items-center text-xs bg-slate-900 border border-slate-800 p-2 rounded-lg";
-        item.innerHTML = `
-          <span class="text-slate-300 font-medium">#${p.shirt} ${p.name} (DNI: ${p.dni}) - ${p.position}</span>
-          <button onclick="removePlayerFromModal(${idx})" class="text-rose-400 font-bold px-2">&times;</button>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function addPlayerToTeam() {
-      if (activeEditingIndex === null) return;
-      const name = document.getElementById('new-player-name').value.trim();
-      const dni = document.getElementById('new-player-dni').value.trim();
-      const shirt = document.getElementById('new-player-shirt').value.trim();
-      const position = document.getElementById('new-player-pos').value;
-
-      if (!name) return;
-
-      let teamObj = tournamentData.teams[activeEditingIndex];
-      if (typeof teamObj !== 'object') teamObj = { name: teamObj, logo: '🛡️', dt: '', players: [] };
-      if (!teamObj.players) teamObj.players = [];
-
-      teamObj.players.push({ name, dni, shirt, position });
-      tournamentData.teams[activeEditingIndex] = teamObj;
-
-      renderModalPlayersList(teamObj.players);
-      document.getElementById('new-player-name').value = "";
-      document.getElementById('new-player-dni').value = "";
-      document.getElementById('new-player-shirt').value = "";
-    }
-
-    function removePlayerFromModal(idx) {
-      let teamObj = tournamentData.teams[activeEditingIndex];
-      teamObj.players.splice(idx, 1);
-      renderModalPlayersList(teamObj.players);
-    }
-
-    function saveModalTeamData() {
-      let teamObj = tournamentData.teams[activeEditingIndex];
-      if (typeof teamObj !== 'object') teamObj = { name: teamObj, logo: '🛡️', dt: '', players: [] };
-
-      teamObj.dt = document.getElementById('modal-team-dt').value;
-      teamObj.dtDni = document.getElementById('modal-team-dt-dni').value;
-
-      const logoElem = document.getElementById('modal-temp-logo-url');
-      if (logoElem) {
-        teamObj.logo = logoElem.getAttribute('data-url');
-      }
-
-      tournamentData.teams[activeEditingIndex] = teamObj;
-      saveTournamentData();
-      renderAll();
-      closeTeamModal();
-    }
-
-    function addTeam() {
-      const input = document.getElementById('new-team-name');
-      const val = input.value.trim();
-      if (!val) return;
-
-      tournamentData.teams.push({ name: val, logo: '🛡️', dt: '', players: [] });
-      input.value = "";
-      saveTournamentData();
-      renderAll();
-    }
-
-    function removeTeam(idx) {
-      tournamentData.teams.splice(idx, 1);
-      saveTournamentData();
-      renderAll();
-    }
-
-    function updateScore(idx, key, val) {
-      tournamentData.matches[idx][key] = parseInt(val) || 0;
-      saveTournamentData();
-      renderAll();
-    }
-
-    function addCard(idx, key) {
-      tournamentData.matches[idx][key] = (tournamentData.matches[idx][key] || 0) + 1;
-      saveTournamentData();
-      renderAll();
-    }
-
-    function generateAutoFixture() {
-      if (tournamentData.teams.length < 2) return alert("Agrega al menos 2 equipos.");
-      tournamentData.matches = [];
-      for (let i = 0; i < tournamentData.teams.length; i += 2) {
-        if (tournamentData.teams[i + 1]) {
-          const home = typeof tournamentData.teams[i] === 'object' ? tournamentData.teams[i].name : tournamentData.teams[i];
-          const away = typeof tournamentData.teams[i+1] === 'object' ? tournamentData.teams[i+1].name : tournamentData.teams[i+1];
-          tournamentData.matches.push({ id: i + 1, home, away, homeScore: 0, awayScore: 0, yellowHome: 0, blueHome: 0, redHome: 0, yellowAway: 0, blueAway: 0, redAway: 0 });
-        }
-      }
-      saveTournamentData();
-      renderAll();
-    }
-
-    function saveTournamentConfig() {
-      tournamentData.name = document.getElementById('input-tournament-name').value;
-      tournamentData.type = document.getElementById('input-tournament-type').value;
-      tournamentData.teamsCount = parseInt(document.getElementById('input-teams-count').value) || 8;
-      tournamentData.qualifiersCount = parseInt(document.getElementById('input-qualifiers-count').value) || 2;
-      tournamentData.pointsConfig = {
-        win: parseInt(document.getElementById('input-pts-win').value) || 3,
-        draw: parseInt(document.getElementById('input-pts-draw').value) || 1,
-        loss: parseInt(document.getElementById('input-pts-loss').value) || 0
-      };
-
-      saveTournamentData();
-      renderAll();
-      alert("¡Configuración sincronizada con Supabase!");
-    }
-
-    function setupQR() {
-      const publicUrl = window.location.href.replace('admin.html', 'index.html');
-      const container = document.getElementById('qrcode');
-      if (container) {
-        container.innerHTML = "";
-        new QRCode(container, { text: publicUrl, width: 140, height: 140 });
-      }
-    }
-
-    function copyPublicLink() {
-      const url = window.location.href.replace('admin.html', 'index.html');
-      navigator.clipboard.writeText(url);
-      alert("¡Enlace público copiado al portapapeles!");
-    }
-
-    async function checkAuth() {
-      if (!supabaseClient) return;
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) guestAdminAccess();
-    }
-
-    function guestAdminAccess() {
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('admin-panel').classList.remove('hidden');
-      document.getElementById('btn-logout').classList.remove('hidden');
-    }
-
-    async function loginWithGoogle() {
-      if (!supabaseClient) return guestAdminAccess();
-      await supabaseClient.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.href }
-      });
-    }
-
-    async function logout() {
-      if (supabaseClient) await supabaseClient.auth.signOut();
+    function logoutAdmin() {
       window.location.reload();
+    }
+
+    async function loadAdminData() {
+      if (!supabaseClient) return;
+      try {
+        const [cat, team, player, match, susp] = await Promise.all([
+          supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'team'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'player'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'match'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'suspension')
+        ]);
+
+        dbData.categories = cat.data || [];
+        dbData.teams = team.data || [];
+        dbData.players = player.data || [];
+        dbData.matches = match.data || [];
+        dbData.suspensions = susp.data || [];
+
+        renderAdminViews();
+      } catch (err) {
+        console.error("Error al cargar datos en admin:", err);
+      }
+    }
+
+    function switchAdminTab(tabKey, evt) {
+      document.querySelectorAll('.admin-tab').forEach(t => {
+        t.classList.remove('tab-active', 'text-green-400');
+        t.classList.add('text-slate-400');
+      });
+      evt.target.classList.add('tab-active', 'text-green-400');
+      evt.target.classList.remove('text-slate-400');
+
+      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`adm-${tabKey}`).classList.remove('hidden');
+    }
+
+    function renderAdminViews() {
+      // Renderizar categorías
+      document.getElementById('adminCategoriesList').innerHTML = dbData.categories.map(c => `
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30 flex justify-between items-center">
+          <div>
+            <h4 class="font-bold text-white">${c.name}</h4>
+            <p class="text-xs text-slate-400">Modalidad: ${c.fixture_type}</p>
+          </div>
+          <button onclick="deleteRecord('${c.id}', 'category')" class="bg-red-900/30 hover:bg-red-900/60 text-red-300 px-3 py-1.5 rounded-lg text-xs font-bold">🗑️ Eliminar</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-sm">No hay torneos creados.</p>';
+
+      // Renderizar equipos
+      document.getElementById('adminTeamsList').innerHTML = dbData.teams.map(t => `
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30 space-y-2">
+          <div class="font-bold text-white text-sm">${t.name}</div>
+          <button onclick="deleteRecord('${t.id}', 'team')" class="text-red-400 text-xs hover:underline">Eliminar equipo</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-sm">No hay equipos.</p>';
+    }
+
+    async function openNewCategoryModal() {
+      const name = prompt("Nombre del nuevo Torneo / Categoría:");
+      if (!name) return;
+      const newCat = { id: 'cat_' + Date.now(), type: 'category', name, fixture_type: 'round_robin' };
+      
+      const { error } = await supabaseClient.from('torneos_data').insert([newCat]);
+      if (!error) {
+        alert("¡Torneo creado con éxito!");
+        loadAdminData();
+      } else {
+        alert("Error al guardar en Supabase.");
+      }
+    }
+
+    async function openNewTeamModal() {
+      if (dbData.categories.length === 0) {
+        alert("Primero debes crear al menos un torneo/categoría.");
+        return;
+      }
+      const name = prompt("Nombre del equipo:");
+      if (!name) return;
+      const catId = dbData.categories[0].id; // Asignar al primero por defecto
+      const newTeam = { id: 'team_' + Date.now(), type: 'team', name, category_id: catId };
+
+      const { error } = await supabaseClient.from('torneos_data').insert([newTeam]);
+      if (!error) {
+        alert("¡Equipo creado con éxito!");
+        loadAdminData();
+      }
+    }
+
+    async function deleteRecord(id, type) {
+      if (!confirm("¿Estás seguro de eliminar este registro?")) return;
+      const { error } = await supabaseClient.from('torneos_data').delete().eq('id', id);
+      if (!error) {
+        loadAdminData();
+      } else {
+        alert("Error al eliminar.");
+      }
     }
   </script>
 </body>
