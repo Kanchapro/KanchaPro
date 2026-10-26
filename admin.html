@@ -15,14 +15,24 @@
 </head>
 <body class="min-h-screen pb-12">
 
+  <!-- ==================== CONFIGURACIÓN DE SUPABASE ==================== -->
+  <script>
+    const SUPABASE_URL = "PEGA_AQUI_TU_PROJECT_URL";
+    const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_KEY";
+    let supabaseClient = null;
+    if (SUPABASE_URL !== "PEGA_AQUI_TU_PROJECT_URL" && typeof supabase !== 'undefined') {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+  </script>
+
   <!-- ==================== PANTALLA DE LOGIN ==================== -->
   <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
     <div class="glass p-8 rounded-2xl max-w-md w-full text-center shadow-2xl border border-slate-700/50">
-      <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20">
+      <div class="w-16 h-16 bg-emerald-500/15 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/20 text-2xl">
         ⚽
       </div>
       <h1 class="text-3xl font-extrabold text-white mb-2">Kancha<span class="text-emerald-400">Pro</span></h1>
-      <p class="text-slate-400 text-sm mb-8">Panel de Control para Organizadores de Torneos</p>
+      <p class="text-slate-400 text-sm mb-8">Panel de Control para Organizadores</p>
       
       <button onclick="loginWithGoogle()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 px-4 rounded-xl border border-slate-600/50 transition flex items-center justify-center gap-3 shadow-lg">
         <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -31,7 +41,7 @@
     </div>
   </div>
 
-  <!-- ==================== PANEL DE CONTROL (Oculto hasta autenticar) ==================== -->
+  <!-- ==================== PANEL DE CONTROL ==================== -->
   <div id="admin-panel" class="hidden">
     <nav class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-40 backdrop-blur-md">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -40,6 +50,9 @@
           <span class="font-bold text-xl tracking-tight text-white">Kancha<span class="text-emerald-400">Pro</span> <span class="text-xs text-slate-400 ml-2 font-normal">Panel Admin</span></span>
         </div>
         <div class="flex items-center gap-3">
+          <button onclick="goToPublic()" class="text-xs bg-slate-800 hover:bg-slate-700 text-emerald-400 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+            👁️ Ver Portal Público
+          </button>
           <button onclick="logout()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-3 py-2 rounded-lg border border-slate-700 transition">
             Cerrar Sesión
           </button>
@@ -47,43 +60,94 @@
       </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-      <div class="glass rounded-2xl p-6 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+      
+      <!-- Cabecera de Torneo -->
+      <div class="glass rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 id="tournament-title" class="text-2xl font-bold text-white">Cargando Torneo...</h2>
+          <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Torneo Activo</span>
+          <h2 id="tournament-title" class="text-2xl font-bold text-white mt-1">Copa Nocturna F5</h2>
           <p class="text-slate-400 text-sm">Gestiona resultados, equipos y comparte la tabla pública</p>
         </div>
-        <button onclick="shareTournament()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
-          🔗 Compartir con Jugadores
-        </button>
+        <div class="flex items-center gap-3">
+          <button onclick="openShareModal()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+            🔗 Compartir Torneo
+          </button>
+        </div>
+      </div>
+
+      <!-- Gestión de Resultados y Partidos -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Planilla de Partidos -->
+        <div class="lg:col-span-2 space-y-6">
+          <div class="glass rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span>📝</span> Planilla de Partidos (Fecha 3)
+              </h3>
+              <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">En vivo</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl flex items-center justify-between gap-4">
+                <span class="font-medium text-white flex-1 text-right">Los Galácticos</span>
+                <div class="flex items-center gap-2">
+                  <input type="number" value="3" class="w-12 text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-white font-bold">
+                  <span class="text-slate-500">-</span>
+                  <input type="number" value="1" class="w-12 text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-white font-bold">
+                </div>
+                <span class="font-medium text-white flex-1 text-left">Real Bañil</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Código QR para Difusión -->
+        <div class="space-y-6">
+          <div class="glass rounded-2xl p-6 text-center">
+            <h3 class="text-lg font-bold text-white mb-2 flex items-center justify-center gap-2">
+              <span>📱</span> Código QR del Torneo
+            </h3>
+            <p class="text-slate-400 text-xs mb-4">Los jugadores pueden escanear esto para ver las posiciones en tiempo real.</p>
+            <div id="qrcode" class="bg-white p-4 rounded-xl inline-block shadow-md mb-3"></div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
 
+  <!-- Modal Compartir -->
+  <div id="share-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="glass p-6 rounded-2xl max-w-md w-full border border-slate-700">
+      <h3 class="text-xl font-bold text-white mb-2">Compartir Torneo</h3>
+      <p class="text-slate-400 text-sm mb-4">Copia el enlace público para enviarlo a los delegados de los equipos.</p>
+      
+      <div class="flex gap-2 mb-6">
+        <input type="text" id="public-link" readonly class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300" value="https://kanchapro.github.io/index.html">
+        <button onclick="copyLink()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition">Copiar</button>
+      </div>
+
+      <button onclick="closeShareModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl transition">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- ==================== SCRIPTS DE FUNCIONALIDAD ==================== -->
   <script>
-    // ⚙️ REEMPLAZA ESTAS DOS LÍNEAS CON TUS CREDENCIALES DE SUPABASE:
-    const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
-
-    let supabaseClient = null;
-
-    if (SUPABASE_URL !== "PEGA_AQUI_TU_PROJECT_URL" && typeof supabase !== 'undefined') {
-      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    }
-
     async function checkAuth() {
       if (!supabaseClient) return;
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('admin-panel').classList.remove('hidden');
-        document.getElementById('tournament-title').innerText = "Mi Torneo Activo";
+        generateQR();
       }
     }
 
     async function loginWithGoogle() {
       if (!supabaseClient) {
-        alert("Por favor configura la SUPABASE_URL y SUPABASE_ANON_KEY en el código.");
+        alert("Configura las credenciales de Supabase en el código.");
         return;
       }
       await supabaseClient.auth.signInWithOAuth({
@@ -95,6 +159,36 @@
     async function logout() {
       if (supabaseClient) await supabaseClient.auth.signOut();
       window.location.reload();
+    }
+
+    function goToPublic() {
+      window.location.href = 'index.html';
+    }
+
+    function openShareModal() {
+      document.getElementById('share-modal').classList.remove('hidden');
+      document.getElementById('share-modal').classList.add('flex');
+    }
+
+    function closeShareModal() {
+      document.getElementById('share-modal').classList.add('hidden');
+      document.getElementById('share-modal').classList.remove('flex');
+    }
+
+    function copyLink() {
+      const input = document.getElementById('public-link');
+      navigator.clipboard.writeText(input.value);
+      alert("¡Enlace copiado al portapapeles!");
+    }
+
+    function generateQR() {
+      const container = document.getElementById('qrcode');
+      container.innerHTML = "";
+      new QRCode(container, {
+        text: window.location.href.replace('admin.html', 'index.html'),
+        width: 140,
+        height: 140
+      });
     }
 
     checkAuth();
