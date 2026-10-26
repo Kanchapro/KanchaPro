@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanchapro - Panel de Administración</title>
+  <title>Kanchapro - Panel de Administración Total</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,6 +13,9 @@
     .btn-green { background-color: #16a34a; transition: background 0.2s; }
     .btn-green:hover { background-color: #15803d; }
     .tab-active { border-bottom: 3px solid #22c55e; color: #4ade80; }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 3px; }
   </style>
 </head>
 <body class="h-full flex flex-col overflow-auto">
@@ -27,7 +30,7 @@
     }
   </script>
 
-  <!-- ==================== PANTALLA DE LOGIN (SOLO GOOGLE) ==================== -->
+  <!-- ==================== PANTALLA DE LOGIN (GOOGLE) ==================== -->
   <div id="loginScreen" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4">
     <div class="glass-card p-8 rounded-2xl max-w-md w-full text-center space-y-6 shadow-2xl">
       <div class="w-16 h-16 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-3xl border border-green-500/30">⚽</div>
@@ -35,8 +38,6 @@
         <h2 class="text-2xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
         <p class="text-xs text-slate-400 mt-1">Inicia sesión con tu cuenta autorizada</p>
       </div>
-      
-      <!-- Botón de Login con Google -->
       <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3.5 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-sm">
         <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
         Continuar con Google
@@ -58,42 +59,86 @@
   <!-- Panel Principal Administrador -->
   <main id="adminMainPanel" class="flex-1 max-w-6xl w-full mx-auto p-4 space-y-6 hidden">
     
-    <!-- Pestañas de Administración -->
-    <div class="flex overflow-x-auto gap-2 glass-card rounded-xl p-2 border border-green-900/30">
-      <button onclick="switchAdminTab('categories', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap tab-active font-semibold">🏆 Torneos / Categorías</button>
-      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">🛡️ Equipos</button>
-      <button onclick="switchAdminTab('matches', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">⚽ Partidos y Resultados</button>
-    </div>
-
-    <!-- Tab 1: Torneos / Categorías -->
-    <div id="adm-categories" class="admin-tab-content glass-card rounded-2xl p-6 space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-green-300">Gestión de Torneos</h3>
-        <button onclick="openNewCategoryModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Nuevo Torneo</button>
+    <!-- Selector global de Torneo Activo -->
+    <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-green-500/30">
+      <div class="w-full sm:w-auto">
+        <label class="block text-xs font-semibold text-green-400 mb-1">TORNEO / CATEGORÍA EN GESTIÓN:</label>
+        <select id="globalCategorySelect" onchange="changeActiveCategory(this.value)" class="bg-[#0b0f0d] border border-green-900/50 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-green-500 w-full sm:w-72">
+          <option value="">-- Selecciona un torneo --</option>
+        </select>
       </div>
-      <div id="adminCategoriesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      <button onclick="openNewCategoryModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl whitespace-nowrap">+ Crear Nuevo Torneo</button>
     </div>
 
-    <!-- Tab 2: Equipos -->
-    <div id="adm-teams" class="admin-tab-content glass-card rounded-2xl p-6 space-y-4 hidden">
+    <!-- Pestañas de Administración -->
+    <div class="flex overflow-x-auto gap-2 glass-card rounded-xl p-2 border border-green-900/30 scrollbar-thin">
+      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap tab-active font-semibold">🛡️ Equipos y Cantidad</button>
+      <button onclick="switchAdminTab('players', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">👥 Planteles y Goles</button>
+      <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">📅 Fixture y Resultados</button>
+      <button onclick="switchAdminTab('standings', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones y Grupos</button>
+      <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 font-semibold">🟥 Suspendidos y Tarjetas</button>
+    </div>
+
+    <!-- Tab 1: Equipos y Configuración del Torneo -->
+    <div id="adm-teams" class="admin-tab-content glass-card rounded-2xl p-6 space-y-6">
       <div class="flex justify-between items-center">
-        <h3 class="text-lg font-bold text-green-300">Equipos Registrados</h3>
-        <button onclick="openNewTeamModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Nuevo Equipo</button>
+        <div>
+          <h3 class="text-lg font-bold text-green-300">Equipos Participantes</h3>
+          <p id="teamLimitCounter" class="text-xs text-slate-400">Cupo de equipos configurado</p>
+        </div>
+        <button onclick="openNewTeamModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Registrar Equipo</button>
       </div>
       <div id="adminTeamsList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </div>
 
-    <!-- Tab 3: Partidos -->
-    <div id="adm-matches" class="admin-tab-content glass-card rounded-2xl p-6 space-y-4 hidden">
-      <h3 class="text-lg font-bold text-green-300">Fixture y Carga de Marcadores</h3>
-      <div id="adminMatchesList" class="space-y-3"></div>
+    <!-- Tab 2: Planteles y Jugadores (Goles / Tarjetas) -->
+    <div id="adm-players" class="admin-tab-content glass-card rounded-2xl p-6 space-y-6 hidden">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-green-300">Gestión de Jugadores y Goleadores</h3>
+        <button onclick="openNewPlayerModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Agregar Jugador</button>
+      </div>
+      <div id="adminPlayersList" class="space-y-3 max-h-[500px] overflow-y-auto scrollbar-thin"></div>
+    </div>
+
+    <!-- Tab 3: Fixture y Resultados -->
+    <div id="adm-fixture" class="admin-tab-content glass-card rounded-2xl p-6 space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40">
+        <div>
+          <h3 class="text-lg font-bold text-green-300">Fixture de Partidos</h3>
+          <p class="text-xs text-slate-400">Genera el fixture automáticamente o agrega partidos manuales.</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="generateAutomaticFixture()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">⚡ Generar Fixture Automático</button>
+          <button onclick="openNewMatchModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Partido Manual</button>
+        </div>
+      </div>
+      <div id="adminMatchesList" class="space-y-3 max-h-[500px] overflow-y-auto scrollbar-thin"></div>
+    </div>
+
+    <!-- Tab 4: Posiciones y Grupos -->
+    <div id="adm-standings" class="admin-tab-content glass-card rounded-2xl p-6 space-y-6 hidden">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-green-300">Tabla de Posiciones y Clasificados</h3>
+        <span id="classificationInfo" class="text-xs bg-green-500/10 text-green-400 px-3 py-1 rounded-full border border-green-500/20">Clasifican X por grupo</span>
+      </div>
+      <div id="adminStandingsContainer" class="overflow-x-auto"></div>
+    </div>
+
+    <!-- Tab 5: Suspendidos y Sanciones -->
+    <div id="adm-discipline" class="admin-tab-content glass-card rounded-2xl p-6 space-y-6 hidden">
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-bold text-green-300">Tribunal de Disciplina - Suspendidos</h3>
+        <button onclick="openNewSuspensionModal()" class="btn-green text-white text-xs font-bold px-4 py-2.5 rounded-xl">+ Sancionar Jugador</button>
+      </div>
+      <div id="adminSuspensionsList" class="space-y-3"></div>
     </div>
 
   </main>
 
-  <!-- Script de Lógica de Administración con Supabase y Auth Google -->
+  <!-- Script del Panel de Administración -->
   <script>
     let dbData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
+    let activeCategoryId = null;
 
     window.addEventListener('DOMContentLoaded', async () => {
       if (supabaseClient) {
@@ -105,17 +150,12 @@
     });
 
     async function loginWithGoogle() {
-      if (!supabaseClient) {
-        alert("Supabase no está configurado correctamente.");
-        return;
-      }
+      if (!supabaseClient) return;
       const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: window.location.href }
       });
-      if (error) {
-        alert("Error al iniciar sesión con Google: " + error.message);
-      }
+      if (error) alert("Error al iniciar sesión: " + error.message);
     }
 
     function unlockAdminPanel() {
@@ -125,9 +165,7 @@
     }
 
     async function logoutAdmin() {
-      if (supabaseClient) {
-        await supabaseClient.auth.signOut();
-      }
+      if (supabaseClient) await supabaseClient.auth.signOut();
       window.location.reload();
     }
 
@@ -148,10 +186,29 @@
         dbData.matches = match.data || [];
         dbData.suspensions = susp.data || [];
 
-        renderAdminViews();
+        populateCategorySelect();
       } catch (err) {
-        console.error("Error al cargar datos en admin:", err);
+        console.error("Error cargando datos:", err);
       }
+    }
+
+    function populateCategorySelect() {
+      const select = document.getElementById('globalCategorySelect');
+      select.innerHTML = '<option value="">-- Selecciona un torneo --</option>' +
+        dbData.categories.map(c => `<option value="${c.id}">🏆 ${c.name} (${c.tournament_type === 'cup' ? 'Copa' : 'Liga'})</option>`).join('');
+
+      if (dbData.categories.length > 0 && !activeCategoryId) {
+        activeCategoryId = dbData.categories[0].id;
+        select.value = activeCategoryId;
+      } else if (activeCategoryId) {
+        select.value = activeCategoryId;
+      }
+      renderActiveCategoryViews();
+    }
+
+    function changeActiveCategory(catId) {
+      activeCategoryId = catId;
+      renderActiveCategoryViews();
     }
 
     function switchAdminTab(tabKey, evt) {
@@ -166,64 +223,266 @@
       document.getElementById(`adm-${tabKey}`).classList.remove('hidden');
     }
 
-    function renderAdminViews() {
-      document.getElementById('adminCategoriesList').innerHTML = dbData.categories.map(c => `
-        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30 flex justify-between items-center">
-          <div>
-            <h4 class="font-bold text-white">${c.name}</h4>
-            <p class="text-xs text-slate-400">Modalidad: ${c.fixture_type}</p>
-          </div>
-          <button onclick="deleteRecord('${c.id}')" class="bg-red-900/30 hover:bg-red-900/60 text-red-300 px-3 py-1.5 rounded-lg text-xs font-bold">🗑️ Eliminar</button>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-sm">No hay torneos creados.</p>';
+    function renderActiveCategoryViews() {
+      if (!activeCategoryId) return;
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      if (!cat) return;
 
-      document.getElementById('adminTeamsList').innerHTML = dbData.teams.map(t => `
-        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30 space-y-2">
-          <div class="font-bold text-white text-sm">${t.name}</div>
-          <button onclick="deleteRecord('${t.id}')" class="text-red-400 text-xs hover:underline">Eliminar equipo</button>
+      // 1. Equipos
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      document.getElementById('teamLimitCounter').textContent = `Equipos registrados: ${teams.length} / ${cat.max_teams || 'Sin límite'} (${cat.tournament_type === 'cup' ? 'Copa - Grupo ' + (t => t.group_name || 'A')(teams) : 'Liga Todos contra Todos'})`;
+      
+      document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30 space-y-2 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white text-sm">${t.name}</div>
+            ${cat.tournament_type === 'cup' ? `<span class="text-xs text-green-400">Grupo: ${t.group_name || 'A'}</span>` : ''}
+          </div>
+          <button onclick="deleteRecord('${t.id}')" class="text-red-400 text-xs hover:underline">Eliminar</button>
         </div>
-      `).join('') || '<p class="text-slate-500 text-sm">No hay equipos.</p>';
+      `).join('') || '<p class="text-slate-500 text-sm">No hay equipos en este torneo.</p>';
+
+      // 2. Jugadores
+      const teamIds = teams.map(t => t.id);
+      const players = dbData.players.filter(p => teamIds.includes(p.team_id));
+      document.getElementById('adminPlayersList').innerHTML = players.map(p => {
+        const team = teams.find(t => t.id === p.team_id);
+        return `
+          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-sm text-white">${p.name}</div>
+              <div class="text-xs text-slate-400">${team ? team.name : ''}</div>
+            </div>
+            <div class="flex items-center gap-4 text-xs">
+              <span class="text-green-400 font-bold">⚽ ${p.goals || 0} Goles</span>
+              <button onclick="updatePlayerStats('${p.id}')" class="bg-green-700/50 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg">Editar Goles/Tarjetas</button>
+              <button onclick="deleteRecord('${p.id}')" class="text-red-400">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-500 text-sm">No hay jugadores cargados.</p>';
+
+      // 3. Fixture
+      const matches = dbData.matches.filter(m => m.category_id === activeCategoryId);
+      document.getElementById('adminMatchesList').innerHTML = matches.map(m => {
+        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+        return `
+          <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30 flex items-center justify-between gap-4">
+            <div class="flex-1 text-right font-semibold text-sm">${hTeam.name}</div>
+            <div class="flex items-center gap-2">
+              <input type="number" id="hs_${m.id}" value="${m.home_score ?? 0}" class="w-12 bg-black text-center border border-green-900 rounded py-1 text-white text-sm">
+              <span class="text-green-400 font-bold">-</span>
+              <input type="number" id="as_${m.id}" value="${m.away_score ?? 0}" class="w-12 bg-black text-center border border-green-900 rounded py-1 text-white text-sm">
+              <button onclick="saveMatchScore('${m.id}')" class="btn-green text-white text-xs px-3 py-1.5 rounded font-bold">Guardar</button>
+            </div>
+            <div class="flex-1 text-left font-semibold text-sm">${aTeam.name}</div>
+            <button onclick="deleteRecord('${m.id}')" class="text-red-400 text-xs">🗑️</button>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-500 text-sm">No hay partidos creados.</p>';
+
+      // 4. Posiciones
+      document.getElementById('classificationInfo').textContent = `Clasifican ${cat.qualifiers_per_group || 2} por grupo`;
+      renderStandingsView(teams, matches, cat);
+
+      // 5. Suspendidos
+      const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
+      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
+        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-3 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold text-white block text-sm">${s.player_name}</span>
+            <span class="text-slate-400">${s.reason || 'Suspendido por sanción'}</span>
+          </div>
+          <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-3 py-1.5 rounded font-bold">Levantar Sanción</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-sm">No hay jugadores suspendidos.</p>';
     }
 
+    function renderStandingsView(teams, matches, cat) {
+      const container = document.getElementById('adminStandingsContainer');
+      const stats = teams.map(team => {
+        let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+        matches.filter(m => m.played).forEach(m => {
+          if (m.home_team === team.id) {
+            played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+            if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+          } else if (m.away_team === team.id) {
+            played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+            if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+          }
+        });
+        return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: won * 3 + drawn };
+      }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+      container.innerHTML = `
+        <table class="w-full text-sm">
+          <thead class="bg-[#0b0f0d] text-slate-400 text-xs uppercase">
+            <tr>
+              <th class="p-3 text-left">#</th>
+              <th class="p-3 text-left">Equipo</th>
+              ${cat.tournament_type === 'cup' ? '<th class="p-3 text-center">Grupo</th>' : ''}
+              <th class="p-3 text-center">PJ</th><th class="p-3 text-center">G</th><th class="p-3 text-center">E</th><th class="p-3 text-center">P</th><th class="p-3 text-center">GF</th><th class="p-3 text-center">GC</th><th class="p-3 text-center">DG</th><th class="p-3 text-center font-bold text-green-400">Pts</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-green-900/20">
+            ${stats.map((t, idx) => `
+              <tr class="${idx < (cat.qualifiers_per_group || 2) ? 'bg-green-900/10 border-l-4 border-green-500' : ''}">
+                <td class="p-3 font-bold text-green-400">${idx + 1}</td>
+                <td class="p-3 font-semibold text-white">${t.name}</td>
+                ${cat.tournament_type === 'cup' ? `<td class="p-3 text-center text-slate-300">${t.group_name || 'A'}</td>` : ''}
+                <td class="p-3 text-center">${t.played}</td><td class="p-3 text-center">${t.won}</td><td class="p-3 text-center">${t.drawn}</td><td class="p-3 text-center">${t.lost}</td><td class="p-3 text-center">${t.gf}</td><td class="p-3 text-center">${t.gc}</td><td class="p-3 text-center">${t.gd}</td><td class="p-3 text-center font-bold text-green-400">${t.points}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    // Modal / Acciones de Creación y Edición
     async function openNewCategoryModal() {
-      const name = prompt("Nombre del nuevo Torneo / Categoría:");
+      const name = prompt("Nombre del Torneo / Categoría:");
       if (!name) return;
-      const newCat = { id: 'cat_' + Date.now(), type: 'category', name, fixture_type: 'round_robin' };
-      
+      const type = prompt("Tipo de Torneo: escribe 'league' (Liga) o 'cup' (Copa):", "league");
+      const max_teams = prompt("Cantidad máxima de equipos:", "8");
+      const qualifiers = type === 'cup' ? prompt("¿Cuántos clasifican por grupo?", "2") : 0;
+      const group_name = type === 'cup' ? prompt("Asignar Grupo inicial (ej: A, B):", "A") : null;
+
+      const newCat = {
+        id: 'cat_' + Date.now(), type: 'category', name,
+        tournament_type: type, max_teams: parseInt(max_teams) || 8,
+        qualifiers_per_group: parseInt(qualifiers) || 2, fixture_type: type
+      };
+
       const { error } = await supabaseClient.from('torneos_data').insert([newCat]);
-      if (!error) {
-        alert("¡Torneo creado con éxito!");
-        loadAdminData();
-      } else {
-        alert("Error al guardar en Supabase.");
-      }
+      if (!error) { loadAdminData(); } else { alert("Error al crear torneo."); }
     }
 
     async function openNewTeamModal() {
-      if (dbData.categories.length === 0) {
-        alert("Primero debes crear al menos un torneo/categoría.");
-        return;
-      }
+      if (!activeCategoryId) return alert("Selecciona un torneo primero.");
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
       const name = prompt("Nombre del equipo:");
       if (!name) return;
-      const catId = dbData.categories[0].id;
-      const newTeam = { id: 'team_' + Date.now(), type: 'team', name, category_id: catId };
+      let group_name = 'A';
+      if (cat.tournament_type === 'cup') {
+        group_name = prompt("Nombre del grupo (ej: A, B, C):", "A");
+      }
+      const newTeam = { id: 'team_' + Date.now(), type: 'team', name, category_id: activeCategoryId, group_name };
 
       const { error } = await supabaseClient.from('torneos_data').insert([newTeam]);
-      if (!error) {
-        alert("¡Equipo creado con éxito!");
-        loadAdminData();
+      if (!error) loadAdminData();
+    }
+
+    async function openNewPlayerModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length === 0) return alert("Registra equipos primero.");
+      const teamName = prompt("Escribe el nombre exacto del equipo o ID:");
+      const name = prompt("Nombre del jugador:");
+      if (!name) return;
+      const team = teams[0]; // Por simpleza asigna al primero si no especifica
+
+      const newPlayer = { id: 'player_' + Date.now(), type: 'player', name, team_id: team.id, goals: 0, yellow_cards: 0, red_cards: 0 };
+      const { error } = await supabaseClient.from('torneos_data').insert([newPlayer]);
+      if (!error) loadAdminData();
+    }
+
+    async function openNewMatchModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
+      const hTeamName = prompt("Nombre del equipo Local:");
+      const aTeamName = prompt("Nombre del equipo Visitante:");
+      const hTeam = teams.find(t => t.name.toLowerCase() === hTeamName?.toLowerCase());
+      const aTeam = teams.find(t => t.name.toLowerCase() === aTeamName?.toLowerCase());
+
+      if (!hTeam || !aTeam) return alert("Equipos no encontrados.");
+
+      const newMatch = {
+        id: 'match_' + Date.now(), type: 'match', category_id: activeCategoryId,
+        home_team: hTeam.id, away_team: aTeam.id, home_score: 0, away_score: 0, played: false
+      };
+      const { error } = await supabaseClient.from('torneos_data').insert([newMatch]);
+      if (!error) loadAdminData();
+    }
+
+    async function generateAutomaticFixture() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos para generar el fixture.");
+      
+      // Generación tipo Todos contra Todos (Round Robin)
+      let matchesToInsert = [];
+      for (let i = 0; i < teams.length; i++) {
+        for (let j = i + 1; j < teams.length; j++) {
+          matchesToInsert.push({
+            id: 'match_' + Date.now() + '_' + i + '_' + j,
+            type: 'match',
+            category_id: activeCategoryId,
+            home_team: teams[i].id,
+            away_team: teams[j].id,
+            home_score: 0,
+            away_score: 0,
+            played: false
+          });
+        }
       }
+
+      for (let m of matchesToInsert) {
+        await supabaseClient.from('torneos_data').insert([m]);
+      }
+      alert("¡Fixture generado automáticamente con éxito!");
+      loadAdminData();
+    }
+
+    async function saveMatchScore(matchId) {
+      const hs = parseInt(document.getElementById(`hs_${matchId}`).value) || 0;
+      const as = parseInt(document.getElementById(`as_${matchId}`).value) || 0;
+
+      const { error } = await supabaseClient.from('torneos_data')
+        .update({ home_score: hs, away_score: as, played: true })
+        .eq('id', matchId);
+
+      if (!error) {
+        alert("¡Resultado guardado y tabla actualizada!");
+        loadAdminData();
+      } else {
+        alert("Error al actualizar resultado.");
+      }
+    }
+
+    async function updatePlayerStats(playerId) {
+      const player = dbData.players.find(p => p.id === playerId);
+      const newGoals = prompt(`Goles actuales de ${player.name}:`, player.goals || 0);
+      if (newGoals === null) return;
+
+      const { error } = await supabaseClient.from('torneos_data')
+        .update({ goals: parseInt(newGoals) || 0 })
+        .eq('id', playerId);
+
+      if (!error) loadAdminData();
+    }
+
+    async function openNewSuspensionModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      const teamIds = teams.map(t => t.id);
+      const players = dbData.players.filter(p => teamIds.includes(p.team_id));
+      if (players.length === 0) return alert("No hay jugadores cargados.");
+
+      const playerName = prompt("Nombre del jugador a sancionar/suspender:");
+      const reason = prompt("Motivo de la sanción:", "Acumulación de tarjetas / Tribunal");
+      if (!playerName) return;
+
+      const newSuspension = {
+        id: 'susp_' + Date.now(), type: 'suspension',
+        category_id: activeCategoryId, player_name: playerName, reason
+      };
+
+      const { error } = await supabaseClient.from('torneos_data').insert([newSuspension]);
+      if (!error) loadAdminData();
     }
 
     async function deleteRecord(id) {
       if (!confirm("¿Estás seguro de eliminar este registro?")) return;
       const { error } = await supabaseClient.from('torneos_data').delete().eq('id', id);
-      if (!error) {
-        loadAdminData();
-      } else {
-        alert("Error al eliminar.");
-      }
+      if (!error) loadAdminData();
     }
   </script>
 </body>
