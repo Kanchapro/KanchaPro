@@ -3,24 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanchapro - Portal Público de Torneos</title>
+  <title>Kanchapro - Panel Admin Pro Total</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Montserrat', sans-serif; background-color: #0b0f0d; color: #f0fdf4; }
-    .glass-card { background: rgba(13, 27, 18, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.15); }
+    .glass-card { background: rgba(13, 27, 18, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.2); }
     .btn-green { background-color: #16a34a; transition: background 0.2s; }
     .btn-green:hover { background-color: #15803d; }
     .tab-active { border-bottom: 3px solid #22c55e; color: #4ade80; }
-    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar { width: 4px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 3px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
   </style>
 </head>
 <body class="h-full flex flex-col overflow-auto">
 
-  <!-- ==================== CONFIGURACIÓN SUPABASE ==================== -->
+  <!-- CONFIGURACIÓN SUPABASE -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
@@ -30,148 +30,341 @@
     }
   </script>
 
-  <!-- Header -->
-  <header class="bg-[#060a08]/95 border-b border-green-900/40 px-4 py-3 flex items-center justify-between sticky top-0 z-50 shadow-lg">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-green-600/20 border border-green-500/40 flex items-center justify-center text-xl">⚽</div>
+  <!-- LOGIN GOOGLE -->
+  <div id="loginScreen" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4">
+    <div class="glass-card p-6 rounded-2xl max-w-sm w-full text-center space-y-5 shadow-2xl">
+      <div class="w-14 h-14 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-green-500/30">⚽</div>
       <div>
-        <h1 class="text-base sm:text-lg font-black tracking-wide text-green-400">KANCHA<span class="text-white">PRO</span></h1>
-        <p class="text-[10px] uppercase tracking-widest text-slate-400">Portal Público</p>
+        <h2 class="text-xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
+        <p class="text-xs text-slate-400 mt-1">Panel de gestión y disciplina</p>
       </div>
+      <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-xs">
+        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        Continuar con Google
+      </button>
     </div>
-    <div>
-      <a href="admin.html" class="text-xs px-3 py-2 bg-green-700/80 hover:bg-green-600 text-white rounded-lg transition font-semibold flex items-center gap-1.5 border border-green-500/30">
-        🔒 Panel Admin
-      </a>
+  </div>
+
+  <!-- HEADER -->
+  <header class="bg-[#060a08]/95 border-b border-green-900/40 px-3 py-2.5 flex items-center justify-between sticky top-0 z-40">
+    <h1 class="text-sm font-black text-green-400">KANCHA<span class="text-white">PRO</span> <span class="text-[10px] text-slate-400 font-normal">| Admin Total</span></h1>
+    <div class="flex items-center gap-1.5">
+      <a href="index.html" class="text-[11px] px-2.5 py-1.5 bg-slate-800 text-green-400 rounded-lg font-semibold border border-green-500/20">👁️ Ver Portal</a>
+      <button onclick="logoutAdmin()" class="text-[11px] px-2.5 py-1.5 bg-red-900/40 text-red-300 rounded-lg font-semibold border border-red-500/30">Salir</button>
     </div>
   </header>
 
-  <!-- Contenido Principal -->
-  <main class="flex-1 max-w-5xl w-full mx-auto p-4 space-y-6">
+  <!-- PANEL PRINCIPAL -->
+  <main id="adminMainPanel" class="flex-1 max-w-5xl w-full mx-auto p-3 space-y-4 hidden">
     
-    <!-- Buscador y Selector de Torneos / Categorías -->
-    <div class="glass-card rounded-2xl p-6 shadow-xl space-y-4">
+    <!-- Torneo Activo -->
+    <div class="glass-card rounded-xl p-3 flex flex-col gap-3 border border-green-500/30">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-bold text-green-300">🔍 Buscar Torneo o Categoría</h2>
-        <span class="text-xs bg-green-500/10 text-green-400 px-2.5 py-1 rounded-full border border-green-500/20">En vivo</span>
+        <label class="text-[10px] font-bold text-green-400 uppercase tracking-wider">Torneo en Gestión:</label>
+        <div class="flex gap-1">
+          <button onclick="openCategoryModal(true)" class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-[11px]">✏️ Editar</button>
+          <button onclick="deleteActiveCategory()" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️</button>
+        </div>
       </div>
-      <div>
-        <input type="text" id="tournamentSearchInput" placeholder="Escribe el nombre del torneo..." class="w-full bg-[#0b0f0d] border border-green-900/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-green-500 text-sm">
-      </div>
-      <div>
-        <label class="block text-xs font-semibold text-slate-400 mb-1">O selecciona de la lista:</label>
-        <select id="tournamentSelect" class="w-full bg-[#0b0f0d] border border-green-900/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-green-500 text-sm">
+      <div class="flex gap-2">
+        <select id="globalCategorySelect" onchange="changeActiveCategory(this.value)" class="bg-[#0b0f0d] border border-green-900/50 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-green-500 flex-1">
           <option value="">-- Selecciona un torneo --</option>
         </select>
+        <button onclick="openCategoryModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Crear</button>
       </div>
     </div>
 
-    <!-- Contenedor de Estadísticas del Torneo Seleccionado -->
-    <div id="tournamentStatsContainer" class="hidden space-y-6">
-      
-      <!-- Info del Torneo -->
-      <div class="glass-card rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Pestañas -->
+    <div class="flex overflow-x-auto gap-1.5 glass-card rounded-xl p-1.5 border border-green-900/30 scrollbar-thin">
+      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap tab-active font-semibold">🛡️ Equipos</button>
+      <button onclick="switchAdminTab('players', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Jugadores y Stats</button>
+      <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture</button>
+      <button onclick="switchAdminTab('standings', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones</button>
+      <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones</button>
+    </div>
+
+    <!-- Tab 1: Equipos -->
+    <div id="adm-teams" class="admin-tab-content glass-card rounded-xl p-4 space-y-4">
+      <div class="flex justify-between items-center">
         <div>
-          <h2 id="selectedTournamentName" class="text-2xl font-black text-white">Nombre del Torneo</h2>
-          <p id="selectedTournamentDetails" class="text-sm text-green-400">Modalidad • Equipos</p>
+          <h3 class="text-sm font-bold text-green-300">Equipos</h3>
+          <p id="teamLimitCounter" class="text-[10px] text-slate-400">Cupo</p>
         </div>
+        <button onclick="openTeamModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Equipo</button>
       </div>
-
-      <!-- Pestañas de Estadísticas -->
-      <div class="flex overflow-x-auto gap-2 bg-[#0b0f0d] rounded-xl p-2 scrollbar-thin border border-green-900/30">
-        <button onclick="switchPublicTab('positions', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap tab-active font-semibold">📊 Posiciones</button>
-        <button onclick="switchPublicTab('fixture', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">📅 Fixture</button>
-        <button onclick="switchPublicTab('scorers', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">⚽ Goleadores</button>
-        <button onclick="switchPublicTab('cards', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">🟨 Tarjetas</button>
-        <button onclick="switchPublicTab('suspensions', event)" class="public-tab px-4 py-2 rounded-lg text-sm whitespace-nowrap text-slate-400 hover:text-white font-semibold">🟥 Suspendidos</button>
-      </div>
-
-      <!-- Tab: Posiciones -->
-      <div id="pub-positions" class="public-tab-content glass-card rounded-2xl p-6 overflow-x-auto">
-        <h3 class="font-bold text-base mb-4 text-green-300">Tabla General de Posiciones</h3>
-        <table class="w-full text-sm">
-          <thead class="bg-[#0b0f0d] text-slate-400 text-xs uppercase">
-            <tr>
-              <th class="p-3 text-left">#</th>
-              <th class="p-3 text-left">Equipo</th>
-              <th class="p-3 text-center">PJ</th>
-              <th class="p-3 text-center">G</th>
-              <th class="p-3 text-center">E</th>
-              <th class="p-3 text-center">P</th>
-              <th class="p-3 text-center">GF</th>
-              <th class="p-3 text-center">GC</th>
-              <th class="p-3 text-center">DG</th>
-              <th class="p-3 text-center font-bold text-green-400">Pts</th>
-            </tr>
-          </thead>
-          <tbody id="pubPositionsBody" class="divide-y divide-green-900/20"></tbody>
-        </table>
-      </div>
-
-      <!-- Tab: Fixture -->
-      <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-4">
-        <h3 class="font-bold text-base mb-4 text-green-300">Fixture y Resultados</h3>
-        <div id="pubFixtureList" class="space-y-3"></div>
-      </div>
-
-      <!-- Tab: Goleadores -->
-      <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-3">
-        <h3 class="font-bold text-base mb-4 text-green-300">Tabla de Goleadores</h3>
-        <div id="pubScorersList" class="space-y-2"></div>
-      </div>
-
-      <!-- Tab: Tarjetas -->
-      <div id="pub-cards" class="public-tab-content glass-card rounded-2xl p-6 hidden">
-        <h3 class="font-bold text-base mb-4 text-green-300">Registro de Tarjetas</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30">
-            <h4 class="font-bold mb-3 text-yellow-400 text-sm">🟨 Tarjetas Amarillas</h4>
-            <div id="pubYellowCards" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin"></div>
-          </div>
-          <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/30">
-            <h4 class="font-bold mb-3 text-red-400 text-sm">🟥 Tarjetas Rojas</h4>
-            <div id="pubRedCards" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tab: Suspendidos -->
-      <div id="pub-suspensions" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-3">
-        <h3 class="font-bold text-base mb-4 text-green-300">Jugadores Suspendidos</h3>
-        <div id="pubSuspensionsList" class="space-y-3"></div>
-      </div>
-
+      <div id="adminTeamsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
     </div>
 
-    <!-- Mensaje inicial antes de seleccionar -->
-    <div id="noTournamentSelected" class="glass-card rounded-2xl p-12 text-center space-y-3">
-      <div class="text-5xl">🏆</div>
-      <h3 class="text-xl font-bold text-green-400">Selecciona un torneo para comenzar</h3>
-      <p class="text-sm text-slate-400">Usa el buscador superior o despliega la lista para consultar todas las estadísticas en tiempo real.</p>
+    <!-- Tab 2: Jugadores -->
+    <div id="adm-players" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-green-300">Planteles</h3>
+          <p class="text-[10px] text-slate-400">Clic en un jugador para ver sus estadísticas</p>
+        </div>
+        <button onclick="openPlayerModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Jugador</button>
+      </div>
+      <div id="adminPlayersList" class="space-y-2 max-h-[400px] overflow-y-auto scrollbar-thin"></div>
+    </div>
+
+    <!-- Tab 3: Fixture -->
+    <div id="adm-fixture" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
+      <div class="flex flex-col gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
+        <h3 class="text-sm font-bold text-green-300">Fixture de Partidos</h3>
+        <div class="flex gap-2">
+          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar Automático</button>
+          <button onclick="openMatchModal()" class="btn-green flex-1 text-white text-[11px] font-bold py-2 rounded-lg">+ Manual</button>
+        </div>
+      </div>
+      <div id="adminMatchesList" class="space-y-3 max-h-[450px] overflow-y-auto scrollbar-thin"></div>
+    </div>
+
+    <!-- Tab 4: Posiciones -->
+    <div id="adm-standings" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
+      <h3 class="text-sm font-bold text-green-300">Tabla de Posiciones</h3>
+      <div id="adminStandingsContainer" class="overflow-x-auto"></div>
+    </div>
+
+    <!-- Tab 5: Sanciones -->
+    <div id="adm-discipline" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-green-300">Sanciones (Descuento Automático)</h3>
+          <p class="text-[10px] text-slate-400">Regla: <span id="ruleDisplay" class="text-green-400 font-semibold">3 amarillas = 1 fecha</span></p>
+        </div>
+        <button onclick="openSuspensionModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Sanción Manual</button>
+      </div>
+      <div id="adminSuspensionsList" class="space-y-2"></div>
     </div>
 
   </main>
 
-  <script>
-    let globalCategories = [];
-    let globalTeams = [];
-    let globalPlayers = [];
-    let globalMatches = [];
-    let globalSuspensions = [];
-    let currentSelectedCategory = null;
+  <!-- ==================== MODALES ==================== -->
 
-    async function initPublicApp() {
-      if (!supabaseClient) {
-        alert("Error al inicializar Supabase.");
-        return;
+  <!-- Modal Estadísticas Jugador -->
+  <div id="playerStatsModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-4">
+    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-4 border border-green-500/30">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <h3 id="statPlayerName" class="text-sm font-bold text-green-400">Nombre del Jugador</h3>
+        <button onclick="closeModal('playerStatsModal')" class="text-slate-400 hover:text-white text-xs font-bold">✕</button>
+      </div>
+      <div class="text-xs text-slate-300">
+        <p>Equipo: <span id="statPlayerTeam" class="text-white font-semibold"></span></p>
+      </div>
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 text-center">
+          <span class="block text-[10px] text-slate-400 uppercase">Goles</span>
+          <span id="statPlayerGoals" class="text-lg font-extrabold text-green-400">0</span>
+        </div>
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 text-center">
+          <span class="block text-[10px] text-yellow-400 uppercase">Amarillas (🟨)</span>
+          <span id="statPlayerYellows" class="text-lg font-extrabold text-yellow-400">0</span>
+        </div>
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 text-center" id="boxBlueStat">
+          <span class="block text-[10px] text-sky-400 uppercase">Azules (🟦)</span>
+          <span id="statPlayerBlues" class="text-lg font-extrabold text-sky-400">0</span>
+        </div>
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 text-center">
+          <span class="block text-[10px] text-red-400 uppercase">Rojas (🟥)</span>
+          <span id="statPlayerReds" class="text-lg font-extrabold text-red-400">0</span>
+        </div>
+      </div>
+      <div class="bg-red-950/30 border border-red-500/30 p-2.5 rounded-xl text-center text-xs">
+        <span class="text-slate-300 block text-[10px] uppercase">Estado de Suspensión</span>
+        <span id="statPlayerSuspended" class="font-bold text-red-400">Habilitado</span>
+      </div>
+      <button onclick="closeModal('playerStatsModal')" class="w-full bg-slate-800 text-slate-200 py-2 rounded-xl text-xs font-semibold">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal Torneo (Con Liga/Copa y Max Equipos) -->
+  <div id="categoryModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
+    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30">
+      <h3 id="catModalTitle" class="text-sm font-bold text-green-400">Crear Torneo</h3>
+      <input type="hidden" id="modalCatId">
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Torneo:</label>
+        <input type="text" id="modalCatName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Disciplina / Modalidad:</label>
+        <select id="modalSportType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+          <option value="football_11">Fútbol 11 (3 pts ganado / Amarilla y Roja)</option>
+          <option value="futsal">Fútbol 5 / Futsal (2 pts ganado / Amarilla, Azul y Roja)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Formato de Torneo:</label>
+        <select id="modalCatType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+          <option value="league">Liga (Todos contra todos)</option>
+          <option value="cup">Copa (Por Grupos)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Cantidad Máxima de Equipos:</label>
+        <input type="number" id="modalCatMaxTeams" value="8" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div class="border-t border-green-900/40 pt-2 space-y-2">
+        <label class="block text-[11px] font-bold text-green-400">Regla de Suspensión por Amarillas:</label>
+        <div class="flex gap-2">
+          <div class="flex-1">
+            <span class="text-[10px] text-slate-400">Amarillas acum:</span>
+            <input type="number" id="ruleYellowLimit" value="3" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-1.5 text-white text-xs text-center">
+          </div>
+          <div class="flex-1">
+            <span class="text-[10px] text-slate-400">Fechas suspensión:</span>
+            <input type="number" id="ruleMatches" value="1" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-1.5 text-white text-xs text-center">
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('categoryModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs">Cancelar</button>
+        <button onclick="saveCategoryFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg text-xs font-bold">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalle de Partido -->
+  <div id="matchDetailModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto">
+    <div class="glass-card p-4 rounded-2xl max-w-md w-full space-y-4 border border-green-500/30 my-auto text-xs">
+      <h3 class="text-sm font-bold text-green-400">Cargar Resultado y Tarjetas</h3>
+      <input type="hidden" id="modalMatchId">
+      
+      <div class="flex justify-between items-center bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 text-center">
+        <div class="flex-1 font-bold text-white truncate" id="mdHomeName">Local</div>
+        <div class="flex items-center gap-1.5 px-2">
+          <input type="number" id="mdHomeScore" class="w-10 bg-black text-center border border-green-900 rounded py-1 text-white text-sm font-bold">
+          <span class="text-green-400 font-bold">-</span>
+          <input type="number" id="mdAwayScore" class="w-10 bg-black text-center border border-green-900 rounded py-1 text-white text-sm font-bold">
+        </div>
+        <div class="flex-1 font-bold text-white truncate" id="mdAwayName">Visitante</div>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[11px] text-green-300 mb-1">⚽ Goles (Jugadores):</label>
+          <textarea id="mdGoals" placeholder="Ej: Juan Pérez (2)" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2 text-white text-xs h-14"></textarea>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-2">
+          <div class="bg-yellow-950/20 border border-yellow-500/30 p-2.5 rounded-xl space-y-1">
+            <label class="block text-[11px] font-bold text-yellow-400">🟨 Amarillas:</label>
+            <input type="text" id="mdYellows" placeholder="Ej: Lucas Díaz, Mario Gómez" class="w-full bg-[#0b0f0d] border border-yellow-900/50 rounded-lg p-1.5 text-white text-xs">
+          </div>
+          
+          <div class="bg-sky-950/20 border border-sky-500/30 p-2.5 rounded-xl space-y-1" id="blueCardBox">
+            <label class="block text-[11px] font-bold text-sky-400">🟦 Azules (Futsal):</label>
+            <input type="text" id="mdBlues" placeholder="Ej: Pedro Sosa" class="w-full bg-[#0b0f0d] border border-sky-900/50 rounded-lg p-1.5 text-white text-xs">
+          </div>
+
+          <div class="bg-red-950/20 border border-red-500/30 p-2.5 rounded-xl space-y-1">
+            <label class="block text-[11px] font-bold text-red-400">🟥 Rojas:</label>
+            <input type="text" id="mdReds" placeholder="Ej: Sergio Ramos" class="w-full bg-[#0b0f0d] border border-red-900/50 rounded-lg p-1.5 text-white text-xs">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] text-amber-300 mb-1">🌟 Jugador del Partido (MVP):</label>
+          <input type="text" id="mdMvp" placeholder="Ej: Lionel Messi" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2 text-white text-xs">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('matchDetailModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs">Cancelar</button>
+        <button onclick="saveMatchDetail()" class="btn-green px-4 py-1.5 text-white rounded-lg text-xs font-bold">Guardar y Descontar Fechas</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Equipo -->
+  <div id="teamModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
+    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
+      <h3 class="text-sm font-bold text-green-400">Registrar Equipo</h3>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Equipo:</label>
+        <input type="text" id="modalTeamName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('teamModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
+        <button onclick="saveTeamFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Jugador -->
+  <div id="playerModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
+    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
+      <h3 class="text-sm font-bold text-green-400">Registrar Jugador</h3>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Equipo:</label>
+        <select id="modalPlayerTeam" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Jugador:</label>
+        <input type="text" id="modalPlayerName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('playerModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
+        <button onclick="savePlayerFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Sanción -->
+  <div id="suspensionModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
+    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
+      <h3 class="text-sm font-bold text-green-400">Sanción de Tribunal</h3>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Jugador:</label>
+        <input type="text" id="modalSuspName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Nombre del jugador">
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Fechas de Suspensión:</label>
+        <input type="number" id="modalSuspMatches" value="1" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Motivo:</label>
+        <input type="text" id="modalSuspReason" value="Sanción disciplinaria" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('suspensionModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
+        <button onclick="saveSuspensionFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar Sanción</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    let dbData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
+    let activeCategoryId = null;
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (supabaseClient) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) unlockAdminPanel();
       }
-      await fetchSupabaseData();
-      setupPublicEvents();
+    });
+
+    async function loginWithGoogle() {
+      if (!supabaseClient) return;
+      await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
     }
 
-    async function fetchSupabaseData() {
+    function unlockAdminPanel() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminMainPanel').classList.remove('hidden');
+      loadAdminData();
+    }
+
+    async function logoutAdmin() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      window.location.reload();
+    }
+
+    async function loadAdminData() {
+      if (!supabaseClient) return;
       try {
-        const [catRes, teamRes, playerRes, matchRes, suspRes] = await Promise.all([
+        const [cat, team, player, match, susp] = await Promise.all([
           supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
           supabaseClient.from('torneos_data').select('*').eq('type', 'team'),
           supabaseClient.from('torneos_data').select('*').eq('type', 'player'),
@@ -179,81 +372,130 @@
           supabaseClient.from('torneos_data').select('*').eq('type', 'suspension')
         ]);
 
-        globalCategories = catRes.data || [];
-        globalTeams = teamRes.data || [];
-        globalPlayers = playerRes.data || [];
-        globalMatches = matchRes.data || [];
-        globalSuspensions = suspRes.data || [];
+        dbData.categories = cat.data || [];
+        dbData.teams = team.data || [];
+        dbData.players = player.data || [];
+        dbData.matches = match.data || [];
+        dbData.suspensions = susp.data || [];
 
-        populateTournamentSelect(globalCategories);
-      } catch (err) {
-        console.error("Error cargando datos de Supabase:", err);
-      }
+        populateCategorySelect();
+      } catch (err) { console.error(err); }
     }
 
-    function populateTournamentSelect(categories, filterText = '') {
-      const select = document.getElementById('tournamentSelect');
-      const filtered = categories.filter(c => c.name.toLowerCase().includes(filterText.toLowerCase()));
-      
+    function populateCategorySelect() {
+      const select = document.getElementById('globalCategorySelect');
       select.innerHTML = '<option value="">-- Selecciona un torneo --</option>' +
-        filtered.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
+        dbData.categories.map(c => `<option value="${c.id}">🏆 ${c.name} (${c.tournament_type === 'cup' ? 'Copa' : 'Liga'})</option>`).join('');
+
+      if (dbData.categories.length > 0 && (!activeCategoryId || !dbData.categories.some(c => c.id === activeCategoryId))) {
+        activeCategoryId = dbData.categories[0].id;
+      }
+      if (activeCategoryId) select.value = activeCategoryId;
+      renderActiveCategoryViews();
     }
 
-    function setupPublicEvents() {
-      const searchInput = document.getElementById('tournamentSearchInput');
-      searchInput.addEventListener('input', (e) => {
-        populateTournamentSelect(globalCategories, e.target.value);
-      });
-
-      const select = document.getElementById('tournamentSelect');
-      select.addEventListener('change', (e) => {
-        const catId = e.target.value;
-        if (!catId) {
-          document.getElementById('tournamentStatsContainer').classList.add('hidden');
-          document.getElementById('noTournamentSelected').classList.remove('hidden');
-          currentSelectedCategory = null;
-          return;
-        }
-        currentSelectedCategory = globalCategories.find(c => c.id === catId);
-        renderTournamentStats();
-      });
+    function changeActiveCategory(catId) {
+      activeCategoryId = catId;
+      renderActiveCategoryViews();
     }
 
-    function switchPublicTab(tabKey, evt) {
-      document.querySelectorAll('.public-tab').forEach(t => {
+    function switchAdminTab(tabKey, evt) {
+      document.querySelectorAll('.admin-tab').forEach(t => {
         t.classList.remove('tab-active', 'text-green-400');
         t.classList.add('text-slate-400');
       });
       evt.target.classList.add('tab-active', 'text-green-400');
       evt.target.classList.remove('text-slate-400');
 
-      document.querySelectorAll('.public-tab-content').forEach(c => c.classList.add('hidden'));
-      document.getElementById(`pub-${tabKey}`).classList.remove('hidden');
+      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`adm-${tabKey}`).classList.remove('hidden');
     }
 
-    function renderTournamentStats() {
-      if (!currentSelectedCategory) return;
-      document.getElementById('noTournamentSelected').classList.add('hidden');
-      document.getElementById('tournamentStatsContainer').classList.remove('hidden');
+    function renderActiveCategoryViews() {
+      if (!activeCategoryId) return;
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      if (!cat) return;
 
-      document.getElementById('selectedTournamentName').textContent = currentSelectedCategory.name;
-      document.getElementById('selectedTournamentDetails').textContent = 
-        `${currentSelectedCategory.fixture_type === 'groups' ? 'Por Grupos' : 'Todos contra todos'} • ${globalTeams.filter(t => t.category_id === currentSelectedCategory.id).length} Equipos`;
+      const rule = cat.suspension_rules || { yellow_limit: 3, matches: 1 };
+      document.getElementById('ruleDisplay').textContent = `${rule.yellow_limit} amarillas = ${rule.matches} fecha(s)`;
 
-      renderPublicPositions();
-      renderPublicFixture();
-      renderPublicScorers();
-      renderPublicCards();
-      renderPublicSuspensions();
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'} | Formato: ${cat.tournament_type === 'cup' ? 'Copa' : 'Liga'}`;
+
+      // Equipos
+      document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
+          <span class="font-bold text-white truncate">${t.name}</span>
+          <button onclick="deleteRecord('${t.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded">🗑️</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs">No hay equipos.</p>';
+
+      // Jugadores
+      const teamIds = teams.map(t => t.id);
+      const players = dbData.players.filter(p => teamIds.includes(p.team_id));
+      document.getElementById('adminPlayersList').innerHTML = players.map(p => {
+        const team = teams.find(t => t.id === p.team_id);
+        const yellows = p.yellow_cards || 0;
+        const isSuspended = yellows >= rule.yellow_limit || (p.red_cards || 0) > 0;
+        return `
+          <div onclick="openPlayerStatsModal('${p.id}')" class="bg-[#0b0f0d] hover:bg-green-950/30 transition cursor-pointer p-3 rounded-xl border border-green-900/30 flex items-center justify-between text-xs">
+            <div>
+              <div class="font-bold text-white">${p.name}</div>
+              <div class="text-[10px] text-slate-400">${team ? team.name : ''}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-400 font-bold">⚽ ${p.goals || 0}</span>
+              <span class="text-yellow-400 font-bold">🟨 ${yellows}</span>
+              ${cat.sport_type === 'futsal' ? `<span class="text-sky-400 font-bold">🟦 ${p.blue_cards || 0}</span>` : ''}
+              <span class="text-red-400 font-bold">🟥 ${p.red_cards || 0}</span>
+              ${isSuspended ? '<span class="bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded text-[9px] font-bold">SUSPENDIDO</span>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs">No hay jugadores.</p>';
+
+      // Fixture
+      const matches = dbData.matches.filter(m => m.category_id === activeCategoryId);
+      document.getElementById('adminMatchesList').innerHTML = matches.map(m => {
+        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+        return `
+          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
+            <div class="flex items-center justify-between gap-1 text-xs">
+              <span class="flex-1 font-semibold text-white truncate text-right">${hTeam.name}</span>
+              <span class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</span>
+              <span class="flex-1 font-semibold text-white truncate text-left">${aTeam.name}</span>
+            </div>
+            <div class="flex justify-between items-center pt-1 border-t border-green-900/30">
+              <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[11px] px-3 py-1 rounded font-semibold">⚙️ Cargar Goles y Tarjetas</button>
+              <button onclick="deleteRecord('${m.id}')" class="text-red-400 text-xs">🗑️</button>
+            </div>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs">No hay partidos.</p>';
+
+      renderStandingsView(teams, matches, cat);
+
+      // Sanciones con recuento de fechas restantes
+      const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
+      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
+        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold text-white">${s.player_name}</span>
+            <span class="text-[10px] text-slate-400 block">${s.reason || 'Sancionado'} — Fechas restantes: <strong class="text-red-400">${s.remaining_matches ?? 1}</strong></span>
+          </div>
+          <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs">Sin sanciones activas.</p>';
     }
 
-    function renderPublicPositions() {
-      const teams = globalTeams.filter(t => t.category_id === currentSelectedCategory.id);
-      const matches = globalMatches.filter(m => m.category_id === currentSelectedCategory.id && m.played);
+    function renderStandingsView(teams, matches, cat) {
+      const container = document.getElementById('adminStandingsContainer');
+      const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
 
       const stats = teams.map(team => {
         let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
-        matches.forEach(m => {
+        matches.filter(m => m.played).forEach(m => {
           if (m.home_team === team.id) {
             played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
             if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
@@ -262,104 +504,276 @@
             if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
           }
         });
-        return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: won * 3 + drawn };
-      }).sort((a, b) => b.points - a.points || b.gd - a.gd || b.gf - a.gf);
+        return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+      }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
-      const tbody = document.getElementById('pubPositionsBody');
-      tbody.innerHTML = stats.map((t, idx) => `
-        <tr class="hover:bg-green-950/20 ${idx < 3 ? 'bg-green-900/10' : ''}">
-          <td class="p-3 font-bold text-green-400">${idx + 1}</td>
-          <td class="p-3 font-semibold text-white flex items-center gap-2">
-            ${t.logo ? `<img src="${t.logo}" class="w-6 h-6 rounded-full object-cover border border-green-500/30">` : '🛡️'} ${t.name}
-          </td>
-          <td class="p-3 text-center">${t.played}</td>
-          <td class="p-3 text-center text-green-400">${t.won}</td>
-          <td class="p-3 text-center text-yellow-400">${t.drawn}</td>
-          <td class="p-3 text-center text-red-400">${t.lost}</td>
-          <td class="p-3 text-center">${t.gf}</td>
-          <td class="p-3 text-center">${t.gc}</td>
-          <td class="p-3 text-center ${t.gd >= 0 ? 'text-green-400' : 'text-red-400'}">${t.gd >= 0 ? '+' + t.gd : t.gd}</td>
-          <td class="p-3 text-center font-bold text-green-400 text-base">${t.points}</td>
-        </tr>
-      `).join('') || `<tr><td colspan="10" class="text-center p-4 text-slate-500">No hay equipos registrados.</td></tr>`;
+      container.innerHTML = `
+        <table class="w-full text-xs">
+          <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
+            <tr>
+              <th class="p-2 text-left">#</th>
+              <th class="p-2 text-left">Equipo</th>
+              <th class="p-2 text-center">PJ</th><th class="p-2 text-center">G</th><th class="p-2 text-center">E</th><th class="p-2 text-center">P</th><th class="p-2 text-center">DG</th><th class="p-2 text-center font-bold text-green-400">Pts</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-green-900/20">
+            ${stats.map((t, idx) => `
+              <tr class="${idx < 2 ? 'bg-green-900/10' : ''}">
+                <td class="p-2 font-bold text-green-400">${idx + 1}</td>
+                <td class="p-2 font-semibold text-white truncate max-w-[100px]">${t.name}</td>
+                <td class="p-2 text-center">${t.played}</td><td class="p-2 text-center">${t.won}</td><td class="p-2 text-center">${t.drawn}</td><td class="p-2 text-center">${t.lost}</td><td class="p-2 text-center">${t.gd}</td><td class="p-2 text-center font-bold text-green-400">${t.points}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
     }
 
-    function renderPublicFixture() {
-      const matches = globalMatches.filter(m => m.category_id === currentSelectedCategory.id);
-      const container = document.getElementById('pubFixtureList');
-      container.innerHTML = matches.map(m => {
-        const home = globalTeams.find(t => t.id === m.home_team) || { name: 'Local' };
-        const away = globalTeams.find(t => t.id === m.away_team) || { name: 'Visitante' };
-        return `
-          <div class="bg-[#0b0f0d] border border-green-900/30 rounded-xl p-4 flex items-center justify-between gap-4">
-            <div class="flex-1 text-right font-semibold text-sm truncate">${home.name}</div>
-            <div class="bg-green-950/60 border border-green-600/30 px-4 py-1.5 rounded-lg text-green-400 font-extrabold text-sm">
-              ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
-            </div>
-            <div class="flex-1 text-left font-semibold text-sm truncate">${away.name}</div>
-          </div>
-        `;
-      }).join('') || `<p class="text-slate-500 text-center py-4">No hay partidos programados.</p>`;
+    function openPlayerStatsModal(playerId) {
+      const player = dbData.players.find(p => p.id === playerId);
+      const team = dbData.teams.find(t => t.id === player.team_id);
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const rule = cat.suspension_rules || { yellow_limit: 3, matches: 1 };
+
+      document.getElementById('statPlayerName').textContent = player.name;
+      document.getElementById('statPlayerTeam').textContent = team ? team.name : 'Sin equipo';
+      document.getElementById('statPlayerGoals').textContent = player.goals || 0;
+      document.getElementById('statPlayerYellows').textContent = player.yellow_cards || 0;
+      document.getElementById('statPlayerBlues').textContent = player.blue_cards || 0;
+      document.getElementById('statPlayerReds').textContent = player.red_cards || 0;
+
+      document.getElementById('boxBlueStat').style.display = (cat.sport_type === 'futsal') ? 'block' : 'none';
+
+      const yellows = player.yellow_cards || 0;
+      const reds = player.red_cards || 0;
+      const suspEl = document.getElementById('statPlayerSuspended');
+
+      if (reds > 0) {
+        suspEl.textContent = `SUSPENDIDO (Roja Directa)`;
+        suspEl.className = "font-bold text-red-400";
+      } else if (yellows >= rule.yellow_limit) {
+        suspEl.textContent = `SUSPENDIDO (${rule.matches} fecha(s) por acumulación)`;
+        suspEl.className = "font-bold text-red-400";
+      } else {
+        suspEl.textContent = `Habilitado (${yellows}/${rule.yellow_limit} amarillas)`;
+        suspEl.className = "font-bold text-green-400";
+      }
+
+      openModal('playerStatsModal');
     }
 
-    function renderPublicScorers() {
-      const teamIds = globalTeams.filter(t => t.category_id === currentSelectedCategory.id).map(t => t.id);
-      const scorers = globalPlayers.filter(p => teamIds.includes(p.team_id) && (p.goals || 0) > 0)
-        .sort((a, b) => (b.goals || 0) - (a.goals || 0));
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
-      const container = document.getElementById('pubScorersList');
-      container.innerHTML = scorers.map((p, idx) => {
-        const team = globalTeams.find(t => t.id === p.team_id);
-        return `
-          <div class="bg-[#0b0f0d] border border-green-900/30 rounded-xl p-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="font-bold text-green-400 w-6">#${idx + 1}</span>
-              <div>
-                <div class="font-bold text-sm text-white">${p.name}</div>
-                <div class="text-xs text-slate-400">${team ? team.name : ''}</div>
-              </div>
-            </div>
-            <div class="text-green-400 font-extrabold text-base">⚽ ${p.goals}</div>
-          </div>
-        `;
-      }).join('') || `<p class="text-slate-500 text-center py-4">No hay goles registrados.</p>`;
+    function openCategoryModal(isEdit) {
+      document.getElementById('catModalTitle').textContent = isEdit ? 'Editar Torneo' : 'Crear Torneo';
+      if (isEdit && activeCategoryId) {
+        const cat = dbData.categories.find(c => c.id === activeCategoryId);
+        document.getElementById('modalCatId').value = cat.id;
+        document.getElementById('modalCatName').value = cat.name;
+        document.getElementById('modalSportType').value = cat.sport_type || 'football_11';
+        document.getElementById('modalCatType').value = cat.tournament_type || 'league';
+        document.getElementById('modalCatMaxTeams').value = cat.max_teams || 8;
+        const rule = cat.suspension_rules || { yellow_limit: 3, matches: 1 };
+        document.getElementById('ruleYellowLimit').value = rule.yellow_limit;
+        document.getElementById('ruleMatches').value = rule.matches;
+      } else {
+        document.getElementById('modalCatId').value = '';
+        document.getElementById('modalCatName').value = '';
+      }
+      openModal('categoryModal');
     }
 
-    function renderPublicCards() {
-      const teamIds = globalTeams.filter(t => t.category_id === currentSelectedCategory.id).map(t => t.id);
-      const players = globalPlayers.filter(p => teamIds.includes(p.team_id));
+    async function saveCategoryFromModal() {
+      const id = document.getElementById('modalCatId').value;
+      const name = document.getElementById('modalCatName').value;
+      const sport_type = document.getElementById('modalSportType').value;
+      const tournament_type = document.getElementById('modalCatType').value;
+      const max_teams = parseInt(document.getElementById('modalCatMaxTeams').value) || 8;
+      const suspension_rules = {
+        yellow_limit: parseInt(document.getElementById('ruleYellowLimit').value) || 3,
+        matches: parseInt(document.getElementById('ruleMatches').value) || 1
+      };
+      if (!name) return alert("Ingresa un nombre.");
 
-      const yellows = players.filter(p => (p.yellow_cards || 0) > 0).sort((a,b) => b.yellow_cards - a.yellow_cards);
-      const reds = players.filter(p => (p.red_cards || 0) > 0).sort((a,b) => b.red_cards - a.red_cards);
-
-      document.getElementById('pubYellowCards').innerHTML = yellows.map(p => `
-        <div class="flex justify-between items-center bg-[#0b0f0d] p-2 rounded-lg text-xs">
-          <span>${p.name}</span> <span class="font-bold text-yellow-400">🟨 ${p.yellow_cards}</span>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-xs">Sin registros</p>';
-
-      document.getElementById('pubRedCards').innerHTML = reds.map(p => `
-        <div class="flex justify-between items-center bg-[#0b0f0d] p-2 rounded-lg text-xs">
-          <span>${p.name}</span> <span class="font-bold text-red-400">🟥 ${p.red_cards}</span>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-xs">Sin registros</p>';
+      if (id) {
+        await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, suspension_rules }).eq('id', id);
+      } else {
+        const newCat = { id: 'cat_' + Date.now(), type: 'category', name, sport_type, tournament_type, max_teams, suspension_rules, fixture_type: tournament_type };
+        await supabaseClient.from('torneos_data').insert([newCat]);
+      }
+      closeModal('categoryModal');
+      loadAdminData();
     }
 
-    function renderPublicSuspensions() {
-      const suspensions = globalSuspensions.filter(s => s.category_id === currentSelectedCategory.id);
-      const container = document.getElementById('pubSuspensionsList');
-      container.innerHTML = suspensions.map(s => `
-        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-3 flex justify-between items-center text-xs">
-          <div>
-            <span class="font-bold text-white block">${s.player_name}</span>
-            <span class="text-slate-400">Motivo / Informe del Tribunal</span>
-          </div>
-          <span class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded-lg font-bold">Suspendido</span>
-        </div>
-      `).join('') || `<p class="text-slate-500 text-center py-4">No hay jugadores suspendidos.</p>`;
+    async function deleteActiveCategory() {
+      if (!activeCategoryId) return;
+      if (!confirm("¿Eliminar torneo?")) return;
+      await supabaseClient.from('torneos_data').delete().eq('id', activeCategoryId);
+      activeCategoryId = null;
+      loadAdminData();
     }
 
-    initPublicApp();
+    function openTeamModal() {
+      if (!activeCategoryId) return alert("Selecciona un torneo.");
+      document.getElementById('modalTeamName').value = '';
+      openModal('teamModal');
+    }
+
+    async function saveTeamFromModal() {
+      const name = document.getElementById('modalTeamName').value;
+      if (!name) return;
+      await supabaseClient.from('torneos_data').insert([{ id: 'team_' + Date.now(), type: 'team', name, category_id: activeCategoryId }]);
+      closeModal('teamModal');
+      loadAdminData();
+    }
+
+    function openPlayerModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length === 0) return alert("Registra equipos primero.");
+      document.getElementById('modalPlayerTeam').innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      document.getElementById('modalPlayerName').value = '';
+      openModal('playerModal');
+    }
+
+    async function savePlayerFromModal() {
+      const team_id = document.getElementById('modalPlayerTeam').value;
+      const name = document.getElementById('modalPlayerName').value;
+      if (!name) return;
+      await supabaseClient.from('torneos_data').insert([{ id: 'player_' + Date.now(), type: 'player', name, team_id, goals: 0, yellow_cards: 0, blue_cards: 0, red_cards: 0 }]);
+      closeModal('playerModal');
+      loadAdminData();
+    }
+
+    function openMatchDetailModal(matchId) {
+      const match = dbData.matches.find(m => m.id === matchId);
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
+
+      document.getElementById('modalMatchId').value = match.id;
+      document.getElementById('mdHomeName').textContent = hTeam.name;
+      document.getElementById('mdAwayName').textContent = aTeam.name;
+      document.getElementById('mdHomeScore').value = match.home_score ?? 0;
+      document.getElementById('mdAwayScore').value = match.away_score ?? 0;
+
+      document.getElementById('blueCardBox').style.display = (cat.sport_type === 'futsal') ? 'block' : 'none';
+
+      const details = match.match_details || {};
+      document.getElementById('mdGoals').value = details.goals || '';
+      document.getElementById('mdYellows').value = details.yellows || '';
+      document.getElementById('mdBlues').value = details.blues || '';
+      document.getElementById('mdReds').value = details.reds || '';
+      document.getElementById('mdMvp').value = details.mvp || '';
+
+      openModal('matchDetailModal');
+    }
+
+    async function saveMatchDetail() {
+      const matchId = document.getElementById('modalMatchId').value;
+      const match = dbData.matches.find(m => m.id === matchId);
+      const home_score = parseInt(document.getElementById('mdHomeScore').value) || 0;
+      const away_score = parseInt(document.getElementById('mdAwayScore').value) || 0;
+      
+      const yellowsStr = document.getElementById('mdYellows').value;
+      const bluesStr = document.getElementById('mdBlues').value;
+      const redsStr = document.getElementById('mdReds').value;
+
+      const match_details = {
+        goals: document.getElementById('mdGoals').value,
+        yellows: yellowsStr,
+        blues: bluesStr,
+        reds: redsStr,
+        mvp: document.getElementById('mdMvp').value
+      };
+
+      // DESCUENTO AUTOMÁTICO DE FECHAS DE SUSPENSIÓN AL JUGAR UN PARTIDO
+      if (!match.played) {
+        const hTeamId = match.home_team;
+        const aTeamId = match.away_team;
+        const teamsPlaying = [hTeamId, aTeamId];
+
+        const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+        const playingPlayers = dbData.players.filter(p => teamsPlaying.includes(p.team_id));
+        const playingPlayerNames = playingPlayers.map(p => p.name.toLowerCase());
+
+        // Descontar 1 fecha a los suspendidos de estos equipos
+        const categorySuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
+        for (let s of categorySuspensions) {
+          if (playingPlayerNames.some(n => n.includes(s.player_name.toLowerCase()) || s.player_name.toLowerCase().includes(n))) {
+            const currentRemaining = s.remaining_matches ?? 1;
+            if (currentRemaining > 1) {
+              await supabaseClient.from('torneos_data').update({ remaining_matches: currentRemaining - 1 }).eq('id', s.id);
+            } else {
+              // Cumplió la sanción completa, se borra automáticamente
+              await supabaseClient.from('torneos_data').delete().eq('id', s.id);
+            }
+          }
+        }
+      }
+
+      await supabaseClient.from('torneos_data').update({ home_score, away_score, played: true, match_details }).eq('id', matchId);
+      closeModal('matchDetailModal');
+      loadAdminData();
+      alert("¡Resultado guardado y sanciones descontadas automáticamente!");
+    }
+
+    function openMatchModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
+      const hName = prompt("Equipo Local:");
+      const aName = prompt("Equipo Visitante:");
+      const hTeam = teams.find(t => t.name.toLowerCase() === hName?.toLowerCase());
+      const aTeam = teams.find(t => t.name.toLowerCase() === aName?.toLowerCase());
+      if (!hTeam || !aTeam) return alert("Equipos no encontrados.");
+
+      supabaseClient.from('torneos_data').insert([{
+        id: 'match_' + Date.now(), type: 'match', category_id: activeCategoryId,
+        home_team: hTeam.id, away_team: aTeam.id, home_score: 0, away_score: 0, played: false
+      }]).then(() => loadAdminData());
+    }
+
+    async function generateAutomaticFixture() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
+      
+      for (let i = 0; i < teams.length; i++) {
+        for (let j = i + 1; j < teams.length; j++) {
+          await supabaseClient.from('torneos_data').insert([{
+            id: 'match_' + Date.now() + '_' + i + '_' + j,
+            type: 'match', category_id: activeCategoryId,
+            home_team: teams[i].id, away_team: teams[j].id,
+            home_score: 0, away_score: 0, played: false
+          }]);
+        }
+      }
+      loadAdminData();
+      alert("¡Fixture generado!");
+    }
+
+    function openSuspensionModal() {
+      document.getElementById('modalSuspName').value = '';
+      document.getElementById('modalSuspMatches').value = '1';
+      openModal('suspensionModal');
+    }
+
+    async function saveSuspensionFromModal() {
+      const player_name = document.getElementById('modalSuspName').value;
+      const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
+      const reason = document.getElementById('modalSuspReason').value;
+      if (!player_name) return;
+      await supabaseClient.from('torneos_data').insert([{ id: 'susp_' + Date.now(), type: 'suspension', category_id: activeCategoryId, player_name, remaining_matches, reason }]);
+      closeModal('suspensionModal');
+      loadAdminData();
+    }
+
+    async function deleteRecord(id) {
+      if (!confirm("¿Eliminar registro?")) return;
+      await supabaseClient.from('torneos_data').delete().eq('id', id);
+      loadAdminData();
+    }
   </script>
 </body>
 </html>
