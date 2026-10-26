@@ -23,7 +23,7 @@
   <!-- CONFIGURACIÓN SUPABASE -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6IkFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -77,16 +77,19 @@
     <!-- Pestañas -->
     <div class="flex overflow-x-auto gap-1.5 glass-card rounded-xl p-1.5 border border-green-900/30 scrollbar-thin">
       <button onclick="switchAdminTab('teams', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap tab-active font-semibold">🛡️ Equipos</button>
-      <button onclick="switchAdminTab('players', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Jugadores y Estadísticas</button>
-      <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture y Resultados</button>
+      <button onclick="switchAdminTab('players', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Jugadores y Stats</button>
+      <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture</button>
       <button onclick="switchAdminTab('standings', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones</button>
-      <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones y Disciplina</button>
+      <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones</button>
     </div>
 
     <!-- Tab 1: Equipos -->
     <div id="adm-teams" class="admin-tab-content glass-card rounded-xl p-4 space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-green-300">Equipos</h3>
+        <div>
+          <h3 class="text-sm font-bold text-green-300">Equipos</h3>
+          <p id="teamLimitCounter" class="text-[10px] text-slate-400">Cupo</p>
+        </div>
         <button onclick="openTeamModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Equipo</button>
       </div>
       <div id="adminTeamsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
@@ -97,14 +100,14 @@
       <div class="flex justify-between items-center">
         <div>
           <h3 class="text-sm font-bold text-green-300">Planteles</h3>
-          <p class="text-[10px] text-slate-400">Haz clic en un jugador para ver sus estadísticas completas</p>
+          <p class="text-[10px] text-slate-400">Clic en un jugador para ver sus estadísticas</p>
         </div>
         <button onclick="openPlayerModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Jugador</button>
       </div>
       <div id="adminPlayersList" class="space-y-2 max-h-[400px] overflow-y-auto scrollbar-thin"></div>
     </div>
 
-    <!-- Tab 3: Fixture y Resultados -->
+    <!-- Tab 3: Fixture -->
     <div id="adm-fixture" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex flex-col gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
         <h3 class="text-sm font-bold text-green-300">Fixture de Partidos</h3>
@@ -126,8 +129,8 @@
     <div id="adm-discipline" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex justify-between items-center">
         <div>
-          <h3 class="text-sm font-bold text-green-300">Tribunal de Disciplina y Sanciones</h3>
-          <p class="text-[10px] text-slate-400">Regla configurada: <span id="ruleDisplay" class="text-green-400 font-semibold">3 amarillas = 1 fecha</span></p>
+          <h3 class="text-sm font-bold text-green-300">Sanciones (Descuento Automático)</h3>
+          <p class="text-[10px] text-slate-400">Regla: <span id="ruleDisplay" class="text-green-400 font-semibold">3 amarillas = 1 fecha</span></p>
         </div>
         <button onclick="openSuspensionModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Sanción Manual</button>
       </div>
@@ -136,16 +139,16 @@
 
   </main>
 
-  <!-- ==================== MODALES FLOTANTES ==================== -->
+  <!-- ==================== MODALES ==================== -->
 
-  <!-- Modal Estadísticas Individuales del Jugador -->
+  <!-- Modal Estadísticas Jugador -->
   <div id="playerStatsModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-4 border border-green-500/30">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
         <h3 id="statPlayerName" class="text-sm font-bold text-green-400">Nombre del Jugador</h3>
         <button onclick="closeModal('playerStatsModal')" class="text-slate-400 hover:text-white text-xs font-bold">✕</button>
       </div>
-      <div class="text-xs text-slate-300 space-y-1">
+      <div class="text-xs text-slate-300">
         <p>Equipo: <span id="statPlayerTeam" class="text-white font-semibold"></span></p>
       </div>
       <div class="grid grid-cols-2 gap-3 pt-1">
@@ -174,31 +177,42 @@
     </div>
   </div>
 
-  <!-- Modal Torneo -->
+  <!-- Modal Torneo (Con Liga/Copa y Max Equipos) -->
   <div id="categoryModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30">
       <h3 id="catModalTitle" class="text-sm font-bold text-green-400">Crear Torneo</h3>
       <input type="hidden" id="modalCatId">
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre:</label>
+        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Torneo:</label>
         <input type="text" id="modalCatName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
       </div>
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Disciplina:</label>
+        <label class="block text-[11px] text-slate-300 mb-1">Disciplina / Modalidad:</label>
         <select id="modalSportType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
           <option value="football_11">Fútbol 11 (3 pts ganado / Amarilla y Roja)</option>
           <option value="futsal">Fútbol 5 / Futsal (2 pts ganado / Amarilla, Azul y Roja)</option>
         </select>
       </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Formato de Torneo:</label>
+        <select id="modalCatType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+          <option value="league">Liga (Todos contra todos)</option>
+          <option value="cup">Copa (Por Grupos)</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Cantidad Máxima de Equipos:</label>
+        <input type="number" id="modalCatMaxTeams" value="8" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
       <div class="border-t border-green-900/40 pt-2 space-y-2">
-        <label class="block text-[11px] font-bold text-green-400">Regla de Acumulación de Tarjetas (Suspensión):</label>
+        <label class="block text-[11px] font-bold text-green-400">Regla de Suspensión por Amarillas:</label>
         <div class="flex gap-2">
           <div class="flex-1">
-            <span class="text-[10px] text-slate-400">Cant. Amarillas:</span>
+            <span class="text-[10px] text-slate-400">Amarillas acum:</span>
             <input type="number" id="ruleYellowLimit" value="3" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-1.5 text-white text-xs text-center">
           </div>
           <div class="flex-1">
-            <span class="text-[10px] text-slate-400">Fechas de Suspensión:</span>
+            <span class="text-[10px] text-slate-400">Fechas suspensión:</span>
             <input type="number" id="ruleMatches" value="1" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-1.5 text-white text-xs text-center">
           </div>
         </div>
@@ -210,7 +224,7 @@
     </div>
   </div>
 
-  <!-- Modal Detalle de Partido con Cajas Separadas para Tarjetas -->
+  <!-- Modal Detalle de Partido -->
   <div id="matchDetailModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto">
     <div class="glass-card p-4 rounded-2xl max-w-md w-full space-y-4 border border-green-500/30 my-auto text-xs">
       <h3 class="text-sm font-bold text-green-400">Cargar Resultado y Tarjetas</h3>
@@ -228,24 +242,23 @@
 
       <div class="space-y-3">
         <div>
-          <label class="block text-[11px] text-green-300 mb-1">⚽ Goles (Jugador y cantidad):</label>
+          <label class="block text-[11px] text-green-300 mb-1">⚽ Goles (Jugadores):</label>
           <textarea id="mdGoals" placeholder="Ej: Juan Pérez (2)" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2 text-white text-xs h-14"></textarea>
         </div>
         
-        <!-- CAJAS SEPARADAS DE TARJETAS -->
         <div class="grid grid-cols-1 gap-2">
           <div class="bg-yellow-950/20 border border-yellow-500/30 p-2.5 rounded-xl space-y-1">
-            <label class="block text-[11px] font-bold text-yellow-400">🟨 Tarjetas Amarillas (Jugadores):</label>
+            <label class="block text-[11px] font-bold text-yellow-400">🟨 Amarillas:</label>
             <input type="text" id="mdYellows" placeholder="Ej: Lucas Díaz, Mario Gómez" class="w-full bg-[#0b0f0d] border border-yellow-900/50 rounded-lg p-1.5 text-white text-xs">
           </div>
           
           <div class="bg-sky-950/20 border border-sky-500/30 p-2.5 rounded-xl space-y-1" id="blueCardBox">
-            <label class="block text-[11px] font-bold text-sky-400">🟦 Tarjetas Azules (Futsal - Jugadores):</label>
+            <label class="block text-[11px] font-bold text-sky-400">🟦 Azules (Futsal):</label>
             <input type="text" id="mdBlues" placeholder="Ej: Pedro Sosa" class="w-full bg-[#0b0f0d] border border-sky-900/50 rounded-lg p-1.5 text-white text-xs">
           </div>
 
           <div class="bg-red-950/20 border border-red-500/30 p-2.5 rounded-xl space-y-1">
-            <label class="block text-[11px] font-bold text-red-400">🟥 Tarjetas Rojas (Jugadores):</label>
+            <label class="block text-[11px] font-bold text-red-400">🟥 Rojas:</label>
             <input type="text" id="mdReds" placeholder="Ej: Sergio Ramos" class="w-full bg-[#0b0f0d] border border-red-900/50 rounded-lg p-1.5 text-white text-xs">
           </div>
         </div>
@@ -258,7 +271,7 @@
 
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('matchDetailModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg text-xs">Cancelar</button>
-        <button onclick="saveMatchDetail()" class="btn-green px-4 py-1.5 text-white rounded-lg text-xs font-bold">Guardar Todo</button>
+        <button onclick="saveMatchDetail()" class="btn-green px-4 py-1.5 text-white rounded-lg text-xs font-bold">Guardar y Descontar Fechas</button>
       </div>
     </div>
   </div>
@@ -267,9 +280,8 @@
   <div id="teamModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 class="text-sm font-bold text-green-400">Registrar Equipo</h3>
-      <input type="hidden" id="modalTeamId">
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre:</label>
+        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Equipo:</label>
         <input type="text" id="modalTeamName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
       </div>
       <div class="flex justify-end gap-2 pt-2">
@@ -283,13 +295,12 @@
   <div id="playerModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 class="text-sm font-bold text-green-400">Registrar Jugador</h3>
-      <input type="hidden" id="modalPlayerId">
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Equipo:</label>
         <select id="modalPlayerTeam" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre:</label>
+        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Jugador:</label>
         <input type="text" id="modalPlayerName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
       </div>
       <div class="flex justify-end gap-2 pt-2">
@@ -303,18 +314,21 @@
   <div id="suspensionModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 class="text-sm font-bold text-green-400">Sanción de Tribunal</h3>
-      <input type="hidden" id="modalSuspId">
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Jugador:</label>
-        <input type="text" id="modalSuspName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Nombre completo">
+        <input type="text" id="modalSuspName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Nombre del jugador">
       </div>
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Motivo / Fechas:</label>
-        <input type="text" id="modalSuspReason" value="Suspendido por 1 fecha" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+        <label class="block text-[11px] text-slate-300 mb-1">Fechas de Suspensión:</label>
+        <input type="number" id="modalSuspMatches" value="1" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Motivo:</label>
+        <input type="text" id="modalSuspReason" value="Sanción disciplinaria" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('suspensionModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="saveSuspensionFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
+        <button onclick="saveSuspensionFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar Sanción</button>
       </div>
     </div>
   </div>
@@ -371,7 +385,7 @@
     function populateCategorySelect() {
       const select = document.getElementById('globalCategorySelect');
       select.innerHTML = '<option value="">-- Selecciona un torneo --</option>' +
-        dbData.categories.map(c => `<option value="${c.id}">🏆 ${c.name} (${c.sport_type === 'futsal' ? 'Fútbol 5' : 'Fútbol 11'})</option>`).join('');
+        dbData.categories.map(c => `<option value="${c.id}">🏆 ${c.name} (${c.tournament_type === 'cup' ? 'Copa' : 'Liga'})</option>`).join('');
 
       if (dbData.categories.length > 0 && (!activeCategoryId || !dbData.categories.some(c => c.id === activeCategoryId))) {
         activeCategoryId = dbData.categories[0].id;
@@ -406,6 +420,7 @@
       document.getElementById('ruleDisplay').textContent = `${rule.yellow_limit} amarillas = ${rule.matches} fecha(s)`;
 
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'} | Formato: ${cat.tournament_type === 'cup' ? 'Copa' : 'Liga'}`;
 
       // Equipos
       document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
@@ -415,7 +430,7 @@
         </div>
       `).join('') || '<p class="text-slate-500 text-xs">No hay equipos.</p>';
 
-      // Jugadores (Con evento click para abrir ventana flotante de estadísticas)
+      // Jugadores
       const teamIds = teams.map(t => t.id);
       const players = dbData.players.filter(p => teamIds.includes(p.team_id));
       document.getElementById('adminPlayersList').innerHTML = players.map(p => {
@@ -461,13 +476,13 @@
 
       renderStandingsView(teams, matches, cat);
 
-      // Sanciones
+      // Sanciones con recuento de fechas restantes
       const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
       document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
         <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
           <div>
             <span class="font-bold text-white">${s.player_name}</span>
-            <span class="text-[10px] text-slate-400 block">${s.reason || 'Sancionado'}</span>
+            <span class="text-[10px] text-slate-400 block">${s.reason || 'Sancionado'} — Fechas restantes: <strong class="text-red-400">${s.remaining_matches ?? 1}</strong></span>
           </div>
           <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
         </div>
@@ -514,7 +529,6 @@
       `;
     }
 
-    // MODAL ESTADÍSTICAS INDIVIDUALES
     function openPlayerStatsModal(playerId) {
       const player = dbData.players.find(p => p.id === playerId);
       const team = dbData.teams.find(t => t.id === player.team_id);
@@ -548,7 +562,6 @@
       openModal('playerStatsModal');
     }
 
-    // MODALES Y ACCIONES
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -559,6 +572,8 @@
         document.getElementById('modalCatId').value = cat.id;
         document.getElementById('modalCatName').value = cat.name;
         document.getElementById('modalSportType').value = cat.sport_type || 'football_11';
+        document.getElementById('modalCatType').value = cat.tournament_type || 'league';
+        document.getElementById('modalCatMaxTeams').value = cat.max_teams || 8;
         const rule = cat.suspension_rules || { yellow_limit: 3, matches: 1 };
         document.getElementById('ruleYellowLimit').value = rule.yellow_limit;
         document.getElementById('ruleMatches').value = rule.matches;
@@ -573,6 +588,8 @@
       const id = document.getElementById('modalCatId').value;
       const name = document.getElementById('modalCatName').value;
       const sport_type = document.getElementById('modalSportType').value;
+      const tournament_type = document.getElementById('modalCatType').value;
+      const max_teams = parseInt(document.getElementById('modalCatMaxTeams').value) || 8;
       const suspension_rules = {
         yellow_limit: parseInt(document.getElementById('ruleYellowLimit').value) || 3,
         matches: parseInt(document.getElementById('ruleMatches').value) || 1
@@ -580,9 +597,9 @@
       if (!name) return alert("Ingresa un nombre.");
 
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name, sport_type, suspension_rules }).eq('id', id);
+        await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, suspension_rules }).eq('id', id);
       } else {
-        const newCat = { id: 'cat_' + Date.now(), type: 'category', name, sport_type, suspension_rules, max_teams: 12, fixture_type: 'league' };
+        const newCat = { id: 'cat_' + Date.now(), type: 'category', name, sport_type, tournament_type, max_teams, suspension_rules, fixture_type: tournament_type };
         await supabaseClient.from('torneos_data').insert([newCat]);
       }
       closeModal('categoryModal');
@@ -656,6 +673,7 @@
 
     async function saveMatchDetail() {
       const matchId = document.getElementById('modalMatchId').value;
+      const match = dbData.matches.find(m => m.id === matchId);
       const home_score = parseInt(document.getElementById('mdHomeScore').value) || 0;
       const away_score = parseInt(document.getElementById('mdAwayScore').value) || 0;
       
@@ -671,29 +689,27 @@
         mvp: document.getElementById('mdMvp').value
       };
 
-      // Actualizar conteo en los jugadores automáticamente si coinciden los nombres
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const teamIds = teams.map(t => t.id);
-      const categoryPlayers = dbData.players.filter(p => teamIds.includes(p.team_id));
+      // DESCUENTO AUTOMÁTICO DE FECHAS DE SUSPENSIÓN AL JUGAR UN PARTIDO
+      if (!match.played) {
+        const hTeamId = match.home_team;
+        const aTeamId = match.away_team;
+        const teamsPlaying = [hTeamId, aTeamId];
 
-      // Procesar amarillas ingresadas
-      if (yellowsStr) {
-        const names = yellowsStr.split(',').map(n => n.trim().toLowerCase());
-        for (let p of categoryPlayers) {
-          if (names.some(n => p.name.toLowerCase().includes(n))) {
-            const newY = (p.yellow_cards || 0) + 1;
-            await supabaseClient.from('torneos_data').update({ yellow_cards: newY }).eq('id', p.id);
-          }
-        }
-      }
+        const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+        const playingPlayers = dbData.players.filter(p => teamsPlaying.includes(p.team_id));
+        const playingPlayerNames = playingPlayers.map(p => p.name.toLowerCase());
 
-      // Procesar rojas ingresadas
-      if (redsStr) {
-        const names = redsStr.split(',').map(n => n.trim().toLowerCase());
-        for (let p of categoryPlayers) {
-          if (names.some(n => p.name.toLowerCase().includes(n))) {
-            const newR = (p.red_cards || 0) + 1;
-            await supabaseClient.from('torneos_data').update({ red_cards: newR }).eq('id', p.id);
+        // Descontar 1 fecha a los suspendidos de estos equipos
+        const categorySuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
+        for (let s of categorySuspensions) {
+          if (playingPlayerNames.some(n => n.includes(s.player_name.toLowerCase()) || s.player_name.toLowerCase().includes(n))) {
+            const currentRemaining = s.remaining_matches ?? 1;
+            if (currentRemaining > 1) {
+              await supabaseClient.from('torneos_data').update({ remaining_matches: currentRemaining - 1 }).eq('id', s.id);
+            } else {
+              // Cumplió la sanción completa, se borra automáticamente
+              await supabaseClient.from('torneos_data').delete().eq('id', s.id);
+            }
           }
         }
       }
@@ -701,7 +717,7 @@
       await supabaseClient.from('torneos_data').update({ home_score, away_score, played: true, match_details }).eq('id', matchId);
       closeModal('matchDetailModal');
       loadAdminData();
-      alert("¡Resultado y tarjetas guardados con éxito!");
+      alert("¡Resultado guardado y sanciones descontadas automáticamente!");
     }
 
     function openMatchModal() {
@@ -739,14 +755,16 @@
 
     function openSuspensionModal() {
       document.getElementById('modalSuspName').value = '';
+      document.getElementById('modalSuspMatches').value = '1';
       openModal('suspensionModal');
     }
 
     async function saveSuspensionFromModal() {
       const player_name = document.getElementById('modalSuspName').value;
+      const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
       const reason = document.getElementById('modalSuspReason').value;
       if (!player_name) return;
-      await supabaseClient.from('torneos_data').insert([{ id: 'susp_' + Date.now(), type: 'suspension', category_id: activeCategoryId, player_name, reason }]);
+      await supabaseClient.from('torneos_data').insert([{ id: 'susp_' + Date.now(), type: 'suspension', category_id: activeCategoryId, player_name, remaining_matches, reason }]);
       closeModal('suspensionModal');
       loadAdminData();
     }
