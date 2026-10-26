@@ -20,7 +20,7 @@
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     let supabaseClient = null;
-    if (SUPABASE_URL !== "https://vjwiqdlmgjvuychmyiix.supabase.co" && typeof supabase !== 'undefined') {
+    if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
   </script>
@@ -125,7 +125,7 @@
       <p class="text-slate-400 text-sm mb-4">Copia el enlace público para enviarlo a los delegados de los equipos.</p>
       
       <div class="flex gap-2 mb-6">
-        <input type="text" id="public-link" readonly class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300" value="https://kanchapro.github.io/index.html">
+        <input type="text" id="public-link" readonly class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-300">
         <button onclick="copyLink()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-4 py-2 rounded-xl text-sm transition">Copiar</button>
       </div>
 
@@ -135,30 +135,40 @@
 
   <!-- ==================== SCRIPTS DE FUNCIONALIDAD ==================== -->
   <script>
+    // Asignar automáticamente el link correcto al input del modal de compartir
+    document.getElementById('public-link').value = window.location.href.replace('admin.html', 'index.html');
+
     async function checkAuth() {
       if (!supabaseClient) return;
-      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      // Manejar el retorno de la autenticación de Google
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      
       if (session) {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('admin-panel').classList.remove('hidden');
         generateQR();
+      } else {
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('admin-panel').classList.add('hidden');
       }
     }
 
     async function loginWithGoogle() {
       if (!supabaseClient) {
-        alert("Configura las credenciales de Supabase en el código.");
+        alert("Error al conectar con Supabase.");
         return;
       }
-      await supabaseClient.auth.signInWithOAuth({
+      const { error } = await supabaseClient.auth.signInWithOAuth({
         provider: 'google',
         options: { redirectTo: window.location.href }
       });
+      if (error) alert("Error en el login: " + error.message);
     }
 
     async function logout() {
       if (supabaseClient) await supabaseClient.auth.signOut();
-      window.location.reload();
+      window.location.href = window.location.pathname; // Recarga limpia
     }
 
     function goToPublic() {
@@ -191,6 +201,7 @@
       });
     }
 
+    // Ejecutar verificación al cargar la página
     checkAuth();
   </script>
 </body>
