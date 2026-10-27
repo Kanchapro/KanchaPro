@@ -1213,6 +1213,18 @@
         const groupCount = cat.group_config?.count || 2;
         const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
 
+        // Auto-asignar grupos si algún equipo no tiene grupo asignado
+        let unassignedTeams = teams.filter(t => !t.group_name);
+        if (unassignedTeams.length > 0) {
+          for (let i = 0; i < teams.length; i++) {
+            let assignedGroup = 'Grupo ' + groupLetters[i % groupCount];
+            if (!teams[i].group_name) {
+              teams[i].group_name = assignedGroup;
+              await supabaseClient.from('torneos_data').update({ group_name: assignedGroup }).eq('id', teams[i].id);
+            }
+          }
+        }
+
         for (let l of groupLetters) {
           let gName = 'Grupo ' + l;
           let gTeams = teams.filter(t => t.group_name === gName);
