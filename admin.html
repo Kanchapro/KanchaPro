@@ -78,7 +78,7 @@
 
     <!-- Pestañas -->
     <div class="flex overflow-x-auto gap-1.5 glass-card rounded-xl p-1.5 border border-green-900/30 scrollbar-thin">
-      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap tab-active font-semibold">🛡️ Equipos</button>
+      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap tab-active font-semibold">🛡️ Equipos y Grupos</button>
       <button onclick="switchAdminTab('players', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Planteles</button>
       <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture</button>
       <button onclick="switchAdminTab('standings', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones y Goleadores</button>
@@ -86,16 +86,20 @@
       <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones y Tarjetas</button>
     </div>
 
-    <!-- Tab 1: Equipos -->
+    <!-- Tab 1: Equipos y Grupos -->
     <div id="adm-teams" class="admin-tab-content glass-card rounded-xl p-4 space-y-4">
       <div class="flex justify-between items-center">
         <div>
-          <h3 class="text-sm font-bold text-green-300">Equipos</h3>
+          <h3 class="text-sm font-bold text-green-300">Equipos y Gestión de Grupos</h3>
           <p id="teamLimitCounter" class="text-[10px] text-slate-400">Cupo</p>
         </div>
-        <button onclick="openTeamModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Equipo</button>
+        <div class="flex gap-2">
+          <button id="groupActionsBtn" onclick="openGroupManagementModal()" class="bg-blue-600/30 text-blue-300 px-3 py-2 rounded-lg text-xs font-bold hidden">⚙️ Organizar Grupos</button>
+          <button onclick="openTeamModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Equipo</button>
+        </div>
       </div>
       <div id="adminTeamsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+      <div id="adminGroupsContainer" class="space-y-3 pt-2"></div>
     </div>
 
     <!-- Tab 2: Planteles -->
@@ -115,7 +119,7 @@
       <div class="flex flex-col gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
         <h3 class="text-sm font-bold text-green-300">Fixture de Partidos (Día, Hora y Cancha)</h3>
         <div class="flex gap-2">
-          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar Automático</button>
+          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar Automático (Liga o Grupos)</button>
           <button onclick="openMatchModal()" class="btn-green flex-1 text-white text-[11px] font-bold py-2 rounded-lg">+ Manual</button>
         </div>
       </div>
@@ -126,7 +130,7 @@
     <div id="adm-standings" class="admin-tab-content glass-card rounded-xl p-4 space-y-5 hidden">
       <div>
         <h3 class="text-sm font-bold text-green-300 mb-2">Tabla de Posiciones</h3>
-        <div id="adminStandingsContainer" class="overflow-x-auto"></div>
+        <div id="adminStandingsContainer" class="overflow-x-auto space-y-4"></div>
       </div>
       <div class="border-t border-green-900/40 pt-4">
         <h3 class="text-sm font-bold text-green-300 mb-2">⚽ Tabla de Goleadores</h3>
@@ -197,11 +201,22 @@
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Formato:</label>
-        <select id="modalCatType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+        <select id="modalCatType" onchange="toggleTournamentFormatOptions(this.value)" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
           <option value="league">Liga (Todos contra todos)</option>
           <option value="cup">Copa (Por Grupos)</option>
         </select>
       </div>
+      
+      <!-- Opciones de Grupos -->
+      <div id="groupFormatOptionsContainer" class="space-y-2 hidden bg-[#0b0f0d] p-2.5 rounded-lg border border-green-900/40">
+        <label class="block text-[10px] text-green-400 font-bold mb-1">Cantidad de Grupos / Zonas:</label>
+        <select id="modalGroupCount" class="w-full bg-black border border-green-900 rounded p-1.5 text-white text-xs">
+          <option value="2">2 Grupos (Zona A y B)</option>
+          <option value="4">4 Grupos (Zona A, B, C, D)</option>
+          <option value="8">8 Grupos (Zona A hasta H)</option>
+        </select>
+      </div>
+
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Cantidad Máxima de Equipos:</label>
         <input type="number" id="modalCatMaxTeams" value="8" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
@@ -229,6 +244,22 @@
         <button onclick="closeModal('categoryModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
         <button onclick="saveCategoryFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar Torneo</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Gestión y Sorteo de Grupos -->
+  <div id="groupManagementModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
+    <div class="glass-card p-5 rounded-2xl max-w-lg w-full space-y-4 border border-green-500/30 my-auto text-xs">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <h3 class="text-sm font-bold text-green-400">Organización de Grupos</h3>
+        <button onclick="closeModal('groupManagementModal')" class="text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="sortGroupsRandomly()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-2 rounded-lg transition">🎲 Sorteo Automático (Aleatorio)</button>
+        <button onclick="saveGroupAssignmentsFromModal()" class="btn-green px-4 py-2 text-white font-bold rounded-lg">Guardar Zonas</button>
+      </div>
+      <p class="text-[10px] text-slate-400">También puedes asignar manualmente a qué grupo pertenece cada equipo en la lista de abajo:</p>
+      <div id="modalTeamGroupsList" class="space-y-2 max-h-[350px] overflow-y-auto scrollbar-thin pr-1"></div>
     </div>
   </div>
 
@@ -498,7 +529,7 @@
     function populateCategorySelect() {
       const select = document.getElementById('globalCategorySelect');
       select.innerHTML = '<option value="">-- Selecciona un torneo --</option>' +
-        dbData.categories.map(c => `<option value="${c.id}">🏆 ${c.name} (${c.tournament_type === 'cup' ? 'Copa' : 'Liga'})</option>`).join('');
+        dbData.categories.map(c => `<option value="${c.id}">🏆 ${c.name} (${c.tournament_type === 'cup' ? 'Copa (Grupos)' : 'Liga'})</option>`).join('');
 
       if (dbData.categories.length > 0 && (!activeCategoryId || !dbData.categories.some(c => c.id === activeCategoryId))) {
         activeCategoryId = dbData.categories[0].id;
@@ -532,11 +563,25 @@
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'}`;
 
+      const groupActionsBtn = document.getElementById('groupActionsBtn');
+      const groupsContainer = document.getElementById('adminGroupsContainer');
+
+      if (cat.tournament_type === 'cup') {
+        groupActionsBtn.classList.remove('hidden');
+        renderGroupsOverview(teams, cat);
+      } else {
+        groupActionsBtn.classList.add('hidden');
+        groupsContainer.innerHTML = '';
+      }
+
       document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
         <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
           <div class="flex items-center gap-2.5">
             ${t.logo ? `<img src="${t.logo}" class="w-7 h-7 object-cover rounded-full border border-green-500/30" onerror="this.style.display='none'">` : '<div class="w-7 h-7 bg-green-950 text-green-400 rounded-full flex items-center justify-center font-bold">🛡️</div>'}
-            <span class="font-bold text-white truncate">${t.name}</span>
+            <div>
+              <span class="font-bold text-white truncate block">${t.name}</span>
+              ${cat.tournament_type === 'cup' ? `<span class="text-[9px] text-emerald-400 font-bold uppercase">Grupo: ${t.group_name || 'Sin Asignar'}</span>` : ''}
+            </div>
           </div>
           <div class="flex gap-1">
             <button onclick="openTeamModal(true, '${t.id}')" class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-[11px]">✏️</button>
@@ -550,7 +595,7 @@
       const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
       
       if (matches.length === 0) {
-        document.getElementById('adminMatchesList').innerHTML = '<p class="text-slate-500 text-xs">No hay partidos de liga.</p>';
+        document.getElementById('adminMatchesList').innerHTML = '<p class="text-slate-500 text-xs">No hay partidos programados.</p>';
       } else {
         let roundsMap = {};
         matches.forEach(m => {
@@ -610,6 +655,78 @@
       renderDisciplineViews(teams);
     }
 
+    function renderGroupsOverview(teams, cat) {
+      const groupCount = cat.group_config?.count || 2;
+      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      const container = document.getElementById('adminGroupsContainer');
+
+      let groupsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">';
+      for (let i = 0; i < groupCount; i++) {
+        let gName = 'Grupo ' + groupLetters[i];
+        let gTeams = teams.filter(t => t.group_name === gName);
+        groupsHtml += `
+          <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2">
+            <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">Zona / ${gName}</h4>
+            <div class="space-y-1">
+              ${gTeams.map(t => `<div class="text-[11px] bg-[#0b0f0d] px-2.5 py-1.5 rounded border border-green-900/30 text-white font-medium flex items-center justify-between"><span>${t.name}</span>${t.logo ? `<img src="${t.logo}" class="w-4 h-4 rounded-full object-cover">` : ''}</div>`).join('') || '<p class="text-[10px] text-slate-500">Sin equipos en este grupo.</p>'}
+            </div>
+          </div>
+        `;
+      }
+      groupsHtml += '</div>';
+      container.innerHTML = groupsHtml;
+    }
+
+    function openGroupManagementModal() {
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length === 0) return alert("Agrega equipos primero.");
+
+      const groupCount = cat.group_config?.count || 2;
+      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+
+      const listContainer = document.getElementById('modalTeamGroupsList');
+      listContainer.innerHTML = teams.map(t => `
+        <div class="flex items-center justify-between bg-[#0b0f0d] p-2.5 rounded-lg border border-green-900/30">
+          <span class="font-semibold text-white">${t.name}</span>
+          <select id="team_group_sel_${t.id}" class="bg-black border border-green-900 rounded p-1 text-white text-xs">
+            <option value="">-- Sin Grupo --</option>
+            ${groupLetters.map(l => `<option value="Grupo ${l}" ${t.group_name === 'Grupo ' + l ? 'selected' : ''}>Grupo ${l}</option>`).join('')}
+          </select>
+        </div>
+      `).join('');
+
+      openModal('groupManagementModal');
+    }
+
+    async function sortGroupsRandomly() {
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      const groupCount = cat.group_config?.count || 2;
+      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+
+      let shuffled = [...teams].sort(() => Math.random() - 0.5);
+      for (let i = 0; i < shuffled.length; i++) {
+        let assignedGroup = 'Grupo ' + groupLetters[i % groupCount];
+        document.getElementById(`team_group_sel_${shuffled[i].id}`).value = assignedGroup;
+      }
+      alert("¡Sorteo aleatorio realizado en pantalla! Haz clic en 'Guardar Zonas' para confirmar.");
+    }
+
+    async function saveGroupAssignmentsFromModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      for (let t of teams) {
+        const sel = document.getElementById(`team_group_sel_${t.id}`);
+        if (sel) {
+          const group_name = sel.value;
+          await supabaseClient.from('torneos_data').update({ group_name }).eq('id', t.id);
+        }
+      }
+      closeModal('groupManagementModal');
+      await loadAdminData();
+      alert("¡Grupos guardados con éxito!");
+    }
+
     async function shareRoundAsImage(sanitizedId, roundName) {
       const cardElement = document.getElementById(`round_card_${sanitizedId}`);
       if (!cardElement) return;
@@ -638,7 +755,6 @@
             }
           }
 
-          // Descarga directa si la API de compartir no está disponible
           const link = document.createElement('a');
           link.download = `${roundName}_KanchaPro.png`;
           link.href = URL.createObjectURL(blob);
@@ -747,40 +863,89 @@
       const container = document.getElementById('adminStandingsContainer');
       const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
 
-      const stats = teams.map(team => {
-        let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
-        matches.filter(m => m.played).forEach(m => {
-          if (m.home_team === team.id) {
-            played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
-            if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
-          } else if (m.away_team === team.id) {
-            played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
-            if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
-          }
-        });
-        return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
-      }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+      if (cat.tournament_type === 'cup') {
+        const groupCount = cat.group_config?.count || 2;
+        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+        let groupsHtml = '';
 
-      container.innerHTML = `
-        <table class="w-full text-xs">
-          <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
-            <tr>
-              <th class="p-2 text-left">#</th>
-              <th class="p-2 text-left">Equipo</th>
-              <th class="p-2 text-center">PJ</th><th class="p-2 text-center">G</th><th class="p-2 text-center">E</th><th class="p-2 text-center">P</th><th class="p-2 text-center">DG</th><th class="p-2 text-center font-bold text-green-400">Pts</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-green-900/20">
-            ${stats.map((t, idx) => `
-              <tr class="${idx < 4 ? 'bg-green-900/10' : ''}">
-                <td class="p-2 font-bold text-green-400">${idx + 1}</td>
-                <td class="p-2 font-semibold text-white truncate max-w-[100px]">${t.name}</td>
-                <td class="p-2 text-center">${t.played}</td><td class="p-2 text-center">${t.won}</td><td class="p-2 text-center">${t.drawn}</td><td class="p-2 text-center">${t.lost}</td><td class="p-2 text-center">${t.gd}</td><td class="p-2 text-center font-bold text-green-400">${t.points}</td>
+        groupLetters.forEach(l => {
+          let gName = 'Grupo ' + l;
+          let gTeams = teams.filter(t => t.group_name === gName);
+          let stats = gTeams.map(team => {
+            let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+            matches.filter(m => m.played).forEach(m => {
+              if (m.home_team === team.id) {
+                played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+                if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+              } else if (m.away_team === team.id) {
+                played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+                if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+              }
+            });
+            return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+          }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+          groupsHtml += `
+            <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2">
+              <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">Tabla - ${gName}</h4>
+              <table class="w-full text-xs">
+                <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
+                  <tr>
+                    <th class="p-2 text-left">#</th>
+                    <th class="p-2 text-left">Equipo</th>
+                    <th class="p-2 text-center">PJ</th><th class="p-2 text-center">G</th><th class="p-2 text-center">E</th><th class="p-2 text-center">P</th><th class="p-2 text-center">DG</th><th class="p-2 text-center font-bold text-green-400">Pts</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-green-900/20">
+                  ${stats.map((t, idx) => `
+                    <tr class="${idx < 2 ? 'bg-green-900/10' : ''}">
+                      <td class="p-2 font-bold text-green-400">${idx + 1}</td>
+                      <td class="p-2 font-semibold text-white truncate max-w-[100px]">${t.name}</td>
+                      <td class="p-2 text-center">${t.played}</td><td class="p-2 text-center">${t.won}</td><td class="p-2 text-center">${t.drawn}</td><td class="p-2 text-center">${t.lost}</td><td class="p-2 text-center">${t.gd}</td><td class="p-2 text-center font-bold text-green-400">${t.points}</td>
+                    </tr>
+                  `).join('') || '<tr><td colspan="8" class="text-center text-slate-500 py-2">Sin equipos en este grupo</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          `;
+        });
+        container.innerHTML = groupsHtml;
+      } else {
+        const stats = teams.map(team => {
+          let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+          matches.filter(m => m.played).forEach(m => {
+            if (m.home_team === team.id) {
+              played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+              if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+            } else if (m.away_team === team.id) {
+              played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+              if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+            }
+          });
+          return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+        }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+        container.innerHTML = `
+          <table class="w-full text-xs">
+            <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
+              <tr>
+                <th class="p-2 text-left">#</th>
+                <th class="p-2 text-left">Equipo</th>
+                <th class="p-2 text-center">PJ</th><th class="p-2 text-center">G</th><th class="p-2 text-center">E</th><th class="p-2 text-center">P</th><th class="p-2 text-center">DG</th><th class="p-2 text-center font-bold text-green-400">Pts</th>
               </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
+            </thead>
+            <tbody class="divide-y divide-green-900/20">
+              ${stats.map((t, idx) => `
+                <tr class="${idx < 4 ? 'bg-green-900/10' : ''}">
+                  <td class="p-2 font-bold text-green-400">${idx + 1}</td>
+                  <td class="p-2 font-semibold text-white truncate max-w-[100px]">${t.name}</td>
+                  <td class="p-2 text-center">${t.played}</td><td class="p-2 text-center">${t.won}</td><td class="p-2 text-center">${t.drawn}</td><td class="p-2 text-center">${t.lost}</td><td class="p-2 text-center">${t.gd}</td><td class="p-2 text-center font-bold text-green-400">${t.points}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
 
       const teamIds = teams.map(t => t.id);
       const categoryPlayers = dbData.players.filter(p => teamIds.includes(p.team_id));
@@ -1034,79 +1199,122 @@
     }
 
     async function generateAutomaticFixture() {
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
       
       const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
       if (existingLeagueMatches.length > 0) {
-        if (!confirm("Ya existe un fixture de liga. ¿Deseas borrarlo y generar uno nuevo?")) return;
+        if (!confirm("Ya existe un fixture. ¿Deseas borrarlo y generar uno nuevo?")) return;
         for (let m of existingLeagueMatches) {
           await supabaseClient.from('torneos_data').delete().eq('id', m.id);
         }
       }
 
-      let list = [...teams];
-      if (list.length % 2 !== 0) {
-        list.push({ id: 'BYE', name: 'LIBRE' });
-      }
-
-      const numTeams = list.length;
-      const totalRounds = numTeams - 1;
-      const matchesPerRound = numTeams / 2;
-
-      let fixtureRounds = [];
-
-      for (let round = 0; round < totalRounds; round++) {
-        let roundMatches = [];
-        for (let i = 0; i < matchesPerRound; i++) {
-          let home = list[i];
-          let away = list[numTeams - 1 - i];
-
-          if (home.id !== 'BYE' && away.id !== 'BYE') {
-            if (round % 2 === 1 && i === 0) {
-              roundMatches.push({ home: away, away: home });
-            } else {
-              roundMatches.push({ home: home, away: away });
-            }
-          }
-        }
-        fixtureRounds.push(roundMatches);
-
-        let temp = list.pop();
-        list.splice(1, 0, temp);
-      }
-
       let timestamp = Date.now();
       let counter = 0;
 
-      for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-        let roundNumber = rIndex + 1;
-        let matchesInRound = fixtureRounds[rIndex];
+      if (cat.tournament_type === 'cup') {
+        const groupCount = cat.group_config?.count || 2;
+        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
 
-        for (let m of matchesInRound) {
-          counter++;
-          const newMatch = {
-            id: `match_${timestamp}_${counter}`,
-            type: 'match',
-            category_id: activeCategoryId,
-            home_team: m.home.id,
-            away_team: m.away.id,
-            home_score: 0,
-            away_score: 0,
-            played: false,
-            is_playoff: false,
-            round_name: `Fecha ${roundNumber}`,
-            match_day: '',
-            match_time: '',
-            match_venue: ''
-          };
+        for (let l of groupLetters) {
+          let gName = 'Grupo ' + l;
+          let gTeams = teams.filter(t => t.group_name === gName);
+          if (gTeams.length < 2) continue;
 
-          await supabaseClient.from('torneos_data').insert([newMatch]);
+          let list = [...gTeams];
+          if (list.length % 2 !== 0) list.push({ id: 'BYE', name: 'LIBRE' });
+
+          const numTeams = list.length;
+          const totalRounds = numTeams - 1;
+          const matchesPerRound = numTeams / 2;
+          let fixtureRounds = [];
+
+          for (let round = 0; round < totalRounds; round++) {
+            let roundMatches = [];
+            for (let i = 0; i < matchesPerRound; i++) {
+              let home = list[i];
+              let away = list[numTeams - 1 - i];
+              if (home.id !== 'BYE' && away.id !== 'BYE') {
+                if (round % 2 === 1 && i === 0) roundMatches.push({ home: away, away: home });
+                else roundMatches.push({ home: home, away: away });
+              }
+            }
+            fixtureRounds.push(roundMatches);
+            let temp = list.pop();
+            list.splice(1, 0, temp);
+          }
+
+          for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
+            let roundNumber = rIndex + 1;
+            let matchesInRound = fixtureRounds[rIndex];
+            for (let m of matchesInRound) {
+              counter++;
+              await supabaseClient.from('torneos_data').insert([{
+                id: `match_${timestamp}_${counter}`,
+                type: 'match',
+                category_id: activeCategoryId,
+                home_team: m.home.id,
+                away_team: m.away.id,
+                home_score: 0,
+                away_score: 0,
+                played: false,
+                is_playoff: false,
+                round_name: `${gName} - Fecha ${roundNumber}`,
+                match_day: '', match_time: '', match_venue: ''
+              }]);
+            }
+          }
+        }
+      } else {
+        let list = [...teams];
+        if (list.length % 2 !== 0) list.push({ id: 'BYE', name: 'LIBRE' });
+
+        const numTeams = list.length;
+        const totalRounds = numTeams - 1;
+        const matchesPerRound = numTeams / 2;
+        let fixtureRounds = [];
+
+        for (let round = 0; round < totalRounds; round++) {
+          let roundMatches = [];
+          for (let i = 0; i < matchesPerRound; i++) {
+            let home = list[i];
+            let away = list[numTeams - 1 - i];
+            if (home.id !== 'BYE' && away.id !== 'BYE') {
+              if (round % 2 === 1 && i === 0) roundMatches.push({ home: away, away: home });
+              else roundMatches.push({ home: home, away: away });
+            }
+          }
+          fixtureRounds.push(roundMatches);
+          let temp = list.pop();
+          list.splice(1, 0, temp);
+        }
+
+        for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
+          let roundNumber = rIndex + 1;
+          let matchesInRound = fixtureRounds[rIndex];
+          for (let m of matchesInRound) {
+            counter++;
+            await supabaseClient.from('torneos_data').insert([{
+              id: `match_${timestamp}_${counter}`,
+              type: 'match',
+              category_id: activeCategoryId,
+              home_team: m.home.id,
+              away_team: m.away.id,
+              home_score: 0,
+              away_score: 0,
+              played: false,
+              is_playoff: false,
+              round_name: `Fecha ${roundNumber}`,
+              match_day: '', match_time: '', match_venue: ''
+            }]);
+          }
         }
       }
 
       await loadAdminData();
-      alert(`¡Fixture generado en ${totalRounds} fechas!`);
+      alert("¡Fixture generado con éxito!");
     }
 
     function openMatchModal(isEdit = false, matchId = null) {
@@ -1128,7 +1336,6 @@
         homeSelect.value = m.home_team;
         awaySelect.value = m.away_team;
         
-        // Bloquear cambio de equipos en edición
         homeSelect.disabled = true;
         awaySelect.disabled = true;
 
@@ -1140,7 +1347,6 @@
         document.getElementById('modalMatchEditId').value = '';
         document.getElementById('modalMatchRound').value = 'Fecha 1';
         
-        // Habilitar selección si es creación nueva
         homeSelect.disabled = false;
         awaySelect.disabled = false;
 
@@ -1280,6 +1486,10 @@
       document.getElementById('playoffOptionsContainer').style.display = isChecked ? 'block' : 'none';
     }
 
+    function toggleTournamentFormatOptions(formatVal) {
+      document.getElementById('groupFormatOptionsContainer').style.display = (formatVal === 'cup') ? 'block' : 'none';
+    }
+
     function openCategoryModal(isEdit) {
       document.getElementById('catModalTitle').textContent = isEdit ? 'Editar Torneo' : 'Crear Torneo';
       if (isEdit && activeCategoryId) {
@@ -1287,7 +1497,15 @@
         document.getElementById('modalCatId').value = cat.id;
         document.getElementById('modalCatName').value = cat.name;
         document.getElementById('modalSportType').value = cat.sport_type || 'football_11';
-        document.getElementById('modalCatType').value = cat.tournament_type || 'league';
+        
+        const tType = cat.tournament_type || 'league';
+        document.getElementById('modalCatType').value = tType;
+        toggleTournamentFormatOptions(tType);
+
+        if (cat.group_config) {
+          document.getElementById('modalGroupCount').value = cat.group_config.count || 2;
+        }
+
         document.getElementById('modalCatMaxTeams').value = cat.max_teams || 8;
         
         const hasP = cat.has_playoffs || false;
@@ -1299,6 +1517,8 @@
       } else {
         document.getElementById('modalCatId').value = '';
         document.getElementById('modalCatName').value = '';
+        document.getElementById('modalCatType').value = 'league';
+        toggleTournamentFormatOptions('league');
         document.getElementById('modalHasPlayoffs').checked = false;
         document.getElementById('playoffOptionsContainer').style.display = 'none';
       }
@@ -1312,6 +1532,7 @@
       const tournament_type = document.getElementById('modalCatType').value;
       const max_teams = parseInt(document.getElementById('modalCatMaxTeams').value) || 8;
       
+      const group_config = tournament_type === 'cup' ? { count: parseInt(document.getElementById('modalGroupCount').value) || 2 } : null;
       const has_playoffs = document.getElementById('modalHasPlayoffs').checked;
       const playoff_config = has_playoffs ? { count: parseInt(document.getElementById('modalPlayoffCount').value) || 4 } : null;
 
@@ -1321,7 +1542,7 @@
       const userEmail = session ? session.user.email : null;
 
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, has_playoffs, playoff_config }).eq('id', id);
+        await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, group_config, has_playoffs, playoff_config }).eq('id', id);
       } else {
         const newCat = { 
           id: 'cat_' + Date.now(), 
@@ -1330,6 +1551,7 @@
           sport_type, 
           tournament_type, 
           max_teams, 
+          group_config,
           has_playoffs, 
           playoff_config, 
           fixture_type: tournament_type,
@@ -1397,7 +1619,7 @@
         await supabaseClient.from('torneos_data').update({ name, logo: logoUrl }).eq('id', id);
       } else {
         await supabaseClient.from('torneos_data').insert([{
-          id: 'team_' + Date.now(), type: 'team', name, logo: logoUrl, category_id: activeCategoryId
+          id: 'team_' + Date.now(), type: 'team', name, logo: logoUrl, category_id: activeCategoryId, group_name: ''
         }]);
       }
       closeModal('teamModal');
