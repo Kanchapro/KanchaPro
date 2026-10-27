@@ -263,7 +263,7 @@
     </div>
   </div>
 
-  <!-- Modal Partido / Fixture (Equipos Bloqueados en Edición) -->
+  <!-- Modal Partido / Fixture -->
   <div id="matchModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 id="matchModalTitle" class="text-sm font-bold text-green-400">Programar Partido</h3>
@@ -274,11 +274,11 @@
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Equipo Local:</label>
-        <select id="modalMatchHome" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs disabled:opacity-60 disabled:cursor-not-allowed"></select>
+        <select id="modalMatchHome" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Equipo Visitante:</label>
-        <select id="modalMatchAway" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs disabled:opacity-60 disabled:cursor-not-allowed"></select>
+        <select id="modalMatchAway" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
@@ -292,7 +292,7 @@
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Cancha / Sede:</label>
-        <input type="text" id="modalMatchVenue" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Cancha 1 o Predio Los Pinos">
+        <input type="text" id="modalMatchVenue" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Cancha 1">
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('matchModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
@@ -312,11 +312,7 @@
       
       <div class="flex justify-between items-center bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 text-center">
         <div class="flex-1 font-bold text-white truncate text-right pr-2" id="mdHomeName">Local</div>
-        <div class="flex items-center gap-1.5">
-          <input type="number" id="mdHomeScore" class="w-12 bg-black text-center border border-green-900 rounded py-1 text-white text-sm font-bold" readonly>
-          <span class="text-green-400 font-bold">-</span>
-          <input type="number" id="mdAwayScore" class="w-12 bg-black text-center border border-green-900 rounded py-1 text-white text-sm font-bold" readonly>
-        </div>
+        <div class="flex items-center gap-1.5 text-green-400 font-bold text-sm">VS</div>
         <div class="flex-1 font-bold text-white truncate text-left pl-2" id="mdAwayName">Visitante</div>
       </div>
 
@@ -438,7 +434,7 @@
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Motivo / Observación:</label>
-        <textarea id="modalSuspReason" rows="2" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Doble amarilla, conducta antideportiva..."></textarea>
+        <textarea id="modalSuspReason" rows="2" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Doble amarilla..."></textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('suspensionModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
@@ -756,7 +752,7 @@
           link.download = `${roundName}_KanchaPro.png`;
           link.href = URL.createObjectURL(blob);
           link.click();
-          alert("¡Imagen de la fecha generada y descargada con éxito! Ya puedes enviarla por WhatsApp.");
+          alert("¡Imagen de la fecha generada y descargada con éxito!");
         }, 'image/png');
       } catch (err) {
         console.error(err);
@@ -1015,9 +1011,7 @@
       const teamIds = teams.map(t => t.id);
       const players = dbData.players.filter(p => teamIds.includes(p.team_id));
 
-      let yellowMap = {};
-      let redMap = {};
-      let blueMap = {};
+      let yellowMap = {}, redMap = {}, blueMap = {};
 
       players.forEach(p => {
         let totalY = 0, totalR = 0, totalB = 0;
@@ -1151,66 +1145,9 @@
         return;
       }
 
-      if (cat) {
-        const isFutsal = cat.sport_type === 'futsal';
-        for (let p of allCategoryPlayers) {
-          let totalYellows = 0;
-          dbData.matches.forEach(m => {
-            const st = m.match_details?.playerStats?.[p.id];
-            if (st) totalYellows += (st.yellows || 0);
-          });
-
-          let suspensionDates = 0;
-          let reasonText = "";
-
-          if (isFutsal) {
-            if (totalYellows === 3 || totalYellows === 6 || totalYellows === 9) {
-              suspensionDates = (totalYellows === 6) ? 2 : 1;
-              reasonText = `Acumulación de ${totalYellows} tarjetas amarillas (Futsal)`;
-            }
-          } else {
-            if (totalYellows > 0 && totalYellows % 5 === 0) {
-              suspensionDates = 1;
-              reasonText = `Acumulación de ${totalYellows} tarjetas amarillas (Fútbol 11)`;
-            }
-          }
-
-          if (suspensionDates > 0) {
-            const existingSusp = dbData.suspensions.find(s => s.player_name === p.name && s.reason === reasonText);
-            if (!existingSusp) {
-              const teamRecord = teams.find(t => t.id === p.team_id);
-              await supabaseClient.from('torneos_data').insert([{
-                id: 'susp_' + Date.now() + '_' + Math.floor(Math.random()*1000),
-                type: 'suspension',
-                category_id: activeCategoryId,
-                player_name: p.name,
-                team_name: teamRecord ? teamRecord.name : '',
-                remaining_matches: suspensionDates,
-                reason: reasonText
-              }]);
-            }
-          }
-        }
-      }
-
-      const playingTeamIds = [match.home_team, match.away_team];
-      const playingTeamsNames = teams.filter(t => playingTeamIds.includes(t.id)).map(t => t.name);
-      const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
-
-      for (let susp of activeSuspensions) {
-        if (playingTeamsNames.includes(susp.team_name)) {
-          let newRemaining = (susp.remaining_matches || 1) - 1;
-          if (newRemaining <= 0) {
-            await supabaseClient.from('torneos_data').delete().eq('id', susp.id);
-          } else {
-            await supabaseClient.from('torneos_data').update({ remaining_matches: newRemaining }).eq('id', susp.id);
-          }
-        }
-      }
-
       closeModal('matchDetailModal');
       await loadAdminData();
-      alert("¡Planilla guardada y sanciones actualizadas automáticamente!");
+      alert("¡Planilla guardada con éxito!");
     }
 
     async function generateAutomaticFixture() {
@@ -1278,7 +1215,7 @@
             for (let m of matchesInRound) {
               counter++;
               await supabaseClient.from('torneos_data').insert([{
-                id: `match_${timestamp}_${counter}`,
+                id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
                 type: 'match',
                 category_id: activeCategoryId,
                 home_team: m.home.id,
@@ -1323,7 +1260,7 @@
           for (let m of matchesInRound) {
             counter++;
             await supabaseClient.from('torneos_data').insert([{
-              id: `match_${timestamp}_${counter}`,
+              id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
               type: 'match',
               category_id: activeCategoryId,
               home_team: m.home.id,
@@ -1355,15 +1292,12 @@
       awaySelect.innerHTML = optionsHtml;
 
       if (isEdit && matchId) {
-        document.getElementById('matchModalTitle').textContent = 'Editar Horario y Cancha';
+        document.getElementById('matchModalTitle').textContent = 'Editar Partido / Horario';
         const m = dbData.matches.find(x => x.id === matchId);
         document.getElementById('modalMatchEditId').value = m.id;
         document.getElementById('modalMatchRound').value = m.round_name || 'Fecha 1';
         homeSelect.value = m.home_team;
         awaySelect.value = m.away_team;
-        
-        homeSelect.disabled = true;
-        awaySelect.disabled = true;
 
         document.getElementById('modalMatchDay').value = m.match_day || '';
         document.getElementById('modalMatchTime').value = m.match_time || '';
@@ -1372,10 +1306,6 @@
         document.getElementById('matchModalTitle').textContent = 'Programar Partido Manual';
         document.getElementById('modalMatchEditId').value = '';
         document.getElementById('modalMatchRound').value = 'Fecha 1';
-        
-        homeSelect.disabled = false;
-        awaySelect.disabled = false;
-
         document.getElementById('modalMatchDay').value = '';
         document.getElementById('modalMatchTime').value = '';
         document.getElementById('modalMatchVenue').value = '';
@@ -1392,15 +1322,15 @@
       const match_time = document.getElementById('modalMatchTime').value;
       const match_venue = document.getElementById('modalMatchVenue').value;
 
-      if (!editId && home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
+      if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
 
       if (editId) {
         await supabaseClient.from('torneos_data').update({
-          round_name, match_day, match_time, match_venue
+          round_name, home_team, away_team, match_day, match_time, match_venue
         }).eq('id', editId);
       } else {
         const newMatch = {
-          id: 'match_' + Date.now(),
+          id: 'match_' + Date.now() + '_' + Math.floor(Math.random()*1000),
           type: 'match',
           category_id: activeCategoryId,
           home_team,
