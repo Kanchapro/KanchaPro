@@ -6,6 +6,8 @@
   <title>KanchaPro - Panel Admin Pro con Sanciones Automáticas</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Librería para capturar tarjetas de fixture como imagen -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Montserrat', sans-serif; background-color: #0b0f0d; color: #f0fdf4; }
@@ -230,7 +232,7 @@
     </div>
   </div>
 
-  <!-- Modal Partido / Fixture (Manual o Edición con Día, Hora, Cancha) -->
+  <!-- Modal Partido / Fixture (Equipos Bloqueados en Edición) -->
   <div id="matchModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 id="matchModalTitle" class="text-sm font-bold text-green-400">Programar Partido</h3>
@@ -241,11 +243,11 @@
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Equipo Local:</label>
-        <select id="modalMatchHome" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
+        <select id="modalMatchHome" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs disabled:opacity-60 disabled:cursor-not-allowed"></select>
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Equipo Visitante:</label>
-        <select id="modalMatchAway" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
+        <select id="modalMatchAway" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs disabled:opacity-60 disabled:cursor-not-allowed"></select>
       </div>
       <div class="grid grid-cols-2 gap-2">
         <div>
@@ -559,12 +561,13 @@
 
         document.getElementById('adminMatchesList').innerHTML = Object.keys(roundsMap).map(roundName => {
           const roundMatches = roundsMap[roundName];
+          const sanitizedId = roundName.replace(/[^a-zA-Z0-9]/g, '_');
           return `
-            <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2.5">
+            <div id="round_card_${sanitizedId}" class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2.5">
               <div class="flex justify-between items-center border-b border-green-900/40 pb-1.5">
-                <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">${roundName}</h4>
-                <button onclick="shareRoundWhatsApp('${roundName}')" class="text-[11px] px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/35 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm">
-                  <span>💬</span> Compartir Fecha
+                <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">${roundName} - ${cat.name}</h4>
+                <button onclick="shareRoundAsImage('${sanitizedId}', '${roundName}')" class="text-[11px] px-2.5 py-1 bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 rounded-lg font-bold border border-emerald-500/40 transition flex items-center gap-1 shadow-sm">
+                  <span>📸</span> Compartir Fecha (Imagen)
                 </button>
               </div>
               <div class="space-y-2">
@@ -575,9 +578,15 @@
                   return `
                     <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
                       <div class="flex items-center justify-between gap-2 text-xs">
-                        <span class="flex-1 font-semibold text-white truncate text-right">${hTeam.name}</span>
+                        <div class="flex items-center gap-1.5 flex-1 justify-end truncate">
+                          <span class="font-semibold text-white truncate">${hTeam.name}</span>
+                          ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-5 h-5 object-cover rounded-full">` : ''}
+                        </div>
                         <span class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
-                        <span class="flex-1 font-semibold text-white truncate text-left">${aTeam.name}</span>
+                        <div class="flex items-center gap-1.5 flex-1 truncate">
+                          ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-5 h-5 object-cover rounded-full">` : ''}
+                          <span class="font-semibold text-white truncate">${aTeam.name}</span>
+                        </div>
                       </div>
                       ${infoText ? `<div class="text-[11px] text-slate-400 text-center font-medium">🗓️ ${infoText}</div>` : ''}
                       <div class="flex justify-between items-center pt-1 border-t border-green-900/30">
@@ -601,23 +610,45 @@
       renderDisciplineViews(teams);
     }
 
-    function shareRoundWhatsApp(roundName) {
-      const cat = dbData.categories.find(c => c.id === activeCategoryId);
-      const catName = cat ? cat.name : 'Torneo KanchaPro';
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const roundMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff && (m.round_name || 'Partidos') === roundName);
+    async function shareRoundAsImage(sanitizedId, roundName) {
+      const cardElement = document.getElementById(`round_card_${sanitizedId}`);
+      if (!cardElement) return;
 
-      let text = `⚽ *${roundName}* — *${catName}*\n\n`;
-      roundMatches.forEach(m => {
-        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
-        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
-        const score = m.played ? `*${m.home_score} - ${m.away_score}*` : '_VS_';
-        const info = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' | ');
-        text += `▪️ ${hTeam.name} ${score} ${aTeam.name}\n`;
-        if (info) text += `   🕒 ${info}\n`;
-      });
-      text += `\n🔗 ¡Sigue todas las tablas y estadísticas en KanchaPro!`;
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+      try {
+        const canvas = await html2canvas(cardElement, {
+          backgroundColor: '#060a08',
+          scale: 2,
+          useCORS: true
+        });
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const file = new File([blob], `${roundName.replace(/\s+/g, '_')}_fixture.png`, { type: 'image/png' });
+          
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                title: roundName,
+                text: `⚽ ¡Fixture de la ${roundName}! Revisa los horarios y canchas en KanchaPro.`,
+                files: [file]
+              });
+              return;
+            } catch (err) {
+              if (err.name !== 'AbortError') console.error(err);
+            }
+          }
+
+          // Descarga directa si la API de compartir no está disponible
+          const link = document.createElement('a');
+          link.download = `${roundName}_KanchaPro.png`;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          alert("¡Imagen de la fecha generada y descargada con éxito! Ya puedes enviarla por WhatsApp.");
+        }, 'image/png');
+      } catch (err) {
+        console.error(err);
+        alert("Hubo un error al generar la imagen de la fecha.");
+      }
     }
 
     function renderRostersView(teams) {
@@ -1083,16 +1114,24 @@
       if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
       const optionsHtml = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
       
-      document.getElementById('modalMatchHome').innerHTML = optionsHtml;
-      document.getElementById('modalMatchAway').innerHTML = optionsHtml;
+      const homeSelect = document.getElementById('modalMatchHome');
+      const awaySelect = document.getElementById('modalMatchAway');
+      
+      homeSelect.innerHTML = optionsHtml;
+      awaySelect.innerHTML = optionsHtml;
 
       if (isEdit && matchId) {
-        document.getElementById('matchModalTitle').textContent = 'Editar Partido / Horario';
+        document.getElementById('matchModalTitle').textContent = 'Editar Horario y Cancha';
         const m = dbData.matches.find(x => x.id === matchId);
         document.getElementById('modalMatchEditId').value = m.id;
         document.getElementById('modalMatchRound').value = m.round_name || 'Fecha 1';
-        document.getElementById('modalMatchHome').value = m.home_team;
-        document.getElementById('modalMatchAway').value = m.away_team;
+        homeSelect.value = m.home_team;
+        awaySelect.value = m.away_team;
+        
+        // Bloquear cambio de equipos en edición
+        homeSelect.disabled = true;
+        awaySelect.disabled = true;
+
         document.getElementById('modalMatchDay').value = m.match_day || '';
         document.getElementById('modalMatchTime').value = m.match_time || '';
         document.getElementById('modalMatchVenue').value = m.match_venue || '';
@@ -1100,6 +1139,11 @@
         document.getElementById('matchModalTitle').textContent = 'Programar Partido Manual';
         document.getElementById('modalMatchEditId').value = '';
         document.getElementById('modalMatchRound').value = 'Fecha 1';
+        
+        // Habilitar selección si es creación nueva
+        homeSelect.disabled = false;
+        awaySelect.disabled = false;
+
         document.getElementById('modalMatchDay').value = '';
         document.getElementById('modalMatchTime').value = '';
         document.getElementById('modalMatchVenue').value = '';
@@ -1116,11 +1160,11 @@
       const match_time = document.getElementById('modalMatchTime').value;
       const match_venue = document.getElementById('modalMatchVenue').value;
 
-      if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
+      if (!editId && home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
 
       if (editId) {
         await supabaseClient.from('torneos_data').update({
-          round_name, home_team, away_team, match_day, match_time, match_venue
+          round_name, match_day, match_time, match_venue
         }).eq('id', editId);
       } else {
         const newMatch = {
