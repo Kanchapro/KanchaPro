@@ -13,7 +13,7 @@
     .btn-green { background-color: #16a34a; transition: background 0.2s; }
     .btn-green:hover { background-color: #15803d; }
     .tab-active { border-bottom: 3px solid #22c55e; color: #4ade80; }
-    .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+    .scrollbar-thin::-webkit-scrollbar { width: 4px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
   </style>
@@ -123,7 +123,7 @@
     <!-- Tab 4: Posiciones -->
     <div id="adm-standings" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <h3 class="text-sm font-bold text-green-300">Tabla de Posiciones</h3>
-      <div id="adminStandingsContainer" class="w-full overflow-x-auto scrollbar-thin"></div>
+      <div id="adminStandingsContainer" class="overflow-x-auto"></div>
     </div>
 
     <!-- Tab 5: Playoffs / Llaves -->
@@ -644,26 +644,24 @@
       }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
       container.innerHTML = `
-        <div class="min-w-[600px] w-full">
-          <table class="w-full text-xs">
-            <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
-              <tr>
-                <th class="p-2 text-left">#</th>
-                <th class="p-2 text-left">Equipo</th>
-                <th class="p-2 text-center">PJ</th><th class="p-2 text-center">G</th><th class="p-2 text-center">E</th><th class="p-2 text-center">P</th><th class="p-2 text-center">DG</th><th class="p-2 text-center font-bold text-green-400">Pts</th>
+        <table class="w-full text-xs">
+          <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
+            <tr>
+              <th class="p-2 text-left">#</th>
+              <th class="p-2 text-left">Equipo</th>
+              <th class="p-2 text-center">PJ</th><th class="p-2 text-center">G</th><th class="p-2 text-center">E</th><th class="p-2 text-center">P</th><th class="p-2 text-center">DG</th><th class="p-2 text-center font-bold text-green-400">Pts</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-green-900/20">
+            ${stats.map((t, idx) => `
+              <tr class="${idx < 4 ? 'bg-green-900/10' : ''}">
+                <td class="p-2 font-bold text-green-400">${idx + 1}</td>
+                <td class="p-2 font-semibold text-white truncate max-w-[100px]">${t.name}</td>
+                <td class="p-2 text-center">${t.played}</td><td class="p-2 text-center">${t.won}</td><td class="p-2 text-center">${t.drawn}</td><td class="p-2 text-center">${t.lost}</td><td class="p-2 text-center">${t.gd}</td><td class="p-2 text-center font-bold text-green-400">${t.points}</td>
               </tr>
-            </thead>
-            <tbody class="divide-y divide-green-900/20">
-              ${stats.map((t, idx) => `
-                <tr class="${idx < 4 ? 'bg-green-900/10' : ''}">
-                  <td class="p-2 font-bold text-green-400">${idx + 1}</td>
-                  <td class="p-2 font-semibold text-white truncate max-w-[150px]">${t.name}</td>
-                  <td class="p-2 text-center">${t.played}</td><td class="p-2 text-center">${t.won}</td><td class="p-2 text-center">${t.drawn}</td><td class="p-2 text-center">${t.lost}</td><td class="p-2 text-center">${t.gd}</td><td class="p-2 text-center font-bold text-green-400">${t.points}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
+            `).join('')}
+          </tbody>
+        </table>
       `;
     }
 
