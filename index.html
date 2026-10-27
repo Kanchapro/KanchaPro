@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KanchaPro — Portal Oficial de Torneos</title>
+  <!-- Favicon con tu escudo -->
+  <link rel="icon" type="image/png" href="1001005929.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -34,10 +36,10 @@
     }
   </script>
 
-  <!-- HEADER DESLUMBRANTE -->
-  <header class="bg-[#050806]/90 border-b border-green-900/40 px-4 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 backdrop-blur-md">
+  <!-- HEADER DESLUMBRANTE SIN BOTÓN DE ADMIN ESTORBOSO -->
+  <header class="bg-[#050806]/90 border-b border-green-900/40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 backdrop-blur-md">
     <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 bg-gradient-to-br from-green-500/30 to-emerald-700/20 text-green-400 rounded-xl flex items-center justify-center font-black border border-green-500/40 shadow-lg shadow-green-900/20 text-base">⚽</div>
+      <img src="1001005929.png" alt="KanchaPro Logo" class="w-10 h-10 object-cover rounded-xl border border-green-500/40 shadow-lg shadow-green-900/30">
       <div>
         <h1 class="text-sm font-black tracking-wider text-green-400">KANCHA<span class="text-white">PRO</span></h1>
         <p class="text-[9px] text-slate-400 tracking-widest uppercase font-semibold">Portal Oficial de Torneos</p>
@@ -56,14 +58,11 @@
       </div>
     </div>
 
-    <!-- Botones de Acción -->
+    <!-- Botón Compartir -->
     <div class="flex items-center gap-2">
       <button onclick="shareTournamentWhatsApp()" class="text-xs px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-xl font-bold border border-emerald-500/30 transition flex items-center gap-1.5 shadow-sm" title="Compartir Torneo en WhatsApp">
         <span>💬</span> Compartir
       </button>
-      <a href="admin.html" class="text-xs px-3 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-300 rounded-xl font-bold border border-green-500/30 transition flex items-center gap-1.5 shadow-sm">
-        <span>⚙️</span> Admin
-      </a>
     </div>
   </header>
 
@@ -86,7 +85,7 @@
         <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
           <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla General de Posiciones
         </h3>
-        <button onclick="captureStandingsScreenshot()" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
+        <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
           📸 Capturar Tabla para WhatsApp
         </button>
       </div>
@@ -121,23 +120,35 @@
 
     <!-- Tab 5: Goleadores -->
     <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4 hidden">
-      <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span> Tabla de Goleadores (Top Scorers)
-      </h3>
-      <div id="publicScorersContainer" class="space-y-2.5 max-h-[550px] overflow-y-auto scrollbar-thin pr-1"></div>
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla de Goleadores (Top Scorers)
+        </h3>
+        <button onclick="captureScreenshot('captureAreaScorers', 'Tabla_De_Goleadores_KanchaPro.png')" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
+          📸 Capturar Goleadores para WhatsApp
+        </button>
+      </div>
+      <div id="captureAreaScorers" class="space-y-2.5 bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 shadow-inner">
+        <div id="publicScorersContainer" class="space-y-2.5 max-h-[550px] overflow-y-auto scrollbar-thin pr-1"></div>
+      </div>
     </div>
 
     <!-- Tab 6: Sanciones -->
     <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4 hidden">
-      <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span> Tribunal de Disciplina y Tarjetas
-      </h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 space-y-3 shadow-inner">
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span> Tribunal de Disciplina y Tarjetas
+        </h3>
+        <button onclick="captureScreenshot('captureAreaDiscipline', 'Tribunal_De_Disciplina_KanchaPro.png')" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
+          📸 Capturar Sanciones para WhatsApp
+        </button>
+      </div>
+      <div id="captureAreaDiscipline" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 shadow-inner">
+        <div class="bg-[#0b140e] p-4 rounded-xl border border-green-900/40 space-y-3">
           <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-2">🟨 Acumulado de Tarjetas Amarillas</h4>
           <div id="pubYellowCardsList" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
         </div>
-        <div class="bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 space-y-3 shadow-inner">
+        <div class="bg-[#0b140e] p-4 rounded-xl border border-green-900/40 space-y-3">
           <h4 class="font-bold text-red-400 text-xs flex items-center gap-2">🟥 Jugadores Suspendidos / Sanciones</h4>
           <div id="pubSuspensionsList" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
         </div>
@@ -145,6 +156,18 @@
     </div>
 
   </main>
+
+  <!-- FOOTER DISCRETO CON ACCESO DE ADMIN OCULTO -->
+  <footer class="bg-[#050806] border-t border-green-900/30 py-4 px-4 text-center text-slate-500 text-[11px] mt-auto flex flex-col sm:flex-row items-center justify-between gap-2 max-w-5xl w-full mx-auto">
+    <div>
+      <span class="text-green-400 font-bold">KanchaPro</span> &copy; 2026 — Todos los derechos reservados.
+    </div>
+    <div>
+      <a href="admin.html" class="text-slate-600 hover:text-green-400 transition text-[10px] flex items-center gap-1">
+        <span>🔒</span> Acceso Administrador
+      </a>
+    </div>
+  </footer>
 
   <!-- MODAL DETALLE DE PARTIDO PÚBLICO -->
   <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
@@ -317,18 +340,18 @@
       `;
     }
 
-    async function captureStandingsScreenshot() {
-      const captureArea = document.getElementById('captureAreaStandings');
+    async function captureScreenshot(elementId, filename) {
+      const captureArea = document.getElementById(elementId);
       try {
         const canvas = await html2canvas(captureArea, { backgroundColor: '#060a08', scale: 2 });
         const imageURL = canvas.toDataURL('image/png');
         
         const link = document.createElement('a');
         link.href = imageURL;
-        link.download = 'Tabla_De_Posiciones_KanchaPro.png';
+        link.download = filename;
         link.click();
 
-        alert("¡Imagen de la tabla generada y descargada con éxito! Ya puedes enviarla por WhatsApp.");
+        alert("¡Imagen generada y descargada con éxito! Ya puedes enviarla por WhatsApp.");
       } catch (err) {
         console.error(err);
         alert("Hubo un error al generar la captura.");
@@ -495,21 +518,26 @@
 
       const sorted = Object.values(scorerMap).sort((a, b) => b.goals - a.goals);
 
-      container.innerHTML = sorted.map((item, idx) => {
-        const t = teams.find(x => x.id === item.player.team_id);
-        return `
-          <div class="flex justify-between items-center bg-[#060a08] p-3 rounded-2xl border border-green-900/40 text-xs shadow-md glass-card-hover">
-            <div class="flex items-center gap-3">
-              <span class="font-black text-green-400 text-sm w-6 text-center">${idx + 1}</span>
-              <div>
-                <span class="font-black text-white text-sm block">${item.player.name}</span>
-                <span class="text-[11px] text-slate-400 font-semibold">${t ? t.name : ''}</span>
+      container.innerHTML = `
+        <div class="text-xs font-black text-green-400 pb-2.5 mb-2 border-b border-green-900/40 uppercase tracking-wider">⚽ Tabla de Goleadores</div>
+        <div class="space-y-2.5">
+          ${sorted.map((item, idx) => {
+            const t = teams.find(x => x.id === item.player.team_id);
+            return `
+              <div class="flex justify-between items-center bg-[#060a08] p-3 rounded-2xl border border-green-900/40 text-xs shadow-md">
+                <div class="flex items-center gap-3">
+                  <span class="font-black text-green-400 text-sm w-6 text-center">${idx + 1}</span>
+                  <div>
+                    <span class="font-black text-white text-sm block">${item.player.name}</span>
+                    <span class="text-[11px] text-slate-400 font-semibold">${t ? t.name : ''}</span>
+                  </div>
+                </div>
+                <span class="font-black text-green-400 text-base">⚽ ${item.goals}</span>
               </div>
-            </div>
-            <span class="font-black text-green-400 text-base">⚽ ${item.goals}</span>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-8">No hay goles registrados todavía.</p>';
+            `;
+          }).join('') || '<p class="text-slate-500 text-xs text-center py-8">No hay goles registrados todavía.</p>'}
+        </div>
+      `;
     }
 
     function renderPublicDiscipline(players, teams, teamIds) {
