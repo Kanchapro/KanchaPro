@@ -489,7 +489,15 @@
         roundsMap[rName].push(m);
       });
 
-      container.innerHTML = Object.keys(roundsMap).map(roundName => `
+      // Ordenar las fechas de forma ascendente (Ej. Fecha 1, Fecha 2, Fecha 3... o Grupo A - Fecha 1, etc.)
+      const sortedRoundNames = Object.keys(roundsMap).sort((a, b) => {
+        const numA = parseInt((a.match(/\d+/) || [0])[0]);
+        const numB = parseInt((b.match(/\d+/) || [0])[0]);
+        if (numA !== numB) return numA - numB;
+        return a.localeCompare(b);
+      });
+
+      container.innerHTML = sortedRoundNames.map(roundName => `
         <div class="bg-[#060a08] border border-green-900/40 rounded-2xl p-3.5 space-y-2.5 shadow-md">
           <h4 class="text-xs font-black text-green-400 uppercase tracking-wider border-b border-green-900/40 pb-1.5 flex items-center gap-1.5"><span>📅</span> ${roundName}</h4>
           <div class="space-y-2">
