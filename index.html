@@ -90,25 +90,32 @@
       </div>
 
       <!-- Tab: Posiciones -->
-      <div id="pub-positions" class="public-tab-content glass-card rounded-2xl p-6 overflow-x-auto">
-        <h3 class="font-bold text-base mb-4 text-green-300">Tabla General de Posiciones</h3>
-        <table class="w-full text-sm">
-          <thead class="bg-[#0b0f0d] text-slate-400 text-xs uppercase">
-            <tr>
-              <th class="p-3 text-left">#</th>
-              <th class="p-3 text-left">Equipo</th>
-              <th class="p-3 text-center">PJ</th>
-              <th class="p-3 text-center">G</th>
-              <th class="p-3 text-center">E</th>
-              <th class="p-3 text-center">P</th>
-              <th class="p-3 text-center">GF</th>
-              <th class="p-3 text-center">GC</th>
-              <th class="p-3 text-center">DG</th>
-              <th class="p-3 text-center font-bold text-green-400">Pts</th>
-            </tr>
-          </thead>
-          <tbody id="pubPositionsBody" class="divide-y divide-green-900/20"></tbody>
-        </table>
+      <div id="pub-positions" class="public-tab-content glass-card rounded-2xl p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h3 class="font-bold text-base text-green-300">Tabla General de Posiciones</h3>
+          <button onclick="compartirPosiciones()" class="bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 transition shadow">
+            💬 Compartir Posiciones en WhatsApp
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-[#0b0f0d] text-slate-400 text-xs uppercase">
+              <tr>
+                <th class="p-3 text-left">#</th>
+                <th class="p-3 text-left">Equipo</th>
+                <th class="p-3 text-center">PJ</th>
+                <th class="p-3 text-center">G</th>
+                <th class="p-3 text-center">E</th>
+                <th class="p-3 text-center">P</th>
+                <th class="p-3 text-center">GF</th>
+                <th class="p-3 text-center">GC</th>
+                <th class="p-3 text-center">DG</th>
+                <th class="p-3 text-center font-bold text-green-400">Pts</th>
+              </tr>
+            </thead>
+            <tbody id="pubPositionsBody" class="divide-y divide-green-900/20"></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Tab: Fixture -->
@@ -118,8 +125,13 @@
       </div>
 
       <!-- Tab: Goleadores -->
-      <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-3">
-        <h3 class="font-bold text-base mb-4 text-green-300">Tabla de Goleadores</h3>
+      <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h3 class="font-bold text-base text-green-300">Tabla de Goleadores</h3>
+          <button onclick="compartirGoleadores()" class="bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 transition shadow">
+            💬 Compartir Goleadores en WhatsApp
+          </button>
+        </div>
         <div id="pubScorersList" class="space-y-2"></div>
       </div>
 
@@ -139,8 +151,13 @@
       </div>
 
       <!-- Tab: Suspendidos -->
-      <div id="pub-suspensions" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-3">
-        <h3 class="font-bold text-base mb-4 text-green-300">Jugadores Suspendidos</h3>
+      <div id="pub-suspensions" class="public-tab-content glass-card rounded-2xl p-6 hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h3 class="font-bold text-base text-green-300">Jugadores Suspendidos</h3>
+          <button onclick="compartirSuspendidos()" class="bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-2 transition shadow">
+            💬 Compartir Sanciones en WhatsApp
+          </button>
+        </div>
         <div id="pubSuspensionsList" class="space-y-3"></div>
       </div>
 
@@ -284,6 +301,84 @@
       renderPublicSuspensions();
     }
 
+    // --- FUNCIONES PARA COMPARTIR EN WHATSAPP ---
+
+    function compartirPosiciones() {
+      if (!currentSelectedCategory) return;
+      const teams = globalTeams.filter(t => t.category_id === currentSelectedCategory.id);
+      const matches = globalMatches.filter(m => m.category_id === currentSelectedCategory.id && m.played);
+      const winPoints = currentSelectedCategory.sport_type === 'futsal' ? 2 : 3;
+
+      const stats = teams.map(team => {
+        let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+        matches.forEach(m => {
+          if (m.home_team === team.id) {
+            played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+            if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+          } else if (m.away_team === team.id) {
+            played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+            if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+          }
+        });
+        return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: won * winPoints + drawn };
+      }).sort((a, b) => b.points - a.points || b.gd - a.gd || b.gf - a.gf);
+
+      if (stats.length === 0) {
+        alert("No hay equipos en este torneo.");
+        return;
+      }
+
+      let texto = `📊 *TABLA DE POSICIONES - ${currentSelectedCategory.name.toUpperCase()}*\n\n`;
+      stats.forEach((t, index) => {
+        texto += `${index + 1}. *${t.name}* — ${t.points} pts (PJ: ${t.played}, DG: ${t.gd >= 0 ? '+' + t.gd : t.gd})\n`;
+      });
+      texto += "\n📲 Sigue el torneo en KanchaPro";
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    }
+
+    function compartirGoleadores() {
+      if (!currentSelectedCategory) return;
+      const teamIds = globalTeams.filter(t => t.category_id === currentSelectedCategory.id).map(t => t.id);
+      let topGoleadores = globalPlayers.filter(p => teamIds.includes(p.team_id) && (p.goals || 0) > 0)
+        .sort((a, b) => (b.goals || 0) - (a.goals || 0)).slice(0, 5);
+
+      if (topGoleadores.length === 0) {
+        alert("Aún no hay goleadores registrados en este torneo.");
+        return;
+      }
+
+      let texto = `⚽ *TABLA DE GOLEADORES - ${currentSelectedCategory.name.toUpperCase()}*\n\n`;
+      topGoleadores.forEach((p, index) => {
+        const team = globalTeams.find(t => t.id === p.team_id);
+        texto += `${index + 1}. ${p.name} (${team ? team.name : ''}) — *${p.goals} goles*\n`;
+      });
+      texto += "\n📲 Sigue el torneo en KanchaPro";
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    }
+
+    function compartirSuspendidos() {
+      if (!currentSelectedCategory) return;
+      const suspensions = globalSuspensions.filter(s => s.category_id === currentSelectedCategory.id);
+
+      if (suspensions.length === 0) {
+        alert("No hay jugadores suspendidos en este torneo.");
+        return;
+      }
+
+      let texto = `🟥 *TRIBUNAL DE DISCIPLINA - SUSPENDIDOS*\n🏆 *${currentSelectedCategory.name.toUpperCase()}*\n\n`;
+      suspensions.forEach((s) => {
+        texto += `• *${s.player_name}* — ${s.remaining_matches || 1} partido(s)\n  Motivo: ${s.reason || 'Sin observación'}\n\n`;
+      });
+      texto += "📲 Sigue el torneo en KanchaPro";
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    }
+
     function renderPublicPositions() {
       const teams = globalTeams.filter(t => t.category_id === currentSelectedCategory.id);
       const matches = globalMatches.filter(m => m.category_id === currentSelectedCategory.id && m.played);
@@ -367,18 +462,18 @@
       const teamIds = globalTeams.filter(t => t.category_id === currentSelectedCategory.id).map(t => t.id);
       const players = globalPlayers.filter(p => teamIds.includes(p.team_id));
 
-      const yellows = players.filter(p => (p.yellow_cards || 0) > 0).sort((a,b) => b.yellow_cards - a.yellow_cards);
-      const reds = players.filter(p => (p.red_cards || 0) > 0).sort((a,b) => b.red_cards - a.red_cards);
+      const yellows = players.filter(p => (p.yellows || 0) > 0).sort((a,b) => b.yellows - a.yellows);
+      const reds = players.filter(p => (p.reds || 0) > 0).sort((a,b) => b.reds - a.reds);
 
       document.getElementById('pubYellowCards').innerHTML = yellows.map(p => `
         <div class="flex justify-between items-center bg-[#0b0f0d] p-2 rounded-lg text-xs">
-          <span>${p.name}</span> <span class="font-bold text-yellow-400">🟨 ${p.yellow_cards}</span>
+          <span>${p.name}</span> <span class="font-bold text-yellow-400">🟨 ${p.yellows}</span>
         </div>
       `).join('') || '<p class="text-slate-500 text-xs">Sin registros</p>';
 
       document.getElementById('pubRedCards').innerHTML = reds.map(p => `
         <div class="flex justify-between items-center bg-[#0b0f0d] p-2 rounded-lg text-xs">
-          <span>${p.name}</span> <span class="font-bold text-red-400">🟥 ${p.red_cards}</span>
+          <span>${p.name}</span> <span class="font-bold text-red-400">🟥 ${p.reds}</span>
         </div>
       `).join('') || '<p class="text-slate-500 text-xs">Sin registros</p>';
     }
@@ -390,7 +485,7 @@
         <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-3 flex justify-between items-center text-xs">
           <div>
             <span class="font-bold text-white block">${s.player_name}</span>
-            <span class="text-slate-400">Fechas restantes: <strong class="text-red-400">${s.remaining_matches ?? 1}</strong></span>
+            <span class="text-slate-400">Fechas restantes: <strong class="text-red-400">${s.remaining_matches ?? 1}</strong> — Motivo: ${s.reason || 'Sin observación'}</span>
           </div>
           <span class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded-lg font-bold">Suspendido</span>
         </div>
