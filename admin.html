@@ -117,10 +117,10 @@
     <!-- Tab 3: Fixture -->
     <div id="adm-fixture" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex flex-col gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
-        <h3 class="text-sm font-bold text-green-300">Fixture de Partidos (Día, Hora y Cancha)</h3>
+        <h3 class="text-sm font-bold text-green-300">Fixture de Partidos (Carga por Fecha / Jornada)</h3>
         <div class="flex gap-2">
-          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar Automático (Liga o Grupos)</button>
-          <button onclick="openMatchModal()" class="btn-green flex-1 text-white text-[11px] font-bold py-2 rounded-lg">+ Manual</button>
+          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar Automático por Fecha</button>
+          <button onclick="openMatchModal()" class="btn-green flex-1 text-white text-[11px] font-bold py-2 rounded-lg">+ Programar Manual</button>
         </div>
       </div>
       <div id="adminMatchesList" class="space-y-3 max-h-[450px] overflow-y-auto scrollbar-thin"></div>
@@ -1315,7 +1315,7 @@
 
     async function saveMatchFromModal() {
       const editId = document.getElementById('modalMatchEditId').value;
-      const round_name = document.getElementById('modalMatchRound').value || 'Fecha 1';
+      const round_name = document.getElementById('modalMatchRound').value.trim() || 'Fecha 1';
       const home_team = document.getElementById('modalMatchHome').value;
       const away_team = document.getElementById('modalMatchAway').value;
       const match_day = document.getElementById('modalMatchDay').value;
@@ -1323,6 +1323,23 @@
       const match_venue = document.getElementById('modalMatchVenue').value;
 
       if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
+
+      // Validar regla estricta: un equipo solo puede jugar 1 partido por fecha
+      const existingMatchesInRound = dbData.matches.filter(m => 
+        m.category_id === activeCategoryId && 
+        !m.is_playoff && 
+        m.round_name.toLowerCase() === round_name.toLowerCase() && 
+        m.id !== editId
+      );
+
+      for (let em of existingMatchesInRound) {
+        if (em.home_team === home_team || em.away_team === home_team) {
+          return alert(`⚠️ El equipo local ya tiene un partido programado en la "${round_name}". Un equipo solo puede jugar 1 vez por fecha.`);
+        }
+        if (em.home_team === away_team || em.away_team === away_team) {
+          return alert(`⚠️ El equipo visitante ya tiene un partido programado en la "${round_name}". Un equipo solo puede jugar 1 vez por fecha.`);
+        }
+      }
 
       if (editId) {
         await supabaseClient.from('torneos_data').update({
