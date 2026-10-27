@@ -83,6 +83,7 @@
       <button onclick="switchAdminTab('standings', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones y Goleadores</button>
       <button onclick="switchAdminTab('playoffs', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🏆 Playoffs / Llaves</button>
       <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones y Tarjetas</button>
+      <button onclick="switchAdminTab('moderators', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Moderadores</button>
     </div>
 
     <!-- Tab 1: Equipos y Grupos -->
@@ -176,6 +177,18 @@
         <h4 class="font-bold text-green-300 text-xs mb-2">Jugadores Suspendidos (Se descuentan por partido jugado)</h4>
         <div id="adminSuspensionsList" class="space-y-2"></div>
       </div>
+    </div>
+
+    <!-- Tab 7: Moderadores -->
+    <div id="adm-moderators" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-green-300">Moderadores del Torneo</h3>
+          <p class="text-[10px] text-slate-400">Agrega los correos de Google de quienes podrán editar este torneo</p>
+        </div>
+        <button onclick="openModeratorModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Moderador</button>
+      </div>
+      <div id="adminModeratorsList" class="space-y-2"></div>
     </div>
 
   </main>
@@ -465,9 +478,24 @@
     </div>
   </div>
 
+  <!-- Modal Moderador -->
+  <div id="moderatorModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
+    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
+      <h3 class="text-sm font-bold text-green-400">Agregar Moderador</h3>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Correo de Gmail del Moderador:</label>
+        <input type="email" id="modalModEmail" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="colaborador@gmail.com">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('moderatorModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
+        <button onclick="saveModeratorFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SCRIPT -->
   <script>
-    let dbData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
+    let dbData = { categories: [], teams: [], players: [], matches: [], suspensions: [], moderators: [] };
     let activeCategoryId = null;
 
     function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
@@ -477,9 +505,38 @@
     window.addEventListener('DOMContentLoaded', async () => {
       if (supabaseClient) {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) unlockAdminPanel();
+        if (session) {
+          checkUserPermissions(session);
+        }
       }
     });
+
+    async function checkUserPermissions(session) {
+      const userEmail = session.user.email;
+      try {
+        const [cat, mods] = await Promise.all([
+          supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'moderator')
+        ]);
+
+        const categories = cat.data || [];
+        const moderators = mods.data || [];
+
+        const isOwner = categories.some(c => c.owner_email === userEmail);
+        const isMod = moderators.some(m => m.owner_email === userEmail);
+
+        if (isOwner || isMod || categories.length === 0) {
+          unlockAdminPanel();
+        } else {
+          alert("⚠️ No tienes permisos de administrador o moderador en este panel.");
+          await supabaseClient.auth.signOut();
+          window.location.reload();
+        }
+      } catch (err) {
+        console.error("Error validando permisos:", err);
+        unlockAdminPanel();
+      }
+    }
 
     async function loginWithGoogle() {
       if (!supabaseClient) return;
@@ -500,12 +557,13 @@
     async function loadAdminData() {
       if (!supabaseClient) return;
       try {
-        const [cat, team, player, match, susp] = await Promise.all([
+        const [cat, team, player, match, susp, mod] = await Promise.all([
           supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
           supabaseClient.from('torneos_data').select('*').eq('type', 'team'),
           supabaseClient.from('torneos_data').select('*').eq('type', 'player'),
           supabaseClient.from('torneos_data').select('*').eq('type', 'match'),
-          supabaseClient.from('torneos_data').select('*').eq('type', 'suspension')
+          supabaseClient.from('torneos_data').select('*').eq('type', 'suspension'),
+          supabaseClient.from('torneos_data').select('*').eq('type', 'moderator')
         ]);
 
         dbData.categories = cat.data || [];
@@ -513,6 +571,7 @@
         dbData.players = player.data || [];
         dbData.matches = match.data || [];
         dbData.suspensions = susp.data || [];
+        dbData.moderators = mod.data || [];
 
         populateCategorySelect();
       } catch (err) { console.error(err); }
@@ -645,6 +704,7 @@
       renderStandingsView(teams, matches, cat);
       renderPlayoffsView(cat, teams);
       renderDisciplineViews(teams);
+      renderModeratorsView();
     }
 
     function renderGroupsOverview(teams, cat) {
@@ -1101,6 +1161,47 @@
           </div>
         `;
       }).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
+    }
+
+    function renderModeratorsView() {
+      const mods = dbData.moderators.filter(m => m.category_id === activeCategoryId);
+      const container = document.getElementById('adminModeratorsList');
+      if (!container) return;
+
+      container.innerHTML = mods.map(m => `
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
+          <span class="text-white font-semibold">📧 ${m.owner_email}</span>
+          <button onclick="deleteRecord('${m.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️ Eliminar</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs">No hay moderadores adicionales en este torneo.</p>';
+    }
+
+    function openModeratorModal() {
+      if (!activeCategoryId) return alert("Selecciona un torneo primero.");
+      document.getElementById('modalModEmail').value = '';
+      openModal('moderatorModal');
+    }
+
+    async function saveModeratorFromModal() {
+      const email = document.getElementById('modalModEmail').value.trim();
+      if (!email) return alert("Ingresa un correo válido.");
+
+      const newMod = {
+        id: 'mod_' + Date.now(),
+        type: 'moderator',
+        category_id: activeCategoryId,
+        owner_email: email
+      };
+
+      const { error } = await supabaseClient.from('torneos_data').insert([newMod]);
+      if (error) {
+        alert("Error al guardar moderador: " + error.message);
+        return;
+      }
+
+      closeModal('moderatorModal');
+      await loadAdminData();
+      alert("¡Moderador agregado con éxito!");
     }
 
     async function saveMatchDetail() {
