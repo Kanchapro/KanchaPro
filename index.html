@@ -17,7 +17,7 @@
     .glass-card-hover:hover { border-color: rgba(34, 197, 94, 0.4); transform: translateY(-2px); box-shadow: 0 15px 35px rgba(22, 163, 74, 0.15); }
     .btn-green { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); transition: all 0.2s; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3); }
     .btn-green:hover { background: linear-gradient(135deg, #15803d 0%, #166534 100%); box-shadow: 0 6px 20px rgba(22, 163, 74, 0.5); transform: translateY(-1px); }
-    .tab-active { background: rgba(34, 197, 94, 0.15); border-bottom: 3px solid #22c55e; color: #4ade80; box-shadow: inset 0 -3px 0 #22c55e; }
+    .tab-active { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.5); color: #4ade80; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2); }
     .scrollbar-thin::-webkit-scrollbar { width: 5px; height: 5px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #060907; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
@@ -29,7 +29,7 @@
   <!-- CONFIGURACIÓN SUPABASE -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6InB1YmxpYyIsImlhdCI6MTc5MzAwODU0NywiZXhwIjoyMTA4NTg0NTQ3f0.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -69,14 +69,14 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-4 space-y-4">
     
-    <!-- Pestañas de Navegación Estilizadas -->
-    <div class="flex overflow-x-auto gap-2 glass-card rounded-2xl p-1.5 border border-green-900/30 scrollbar-thin shadow-xl">
-      <button onclick="switchPublicTab('standings', event)" class="public-tab px-4 py-2 rounded-xl text-xs whitespace-nowrap tab-active font-bold flex items-center gap-1.5 transition">📊 Posiciones</button>
-      <button onclick="switchPublicTab('fixture', event)" class="public-tab px-4 py-2 rounded-xl text-xs whitespace-nowrap text-slate-400 font-bold flex items-center gap-1.5 transition hover:text-white">📅 Fixture y Resultados</button>
-      <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-4 py-2 rounded-xl text-xs whitespace-nowrap text-slate-400 font-bold flex items-center gap-1.5 transition hover:text-white">🏆 Playoffs</button>
-      <button onclick="switchPublicTab('teams', event)" class="public-tab px-4 py-2 rounded-xl text-xs whitespace-nowrap text-slate-400 font-bold flex items-center gap-1.5 transition hover:text-white">🛡️ Equipos y Planteles</button>
-      <button onclick="switchPublicTab('scorers', event)" class="public-tab px-4 py-2 rounded-xl text-xs whitespace-nowrap text-slate-400 font-bold flex items-center gap-1.5 transition hover:text-white">⚽ Goleadores</button>
-      <button onclick="switchPublicTab('discipline', event)" class="public-tab px-4 py-2 rounded-xl text-xs whitespace-nowrap text-slate-400 font-bold flex items-center gap-1.5 transition hover:text-white">🟥 Sanciones</button>
+    <!-- Pestañas de Navegación Organizadas en Cuadrícula (Adaptable a Celular) -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 glass-card rounded-2xl p-2 border border-green-900/30 shadow-xl">
+      <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center tab-active font-bold flex items-center justify-center gap-1.5 transition">📊 Posiciones</button>
+      <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">📅 Fixture</button>
+      <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">🏆 Playoffs</button>
+      <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">🛡️ Equipos</button>
+      <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">⚽ Goleadores</button>
+      <button onclick="switchPublicTab('discipline', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">🟥 Sanciones</button>
     </div>
 
     <!-- Tab 1: Posiciones -->
