@@ -486,7 +486,6 @@
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'}`;
 
-      // Mostrar u ocultar sección de Tarjetas Azules según deporte
       const isFutsal = cat.sport_type === 'futsal';
       const blueCardContainer = document.getElementById('adminBlueCardContainer');
       if (blueCardContainer) {
@@ -559,7 +558,8 @@
       }
 
       container.innerHTML = teams.map(team => {
-        const teamPlayers = dbData.players.filter(p => p.team_id === team.id);
+        // Filtrar jugadores por category_id o team_id para asegurar que aparezcan correctamente
+        const teamPlayers = dbData.players.filter(p => p.team_id === team.id || p.category_id === activeCategoryId && p.team_id === team.id);
         return `
           <div class="bg-[#0b0f0d] border border-green-900/40 rounded-xl overflow-hidden">
             <div onclick="toggleTeamRoster('${team.id}')" class="p-3 bg-green-950/20 flex justify-between items-center cursor-pointer hover:bg-green-900/20 transition">
@@ -703,7 +703,7 @@
 
     function renderDisciplineViews(teams, isFutsal) {
       const teamIds = teams.map(t => t.id);
-      const players = dbData.players.filter(p => teamIds.includes(p.team_id));
+      const players = dbData.players.filter(p => teamIds.includes(p.team_id) || p.category_id === activeCategoryId);
 
       const yellows = players.filter(p => (p.yellows || 0) > 0).sort((a,b) => b.yellows - a.yellows);
       const blues = players.filter(p => (p.blues || 0) > 0).sort((a,b) => b.blues - a.blues);
@@ -989,8 +989,9 @@
       const team_id = document.getElementById('modalPlayerTeam').value;
       const name = document.getElementById('modalPlayerName').value;
       if (!name) return;
+      // Se añade category_id explícitamente para que aparezca en el listado y en los filtros
       await supabaseClient.from('torneos_data').insert([{
-        id: 'player_' + Date.now(), type: 'player', name, team_id, goals: 0, yellows: 0, blues: 0, reds: 0
+        id: 'player_' + Date.now(), type: 'player', name, team_id, category_id: activeCategoryId, goals: 0, yellows: 0, blues: 0, reds: 0
       }]);
       closeModal('playerModal');
       loadAdminData();
@@ -1053,7 +1054,8 @@
       const matchId = document.getElementById('modalMatchId').value;
       const match = dbData.matches.find(m => m.id === matchId);
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const allCategoryPlayers = dbData.players.filter(p => teams.map(t => t.id).includes(p.team_id));
+      // Incluir todos los jugadores válidos del torneo actual
+      const allCategoryPlayers = dbData.players.filter(p => teams.map(t => t.id).includes(p.team_id) || p.category_id === activeCategoryId);
 
       let playerStats = {};
       let totalHomeGoals = 0;
