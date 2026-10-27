@@ -6,7 +6,6 @@
   <title>KanchaPro - Panel Admin Pro con Sanciones Automáticas</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Librería para capturar tarjetas de fixture como imagen -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -1324,7 +1323,6 @@
 
       if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
 
-      // Validar regla estricta: un equipo solo puede jugar 1 partido por fecha
       const existingMatchesInRound = dbData.matches.filter(m => 
         m.category_id === activeCategoryId && 
         !m.is_playoff && 
