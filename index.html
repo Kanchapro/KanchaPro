@@ -29,7 +29,7 @@
   <!-- CONFIGURACIÓN SUPABASE -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6InB1YmxpYyIsImlhdCI6MTc5MzAwODU0NywiZXhwIjoyMTA4NTg0NTQ3f0.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -235,7 +235,7 @@
         pubData.suspensions = susp.data || [];
 
         populatePublicCategorySelect();
-      } catch (err) { console.error(err); }
+      } catch (err) { console.error("Error al cargar datos públicos:", err); }
     }
 
     function populatePublicCategorySelect(filteredCategories = null) {
@@ -248,7 +248,6 @@
       }
       select.innerHTML = catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
       
-      // Comprobar si hay un favorito guardado localmente
       const savedFav = localStorage.getItem(STORAGE_FAV_KEY);
 
       if (!currentPublicCatId) {
@@ -287,11 +286,9 @@
       const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
 
       if (currentFav === currentPublicCatId) {
-        // Si ya era favorito, lo quitamos
         localStorage.removeItem(STORAGE_FAV_KEY);
         alert("Torneo removido de favoritos.");
       } else {
-        // Guardamos como favorito
         localStorage.setItem(STORAGE_FAV_KEY, currentPublicCatId);
         alert("¡Torneo guardado como favorito en este dispositivo!");
       }
