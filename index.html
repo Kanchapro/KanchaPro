@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KanchaPro — Portal Oficial de Torneos</title>
-  <!-- Favicon con el escudo oficial desde ImgBB -->
   <link rel="icon" type="image/png" href="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,18 +14,15 @@
     .glass-card { background: rgba(11, 20, 14, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.18); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
     .glass-card-hover { transition: all 0.25s ease; }
     .glass-card-hover:hover { border-color: rgba(34, 197, 94, 0.4); transform: translateY(-2px); box-shadow: 0 15px 35px rgba(22, 163, 74, 0.15); }
-    .btn-green { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); transition: all 0.2s; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3); }
-    .btn-green:hover { background: linear-gradient(135deg, #15803d 0%, #166534 100%); box-shadow: 0 6px 20px rgba(22, 163, 74, 0.5); transform: translateY(-1px); }
+    .btn-theme { transition: all 0.2s; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
     .tab-active { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.5); color: #4ade80; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2); }
     .scrollbar-thin::-webkit-scrollbar { width: 5px; height: 5px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #060907; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
-    .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #22c55e; }
   </style>
 </head>
 <body class="h-full flex flex-col overflow-auto">
 
-  <!-- CONFIGURACIÓN SUPABASE -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
@@ -36,17 +32,19 @@
     }
   </script>
 
-  <!-- HEADER DESLUMBRANTE CON ESCUDO OFICIAL -->
+  <!-- HEADER CON LOGO DINÁMICO DEL TORNEO -->
   <header class="bg-[#050806]/90 border-b border-green-900/40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 backdrop-blur-md">
     <div class="flex items-center gap-2.5">
-      <img src="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png" alt="KanchaPro Logo" class="w-10 h-10 object-cover rounded-xl border border-green-500/40 shadow-lg shadow-green-900/30">
+      <div id="headerTournamentLogo" class="w-10 h-10 object-cover rounded-xl border border-green-500/40 shadow-lg flex items-center justify-center bg-green-950 overflow-hidden">
+        <img src="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png" alt="Logo" class="w-full h-full object-cover">
+      </div>
       <div>
-        <h1 class="text-sm font-black tracking-wider text-green-400">KANCHA<span class="text-white">PRO</span></h1>
+        <h1 id="headerTournamentTitle" class="text-sm font-black tracking-wider text-green-400">KANCHA<span class="text-white">PRO</span></h1>
         <p class="text-[9px] text-slate-400 tracking-widest uppercase font-semibold">Portal Oficial de Torneos</p>
       </div>
     </div>
 
-    <!-- Buscador, Selector y Botón Favorito -->
+    <!-- Buscador, Selector y Favorito -->
     <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-1 max-w-md justify-end">
       <div class="relative flex-1 max-w-[150px]">
         <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar..." oninput="filterTournaments(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-green-500 transition shadow-inner">
@@ -55,7 +53,6 @@
         <select id="publicCategorySelect" onchange="changePublicCategory(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-green-500 font-semibold transition shadow-inner">
           <option value="">Cargando torneos...</option>
         </select>
-        <!-- Botón de Favorito Local -->
         <button id="favBtn" onclick="toggleFavoriteTournament()" title="Marcar como torneo favorito" class="bg-[#0b140e] hover:bg-green-950/40 border border-green-900/50 px-2.5 py-1.5 rounded-xl text-slate-500 text-sm transition shadow-inner">
           ⭐
         </button>
@@ -73,7 +70,7 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-4 space-y-4">
     
-    <!-- Pestañas de Navegación Organizadas en Cuadrícula (Adaptable a Celular) -->
+    <!-- Pestañas -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 glass-card rounded-2xl p-2 border border-green-900/30 shadow-xl">
       <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center tab-active font-bold flex items-center justify-center gap-1.5 transition">📊 Posiciones</button>
       <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">📅 Fixture</button>
@@ -89,7 +86,7 @@
         <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
           <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla de Posiciones
         </h3>
-        <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
+        <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-theme text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg bg-emerald-600 hover:bg-emerald-700">
           📸 Capturar Tabla para WhatsApp
         </button>
       </div>
@@ -128,7 +125,7 @@
         <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
           <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla de Goleadores (Top Scorers)
         </h3>
-        <button onclick="captureScreenshot('captureAreaScorers', 'Tabla_De_Goleadores_KanchaPro.png')" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
+        <button onclick="captureScreenshot('captureAreaScorers', 'Tabla_De_Goleadores_KanchaPro.png')" class="btn-theme text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg bg-emerald-600 hover:bg-emerald-700">
           📸 Capturar Goleadores para WhatsApp
         </button>
       </div>
@@ -143,7 +140,7 @@
         <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
           <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span> Tribunal de Disciplina y Tarjetas
         </h3>
-        <button onclick="captureScreenshot('captureAreaDiscipline', 'Tribunal_De_Disciplina_KanchaPro.png')" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
+        <button onclick="captureScreenshot('captureAreaDiscipline', 'Tribunal_De_Disciplina_KanchaPro.png')" class="btn-theme text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg bg-emerald-600 hover:bg-emerald-700">
           📸 Capturar Sanciones para WhatsApp
         </button>
       </div>
@@ -161,7 +158,7 @@
 
   </main>
 
-  <!-- FOOTER DISCRETO CON ACCESO DE ADMIN OCULTO -->
+  <!-- FOOTER -->
   <footer class="bg-[#050806] border-t border-green-900/30 py-4 px-4 text-center text-slate-500 text-[11px] mt-auto flex flex-col sm:flex-row items-center justify-between gap-2 max-w-5xl w-full mx-auto">
     <div>
       <span class="text-green-400 font-bold">KanchaPro</span> &copy; 2026 — Todos los derechos reservados.
@@ -173,7 +170,7 @@
     </div>
   </footer>
 
-  <!-- MODAL DETALLE DE PARTIDO PÚBLICO -->
+  <!-- MODAL DETALLE DE PARTIDO -->
   <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-4 border border-green-500/30 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-2.5">
@@ -204,7 +201,6 @@
     </div>
   </div>
 
-  <!-- SCRIPT PÚBLICO -->
   <script>
     let pubData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
     let currentPublicCatId = null;
@@ -311,10 +307,10 @@
 
     function switchPublicTab(tabKey, evt) {
       document.querySelectorAll('.public-tab').forEach(t => {
-        t.classList.remove('tab-active', 'text-green-400');
+        t.classList.remove('tab-active');
         t.classList.add('text-slate-400');
       });
-      evt.currentTarget.classList.add('tab-active', 'text-green-400');
+      evt.currentTarget.classList.add('tab-active');
       evt.currentTarget.classList.remove('text-slate-400');
 
       document.querySelectorAll('.public-tab-content').forEach(c => c.classList.add('hidden'));
@@ -325,6 +321,19 @@
       if (!currentPublicCatId) return;
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       if (!cat) return;
+
+      // Aplicar colores y logos del torneo actual
+      const themeColor = cat.theme_color || '#16a34a';
+      document.documentElement.style.setProperty('--theme-color', themeColor);
+      
+      const headerLogo = document.getElementById('headerTournamentLogo');
+      if (cat.logo) {
+        headerLogo.innerHTML = `<img src="${cat.logo}" class="w-full h-full object-cover">`;
+      } else {
+        headerLogo.innerHTML = `<span class="text-xs">🏆</span>`;
+      }
+
+      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[10px] text-emerald-300 block font-normal">${cat.name}</span>`;
 
       const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
       const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
@@ -462,7 +471,7 @@
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       const catName = cat ? cat.name : 'Torneo KanchaPro';
       const url = window.location.href;
-      const text = `⚽ ¡Sigue las estadísticas, fixture y tabla de posiciones del torneo *${catName}* em KanchaPro!\n\n🔗 ${url}`;
+      const text = `⚽ ¡Sigue las estadísticas, fixture y tabla de posiciones del torneo *${catName}* en KanchaPro!\n\n🔗 ${url}`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
@@ -487,13 +496,17 @@
             ${roundsMap[roundName].map(m => {
               const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
               const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+              const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
               return `
-                <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/30 flex items-center justify-between gap-2 text-xs glass-card-hover">
-                  <span class="flex-1 font-bold text-white truncate text-right">${hTeam.name}</span>
-                  <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-3.5 py-1.5 rounded-xl text-green-400 font-black border border-green-900/60 hover:border-green-500 transition shadow">
-                    ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
-                  </button>
-                  <span class="flex-1 font-bold text-white truncate text-left">${aTeam.name}</span>
+                <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/30 space-y-1.5 text-xs glass-card-hover">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="flex-1 font-bold text-white truncate text-right">${hTeam.name}</span>
+                    <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-3.5 py-1.5 rounded-xl text-green-400 font-black border border-green-900/60 hover:border-green-500 transition shadow">
+                      ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
+                    </button>
+                    <span class="flex-1 font-bold text-white truncate text-left">${aTeam.name}</span>
+                  </div>
+                  ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-semibold">🗓️ ${infoText}</div>` : ''}
                 </div>
               `;
             }).join('')}
@@ -552,12 +565,18 @@
       container.innerHTML = playoffMatches.map(m => {
         const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Por definir' };
         const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
+        const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
         return `
-          <div class="bg-[#0b140e] p-3.5 rounded-2xl border border-green-900/40 flex items-center justify-between gap-2 text-xs shadow-md">
-            <span class="text-green-400 font-black w-28 uppercase tracking-wider">${m.round_name || 'Llave'}</span>
-            <div class="flex-1 text-right font-bold text-white truncate">${hTeam.name}</div>
-            <div class="bg-black px-3.5 py-1.5 rounded-xl text-green-400 font-black border border-green-900/60 shadow">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</div>
-            <div class="flex-1 text-left font-bold text-white truncate">${aTeam.name}</div>
+          <div class="bg-[#0b140e] p-3.5 rounded-2xl border border-green-900/40 flex flex-col gap-1.5 text-xs shadow-md">
+            <div class="flex items-center justify-between">
+              <span class="text-green-400 font-black uppercase tracking-wider">${m.round_name || 'Llave'}</span>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex-1 text-right font-bold text-white truncate">${hTeam.name}</div>
+              <div class="bg-black px-3.5 py-1.5 rounded-xl text-green-400 font-black border border-green-900/60 shadow">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</div>
+              <div class="flex-1 text-left font-bold text-white truncate">${aTeam.name}</div>
+            </div>
+            ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-medium">🗓️ ${infoText}</div>` : ''}
           </div>
         `;
       }).join('') || `<p class="text-slate-500 text-xs text-center py-6">Aún no se han generado las llaves de playoffs.</p>`;
