@@ -1078,15 +1078,36 @@
       }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin azules</p>';
 
       const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
-      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
-        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
-          <div>
-            <span class="font-bold text-white">${s.player_name} (${s.team_name || ''})</span>
-            <span class="text-[10px] text-slate-400 block">Fechas restantes: <strong>${s.remaining_matches ?? 1} partidos</strong> — Motivo: ${s.reason || 'Sin observación'}</span>
+      const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
+      let uniqueRounds = [...new Set(matches.map(m => m.round_name || 'Fecha'))];
+
+      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => {
+        const rem = s.remaining_matches ?? 1;
+        let missedRoundsText = "";
+        if (uniqueRounds.length > 0) {
+          let totalRoundsCount = uniqueRounds.length;
+          let startIndex = Math.max(0, totalRoundsCount - rem);
+          let affectedRounds = uniqueRounds.slice(startIndex, startIndex + rem);
+          if (affectedRounds.length > 0) {
+            missedRoundsText = `No puede jugar: ${affectedRounds.join(', ')}`;
+          } else {
+            missedRoundsText = `${rem} ${rem === 1 ? 'fecha pendiente' : 'fechas pendientes'}`;
+          }
+        } else {
+          missedRoundsText = `${rem} ${rem === 1 ? 'fecha pendiente' : 'fechas pendientes'}`;
+        }
+
+        return `
+          <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
+            <div>
+              <span class="font-bold text-white">${s.player_name} (${s.team_name || ''})</span>
+              <span class="text-[11px] text-yellow-300 font-bold block mt-0.5">🚫 ${missedRoundsText}</span>
+              <span class="text-[10px] text-slate-400 block">Motivo: ${s.reason || 'Sin observación'}</span>
+            </div>
+            <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
           </div>
-          <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
     }
 
     async function saveMatchDetail() {
@@ -1172,7 +1193,6 @@
         }
       }
 
-      // Descontar partidos de suspensión a los jugadores de los equipos que jugaron este partido
       const playingTeamIds = [match.home_team, match.away_team];
       const playingTeamsNames = teams.filter(t => playingTeamIds.includes(t.id)).map(t => t.name);
       const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
@@ -1213,7 +1233,6 @@
         const groupCount = cat.group_config?.count || 2;
         const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
 
-        // Auto-asignar grupos si algún equipo no tiene grupo asignado
         let unassignedTeams = teams.filter(t => !t.group_name);
         if (unassignedTeams.length > 0) {
           for (let i = 0; i < teams.length; i++) {
