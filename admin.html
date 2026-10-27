@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanchapro - Panel Admin Pro con Goleadores</title>
+  <title>Kanchapro - Panel Admin Pro con Sanciones Automáticas</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
       <div class="w-14 h-14 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-green-500/30">⚽</div>
       <div>
         <h2 class="text-xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
-        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Playoffs, Futsal y Goleadores</p>
+        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Playoffs, Futsal y Sanciones por Amarillas</p>
       </div>
       <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-xs">
         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -189,8 +189,8 @@
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Disciplina / Modalidad:</label>
         <select id="modalSportType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
-          <option value="football_11">Fútbol 11 (3 pts ganado)</option>
-          <option value="futsal">Fútbol 5 / Futsal (2 pts ganado)</option>
+          <option value="football_11">Fútbol 11 (3 pts ganado / 5 amarillas = 1 fecha)</option>
+          <option value="futsal">Fútbol 5 / Futsal (2 pts ganado / 3 amarillas = 1 fecha, 6 amarillas = 2 fechas)</option>
         </select>
       </div>
       <div>
@@ -681,7 +681,6 @@
         </table>
       `;
 
-      // Renderizar Top Goleadores
       const teamIds = teams.map(t => t.id);
       const categoryPlayers = dbData.players.filter(p => teamIds.includes(p.team_id));
 
@@ -825,6 +824,205 @@
           <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
         </div>
       `).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
+    }
+
+    async function saveMatchDetail() {
+      const matchId = document.getElementById('modalMatchId').value;
+      const match = dbData.matches.find(m => m.id === matchId);
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      const allCategoryPlayers = dbData.players.filter(p => teams.map(t => t.id).includes(p.team_id));
+
+      let playerStats = {};
+      let totalHomeGoals = 0;
+      let totalAwayGoals = 0;
+
+      for (let p of allCategoryPlayers) {
+        const gInput = document.getElementById(`p_g_${p.id}`);
+        const yInput = document.getElementById(`p_y_${p.id}`);
+        const rInput = document.getElementById(`p_r_${p.id}`);
+        const bInput = document.getElementById(`p_b_${p.id}`);
+        if (!gInput) continue;
+
+        const goals = parseInt(gInput.value) || 0;
+        const yellows = parseInt(yInput.value) || 0;
+        const reds = parseInt(rInput.value) || 0;
+        const blues = parseInt(bInput.value) || 0;
+
+        playerStats[p.id] = { goals, yellows, reds, blues };
+
+        if (p.team_id === match.home_team) totalHomeGoals += goals;
+        if (p.team_id === match.away_team) totalAwayGoals += goals;
+      }
+
+      const { error: matchError } = await supabaseClient.from('torneos_data').update({
+        home_score: totalHomeGoals,
+        away_score: totalAwayGoals,
+        played: true,
+        match_details: { playerStats }
+      }).eq('id', matchId);
+
+      if (matchError) {
+        alert("Error al guardar planilla: " + matchError.message);
+        return;
+      }
+
+      // Verificación automática de acumulación de amarillas para sanciones
+      if (cat) {
+        const isFutsal = cat.sport_type === 'futsal';
+        for (let p of allCategoryPlayers) {
+          // Calcular total de amarillas históricas del jugador en el torneo
+          let totalYellows = 0;
+          dbData.matches.forEach(m => {
+            const st = m.match_details?.playerStats?.[p.id];
+            if (st) totalYellows += (st.yellows || 0);
+          });
+
+          let suspensionDates = 0;
+          let reasonText = "";
+
+          if (isFutsal) {
+            if (totalYellows === 3 || totalYellows === 6 || totalYellows === 9) {
+              suspensionDates = (totalYellows === 6) ? 2 : 1;
+              reasonText = `Acumulación de ${totalYellows} tarjetas amarillas (Futsal)`;
+            }
+          } else {
+            // Fútbol 11: 5 amarillas = 1 fecha, 10 amarillas = 1 fecha, etc.
+            if (totalYellows > 0 && totalYellows % 5 === 0) {
+              suspensionDates = 1;
+              reasonText = `Acumulación de ${totalYellows} tarjetas amarillas (Fútbol 11)`;
+            }
+          }
+
+          if (suspensionDates > 0) {
+            // Verificar si ya existe una sanción activa por este motivo exacto para evitar duplicados en el mismo partido
+            const existingSusp = dbData.suspensions.find(s => s.player_id === p.id && s.reason === reasonText);
+            if (!existingSusp) {
+              const teamRecord = teams.find(t => t.id === p.team_id);
+              await supabaseClient.from('torneos_data').insert([{
+                id: 'susp_' + Date.now() + '_' + Math.floor(Math.random()*1000),
+                type: 'suspension',
+                category_id: activeCategoryId,
+                player_id: p.id,
+                player_name: p.name,
+                team_name: teamRecord ? teamRecord.name : '',
+                remaining_matches: suspensionDates,
+                reason: reasonText
+              }]);
+            }
+          }
+        }
+      }
+
+      // Descuento automático de suspensiones si el partido no estaba jugado previamente
+      if (!match.played) {
+        const playingTeamIds = [match.home_team, match.away_team];
+        const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
+
+        for (let susp of activeSuspensions) {
+          const playerRecord = dbData.players.find(p => p.id === susp.player_id);
+          if (playerRecord && playingTeamIds.includes(playerRecord.team_id)) {
+            let newRemaining = (susp.remaining_matches || 1) - 1;
+            if (newRemaining <= 0) {
+              await supabaseClient.from('torneos_data').delete().eq('id', susp.id);
+            } else {
+              await supabaseClient.from('torneos_data').update({ remaining_matches: newRemaining }).eq('id', susp.id);
+            }
+          }
+        }
+      }
+
+      closeModal('matchDetailModal');
+      await loadAdminData();
+      alert("¡Planilla guardada y sanciones actualizadas automáticamente!");
+    }
+
+    function openMatchModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
+      const hName = prompt("Equipo Local:");
+      const aName = prompt("Equipo Visitante:");
+      const hTeam = teams.find(t => t.name.toLowerCase() === hName?.toLowerCase());
+      const aTeam = teams.find(t => t.name.toLowerCase() === aName?.toLowerCase());
+      if (!hTeam || !aTeam) return alert("Equipos no encontrados.");
+
+      supabaseClient.from('torneos_data').insert([{
+        id: 'match_' + Date.now(), type: 'match', category_id: activeCategoryId,
+        home_team: hTeam.id, away_team: aTeam.id, home_score: 0, away_score: 0, played: false, is_playoff: false
+      }]).then(() => loadAdminData());
+    }
+
+    async function generateAutomaticFixture() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
+      
+      const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
+      if (existingLeagueMatches.length > 0) {
+        if (!confirm("Ya existe un fixture de liga. ¿Deseas borrarlo y generar uno nuevo?")) return;
+        for (let m of existingLeagueMatches) {
+          await supabaseClient.from('torneos_data').delete().eq('id', m.id);
+        }
+      }
+
+      let list = [...teams];
+      if (list.length % 2 !== 0) {
+        list.push({ id: 'BYE', name: 'LIBRE' });
+      }
+
+      const numTeams = list.length;
+      const totalRounds = numTeams - 1;
+      const matchesPerRound = numTeams / 2;
+
+      let fixtureRounds = [];
+
+      for (let round = 0; round < totalRounds; round++) {
+        let roundMatches = [];
+        for (let i = 0; i < matchesPerRound; i++) {
+          let home = list[i];
+          let away = list[numTeams - 1 - i];
+
+          if (home.id !== 'BYE' && away.id !== 'BYE') {
+            if (round % 2 === 1 && i === 0) {
+              roundMatches.push({ home: away, away: home });
+            } else {
+              roundMatches.push({ home: home, away: away });
+            }
+          }
+        }
+        fixtureRounds.push(roundMatches);
+
+        let temp = list.pop();
+        list.splice(1, 0, temp);
+      }
+
+      let timestamp = Date.now();
+      let counter = 0;
+
+      for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
+        let roundNumber = rIndex + 1;
+        let matchesInRound = fixtureRounds[rIndex];
+
+        for (let m of matchesInRound) {
+          counter++;
+          const newMatch = {
+            id: `match_${timestamp}_${counter}`,
+            type: 'match',
+            category_id: activeCategoryId,
+            home_team: m.home.id,
+            away_team: m.away.id,
+            home_score: 0,
+            away_score: 0,
+            played: false,
+            is_playoff: false,
+            round_name: `Fecha ${roundNumber}`
+          };
+
+          await supabaseClient.from('torneos_data').insert([newMatch]);
+        }
+      }
+
+      await loadAdminData();
+      alert(`¡Fixture generado en ${totalRounds} fechas!`);
     }
 
     function openPlayoffMatchModal() {
@@ -1122,156 +1320,6 @@
       }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores en este equipo.</p>';
 
       openModal('matchDetailModal');
-    }
-
-    async function saveMatchDetail() {
-      const matchId = document.getElementById('modalMatchId').value;
-      const match = dbData.matches.find(m => m.id === matchId);
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const allCategoryPlayers = dbData.players.filter(p => teams.map(t => t.id).includes(p.team_id));
-
-      let playerStats = {};
-      let totalHomeGoals = 0;
-      let totalAwayGoals = 0;
-
-      for (let p of allCategoryPlayers) {
-        const gInput = document.getElementById(`p_g_${p.id}`);
-        const yInput = document.getElementById(`p_y_${p.id}`);
-        const rInput = document.getElementById(`p_r_${p.id}`);
-        const bInput = document.getElementById(`p_b_${p.id}`);
-        if (!gInput) continue;
-
-        const goals = parseInt(gInput.value) || 0;
-        const yellows = parseInt(yInput.value) || 0;
-        const reds = parseInt(rInput.value) || 0;
-        const blues = parseInt(bInput.value) || 0;
-
-        playerStats[p.id] = { goals, yellows, reds, blues };
-
-        if (p.team_id === match.home_team) totalHomeGoals += goals;
-        if (p.team_id === match.away_team) totalAwayGoals += goals;
-      }
-
-      const { error: matchError } = await supabaseClient.from('torneos_data').update({
-        home_score: totalHomeGoals,
-        away_score: totalAwayGoals,
-        played: true,
-        match_details: { playerStats }
-      }).eq('id', matchId);
-
-      if (matchError) {
-        alert("Error al guardar planilla: " + matchError.message);
-        return;
-      }
-
-      if (!match.played) {
-        const playingTeamIds = [match.home_team, match.away_team];
-        const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
-
-        for (let susp of activeSuspensions) {
-          const playerRecord = dbData.players.find(p => p.id === susp.player_id);
-          if (playerRecord && playingTeamIds.includes(playerRecord.team_id)) {
-            let newRemaining = (susp.remaining_matches || 1) - 1;
-            if (newRemaining <= 0) {
-              await supabaseClient.from('torneos_data').delete().eq('id', susp.id);
-            } else {
-              await supabaseClient.from('torneos_data').update({ remaining_matches: newRemaining }).eq('id', susp.id);
-            }
-          }
-        }
-      }
-
-      closeModal('matchDetailModal');
-      await loadAdminData();
-      alert("¡Planilla y resultados guardados con éxito!");
-    }
-
-    function openMatchModal() {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
-      const hName = prompt("Equipo Local:");
-      const aName = prompt("Equipo Visitante:");
-      const hTeam = teams.find(t => t.name.toLowerCase() === hName?.toLowerCase());
-      const aTeam = teams.find(t => t.name.toLowerCase() === aName?.toLowerCase());
-      if (!hTeam || !aTeam) return alert("Equipos no encontrados.");
-
-      supabaseClient.from('torneos_data').insert([{
-        id: 'match_' + Date.now(), type: 'match', category_id: activeCategoryId,
-        home_team: hTeam.id, away_team: aTeam.id, home_score: 0, away_score: 0, played: false, is_playoff: false
-      }]).then(() => loadAdminData());
-    }
-
-    async function generateAutomaticFixture() {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
-      
-      const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
-      if (existingLeagueMatches.length > 0) {
-        if (!confirm("Ya existe un fixture de liga. ¿Deseas borrarlo y generar uno nuevo?")) return;
-        for (let m of existingLeagueMatches) {
-          await supabaseClient.from('torneos_data').delete().eq('id', m.id);
-        }
-      }
-
-      let list = [...teams];
-      if (list.length % 2 !== 0) {
-        list.push({ id: 'BYE', name: 'LIBRE' });
-      }
-
-      const numTeams = list.length;
-      const totalRounds = numTeams - 1;
-      const matchesPerRound = numTeams / 2;
-
-      let fixtureRounds = [];
-
-      for (let round = 0; round < totalRounds; round++) {
-        let roundMatches = [];
-        for (let i = 0; i < matchesPerRound; i++) {
-          let home = list[i];
-          let away = list[numTeams - 1 - i];
-
-          if (home.id !== 'BYE' && away.id !== 'BYE') {
-            if (round % 2 === 1 && i === 0) {
-              roundMatches.push({ home: away, away: home });
-            } else {
-              roundMatches.push({ home: home, away: away });
-            }
-          }
-        }
-        fixtureRounds.push(roundMatches);
-
-        let temp = list.pop();
-        list.splice(1, 0, temp);
-      }
-
-      let timestamp = Date.now();
-      let counter = 0;
-
-      for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-        let roundNumber = rIndex + 1;
-        let matchesInRound = fixtureRounds[rIndex];
-
-        for (let m of matchesInRound) {
-          counter++;
-          const newMatch = {
-            id: `match_${timestamp}_${counter}`,
-            type: 'match',
-            category_id: activeCategoryId,
-            home_team: m.home.id,
-            away_team: m.away.id,
-            home_score: 0,
-            away_score: 0,
-            played: false,
-            is_playoff: false,
-            round_name: `Fecha ${roundNumber}`
-          };
-
-          await supabaseClient.from('torneos_data').insert([newMatch]);
-        }
-      }
-
-      await loadAdminData();
-      alert(`¡Fixture generado en ${totalRounds} fechas!`);
     }
 
     function openSuspensionModal() {
