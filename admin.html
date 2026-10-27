@@ -558,7 +558,6 @@
       }
 
       container.innerHTML = teams.map(team => {
-        // Filtrar jugadores por team_id o cuyo equipo pertenezca al torneo actual
         const teamPlayers = dbData.players.filter(p => p.team_id === team.id);
         return `
           <div class="bg-[#0b0f0d] border border-green-900/40 rounded-xl overflow-hidden">
@@ -794,7 +793,7 @@
 
       await supabaseClient.from('torneos_data').insert([newMatch]);
       closeModal('playoffMatchModal');
-      loadAdminData();
+      await loadAdminData();
       alert("¡Llave de playoff creada con éxito!");
     }
 
@@ -846,7 +845,7 @@
       }
 
       alert("¡Llaves de playoffs generadas con éxito!");
-      loadAdminData();
+      await loadAdminData();
     }
 
     function togglePlayoffOptions(isChecked) {
@@ -912,7 +911,7 @@
       }
       
       closeModal('categoryModal');
-      loadAdminData();
+      await loadAdminData();
       alert("¡Torneo guardado con éxito!");
     }
 
@@ -921,7 +920,7 @@
       if (!confirm("¿Eliminar torneo?")) return;
       await supabaseClient.from('torneos_data').delete().eq('id', activeCategoryId);
       activeCategoryId = null;
-      loadAdminData();
+      await loadAdminData();
     }
 
     function openTeamModal(isEdit, teamId) {
@@ -974,7 +973,7 @@
         }]);
       }
       closeModal('teamModal');
-      loadAdminData();
+      await loadAdminData();
     }
 
     function openPlayerModal() {
@@ -988,9 +987,9 @@
     async function savePlayerFromModal() {
       const team_id = document.getElementById('modalPlayerTeam').value;
       const name = document.getElementById('modalPlayerName').value;
-      if (!name) return;
-      
-      const res = await supabaseClient.from('torneos_data').insert([{
+      if (!name) return alert("Ingresa el nombre del jugador.");
+
+      const newPlayer = {
         id: 'player_' + Date.now(), 
         type: 'player', 
         name, 
@@ -1000,15 +999,17 @@
         yellows: 0, 
         blues: 0, 
         reds: 0
-      }]);
+      };
 
-      if (res.error) {
-        alert("Error al guardar el jugador: " + res.error.message);
+      const { error } = await supabaseClient.from('torneos_data').insert([newPlayer]);
+      if (error) {
+        alert("Error al guardar jugador: " + error.message);
         return;
       }
 
       closeModal('playerModal');
-      loadAdminData();
+      await loadAdminData();
+      alert("¡Jugador agregado con éxito!");
     }
 
     function openMatchDetailModal(matchId) {
@@ -1042,7 +1043,7 @@
             </div>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores cargados en este equipo.</p>';
+      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores en este equipo. Agrégalos en la pestaña Planteles.</p>';
 
       const aPlayers = dbData.players.filter(p => p.team_id === aTeam.id);
       document.getElementById('labelAwayTeamTitle').textContent = `Plantel Visitante (${aTeam.name})`;
@@ -1059,7 +1060,7 @@
             </div>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores cargados en este equipo.</p>';
+      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores en este equipo. Agrégalos en la pestaña Planteles.</p>';
 
       openModal('matchDetailModal');
     }
@@ -1092,27 +1093,31 @@
         if (p.team_id === match.away_team) totalAwayGoals += goals;
       }
 
-      const resMatch = await supabaseClient.from('torneos_data').update({
+      // Actualizar el partido con el puntaje y las estadísticas detalladas
+      const { error: matchError } = await supabaseClient.from('torneos_data').update({
         home_score: totalHomeGoals,
         away_score: totalAwayGoals,
         played: true,
         match_details: { playerStats }
       }).eq('id', matchId);
 
-      if (resMatch.error) {
-        alert("Error al guardar planilla: " + resMatch.error.message);
+      if (matchError) {
+        alert("Error al guardar planilla: " + matchError.message);
         return;
       }
 
-      // Recalcular acumulados globales de goles y tarjetas por jugador
+      // Recalcular acumulados globales de goles y tarjetas por jugador sumando todos los partidos
       for (let p of allCategoryPlayers) {
         let totalG = 0, totalY = 0, totalB = 0, totalR = 0;
+        
+        // Revisar todas las planillas de los partidos jugados en esta categoría
         dbData.matches.forEach(m => {
-          if (m.match_details && m.match_details.playerStats && m.match_details.playerStats[p.id]) {
-            totalG += (m.match_details.playerStats[p.id].goals || 0);
-            totalY += (m.match_details.playerStats[p.id].yellows || 0);
-            totalB += (m.match_details.playerStats[p.id].blues || 0);
-            totalR += (m.match_details.playerStats[p.id].reds || 0);
+          let details = m.id === matchId ? { playerStats } : (m.match_details || {});
+          if (details.playerStats && details.playerStats[p.id]) {
+            totalG += (details.playerStats[p.id].goals || 0);
+            totalY += (details.playerStats[p.id].yellows || 0);
+            totalB += (details.playerStats[p.id].blues || 0);
+            totalR += (details.playerStats[p.id].reds || 0);
           }
         });
 
@@ -1143,8 +1148,8 @@
       }
 
       closeModal('matchDetailModal');
-      loadAdminData();
-      alert("¡Planilla guardada con éxito!");
+      await loadAdminData();
+      alert("¡Planilla y resultados guardados con éxito!");
     }
 
     function openMatchModal() {
@@ -1261,14 +1266,14 @@
       }]);
 
       closeModal('suspensionModal');
-      loadAdminData();
+      await loadAdminData();
       alert("¡Sanción guardada con éxito!");
     }
 
     async function deleteRecord(id) {
       if (!confirm("¿Eliminar este registro?")) return;
       await supabaseClient.from('torneos_data').delete().eq('id', id);
-      loadAdminData();
+      await loadAdminData();
     }
   </script>
 </body>
