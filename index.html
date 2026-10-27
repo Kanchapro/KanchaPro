@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KanchaPro — Portal Oficial de Torneos</title>
   <!-- Favicon con tu escudo -->
-  <link rel="icon" type="image/png" href="1001005929.png">
+  <link rel="icon" type="image/png" href="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -36,7 +36,7 @@
     }
   </script>
 
-  <!-- HEADER DESLUMBRANTE SIN BOTÓN DE ADMIN ESTORBOSO -->
+  <!-- HEADER DESLUMBRANTE -->
   <header class="bg-[#050806]/90 border-b border-green-900/40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 backdrop-blur-md">
     <div class="flex items-center gap-2.5">
       <img src="1001005929.png" alt="KanchaPro Logo" class="w-10 h-10 object-cover rounded-xl border border-green-500/40 shadow-lg shadow-green-900/30">
@@ -488,10 +488,10 @@
                 return `
                   <div class="flex justify-between items-center bg-[#0b140e] p-2 rounded-xl border border-green-900/20 text-xs">
                     <span class="font-semibold text-slate-200">👤 ${p.name}</span>
-                    <div class="flex gap-2.5 text-[11px] font-bold">
+                    <div class="flex gap-2 text-[11px] font-bold">
                       <span class="text-green-400">⚽ ${g}</span>
                       <span class="text-yellow-400">🟨 ${y}</span>
-                      ${isFutsal ? `<span class="text-blue-400">🟦 ${b}</span>` : ''}
+                      <span class="text-blue-400">🟦 ${b}</span>
                       <span class="text-red-400">🟥 ${r}</span>
                     </div>
                   </div>
@@ -543,21 +543,25 @@
     function renderPublicDiscipline(players, teams, teamIds) {
       let yellowMap = {};
       let blueMap = {};
+      let redMap = {};
 
       players.forEach(p => {
-        let totalY = 0, totalB = 0;
+        let totalY = 0, totalB = 0, totalR = 0;
         pubData.matches.forEach(m => {
           const st = m.match_details?.playerStats?.[p.id];
           if (st) {
             totalY += (st.yellows || 0);
             totalB += (st.blues || 0);
+            totalR += (st.reds || 0);
           }
         });
         if (totalY > 0) yellowMap[p.id] = { player: p, count: totalY };
         if (totalB > 0) blueMap[p.id] = { player: p, count: totalB };
+        if (totalR > 0) redMap[p.id] = { player: p, count: totalR };
       });
 
       const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
+      const bluesSorted = Object.values(blueMap).sort((a,b) => b.count - a.count);
 
       document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.map(item => {
         const t = teams.find(x => x.id === item.player.team_id);
