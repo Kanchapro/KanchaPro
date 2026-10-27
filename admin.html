@@ -1155,14 +1155,13 @@
           }
 
           if (suspensionDates > 0) {
-            const existingSusp = dbData.suspensions.find(s => s.player_id === p.id && s.reason === reasonText);
+            const existingSusp = dbData.suspensions.find(s => s.player_name === p.name && s.reason === reasonText);
             if (!existingSusp) {
               const teamRecord = teams.find(t => t.id === p.team_id);
               await supabaseClient.from('torneos_data').insert([{
                 id: 'susp_' + Date.now() + '_' + Math.floor(Math.random()*1000),
                 type: 'suspension',
                 category_id: activeCategoryId,
-                player_id: p.id,
                 player_name: p.name,
                 team_name: teamRecord ? teamRecord.name : '',
                 remaining_matches: suspensionDates,
@@ -1175,11 +1174,11 @@
 
       // Descontar partidos de suspensión a los jugadores de los equipos que jugaron este partido
       const playingTeamIds = [match.home_team, match.away_team];
+      const playingTeamsNames = teams.filter(t => playingTeamIds.includes(t.id)).map(t => t.name);
       const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
 
       for (let susp of activeSuspensions) {
-        const playerRecord = dbData.players.find(p => p.id === susp.player_id);
-        if (playerRecord && playingTeamIds.includes(playerRecord.team_id)) {
+        if (playingTeamsNames.includes(susp.team_name)) {
           let newRemaining = (susp.remaining_matches || 1) - 1;
           if (newRemaining <= 0) {
             await supabaseClient.from('torneos_data').delete().eq('id', susp.id);
@@ -1744,7 +1743,6 @@
         id: 'susp_' + Date.now(),
         type: 'suspension',
         category_id: activeCategoryId,
-        player_id: playerId,
         player_name: player ? player.name : 'Jugador',
         team_name: team ? team.name : '',
         remaining_matches,
