@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanchapro - Panel Admin Pro con Playoffs</title>
+  <title>Kanchapro - Portal de Torneos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,407 +30,126 @@
     }
   </script>
 
-  <!-- LOGIN GOOGLE -->
-  <div id="loginScreen" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4">
-    <div class="glass-card p-6 rounded-2xl max-w-sm w-full text-center space-y-5 shadow-2xl">
-      <div class="w-14 h-14 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-green-500/30">⚽</div>
-      <div>
-        <h2 class="text-xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
-        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Playoffs</p>
-      </div>
-      <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-xs">
-        <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        Continuar con Google
-      </button>
-    </div>
-  </div>
-
   <!-- HEADER -->
-  <header class="bg-[#060a08]/95 border-b border-green-900/40 px-3 py-2.5 flex items-center justify-between sticky top-0 z-40">
-    <h1 class="text-sm font-black text-green-400">KANCHA<span class="text-white">PRO</span> <span class="text-[10px] text-slate-400 font-normal">| Admin Total</span></h1>
-    <div class="flex items-center gap-1.5">
-      <a href="index.html" class="text-[11px] px-2.5 py-1.5 bg-slate-800 text-green-400 rounded-lg font-semibold border border-green-500/20">👁️ Ver Portal</a>
-      <button onclick="logoutAdmin()" class="text-[11px] px-2.5 py-1.5 bg-red-900/40 text-red-300 rounded-lg font-semibold border border-red-500/30">Salir</button>
+  <header class="bg-[#060a08]/95 border-b border-green-900/40 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center font-bold border border-green-500/30">⚽</div>
+      <h1 class="text-sm font-black text-green-400">KANCHA<span class="text-white">PRO</span></h1>
+    </div>
+    <div class="flex items-center gap-2">
+      <select id="publicCategorySelect" onchange="changePublicCategory(this.value)" class="bg-[#0b0f0d] border border-green-900/60 rounded-lg px-2.5 py-1.5 text-white text-xs focus:outline-none focus:border-green-500">
+        <option value="">Cargando torneos...</option>
+      </select>
+      <a href="admin.html" class="text-[11px] px-2.5 py-1.5 bg-green-600/20 hover:bg-green-600/30 text-green-300 rounded-lg font-semibold border border-green-500/30 transition">⚙️ Admin</a>
     </div>
   </header>
 
-  <!-- PANEL PRINCIPAL -->
-  <main id="adminMainPanel" class="flex-1 max-w-5xl w-full mx-auto p-3 space-y-4 hidden">
+  <!-- CONTENIDO PRINCIPAL PÚBLICO -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-3 space-y-4">
     
-    <!-- Torneo Activo -->
-    <div class="glass-card rounded-xl p-3 flex flex-col gap-3 border border-green-500/30">
-      <div class="flex items-center justify-between">
-        <label class="text-[10px] font-bold text-green-400 uppercase tracking-wider">Torneo en Gestión:</label>
-        <div class="flex gap-1">
-          <button onclick="openCategoryModal(true)" class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-[11px]">✏️ Editar</button>
-          <button onclick="deleteActiveCategory()" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️</button>
-        </div>
-      </div>
-      <div class="flex gap-2">
-        <select id="globalCategorySelect" onchange="changeActiveCategory(this.value)" class="bg-[#0b0f0d] border border-green-900/50 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-green-500 flex-1">
-          <option value="">-- Selecciona un torneo --</option>
-        </select>
-        <button onclick="openCategoryModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Crear</button>
-      </div>
-    </div>
-
-    <!-- Pestañas -->
+    <!-- Pestañas Públicas -->
     <div class="flex overflow-x-auto gap-1.5 glass-card rounded-xl p-1.5 border border-green-900/30 scrollbar-thin">
-      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap tab-active font-semibold">🛡️ Equipos</button>
-      <button onclick="switchAdminTab('players', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">👥 Planteles</button>
-      <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture</button>
-      <button onclick="switchAdminTab('standings', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones</button>
-      <button onclick="switchAdminTab('playoffs', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🏆 Playoffs / Llaves</button>
-      <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones y Tarjetas</button>
+      <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap tab-active font-semibold">📊 Posiciones</button>
+      <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture y Resultados</button>
+      <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🏆 Playoffs / Llaves</button>
+      <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🛡️ Equipos y Planteles</button>
+      <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">⚽ Goleadores</button>
+      <button onclick="switchPublicTab('discipline', event)" class="public-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones y Tarjetas</button>
     </div>
 
-    <!-- Tab 1: Equipos -->
-    <div id="adm-teams" class="admin-tab-content glass-card rounded-xl p-4 space-y-4">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-sm font-bold text-green-300">Equipos</h3>
-          <p id="teamLimitCounter" class="text-[10px] text-slate-400">Cupo</p>
-        </div>
-        <button onclick="openTeamModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Equipo</button>
-      </div>
-      <div id="adminTeamsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-    </div>
-
-    <!-- Tab 2: Planteles -->
-    <div id="adm-players" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-sm font-bold text-green-300">Planteles por Equipo</h3>
-          <p class="text-[10px] text-slate-400">Haz clic en un equipo para ver sus jugadores y en un jugador para ver sus estadísticas</p>
-        </div>
-        <button onclick="openPlayerModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Jugador</button>
-      </div>
-      <div id="adminRostersContainer" class="space-y-3 max-h-[450px] overflow-y-auto scrollbar-thin pr-1"></div>
-    </div>
-
-    <!-- Tab 3: Fixture -->
-    <div id="adm-fixture" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
-      <div class="flex flex-col gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
-        <h3 class="text-sm font-bold text-green-300">Fixture de Partidos</h3>
-        <div class="flex gap-2">
-          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar Automático</button>
-          <button onclick="openMatchModal()" class="btn-green flex-1 text-white text-[11px] font-bold py-2 rounded-lg">+ Manual</button>
-        </div>
-      </div>
-      <div id="adminMatchesList" class="space-y-3 max-h-[450px] overflow-y-auto scrollbar-thin"></div>
-    </div>
-
-    <!-- Tab 4: Posiciones -->
-    <div id="adm-standings" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
+    <!-- Tab 1: Posiciones -->
+    <div id="pub-standings" class="public-tab-content glass-card rounded-xl p-4 space-y-3">
       <h3 class="text-sm font-bold text-green-300">Tabla de Posiciones</h3>
-      <div id="adminStandingsContainer" class="overflow-x-auto"></div>
+      <div id="publicStandingsContainer" class="overflow-x-auto"></div>
     </div>
 
-    <!-- Tab 5: Playoffs / Llaves -->
-    <div id="adm-playoffs" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-sm font-bold text-green-300">Fase de Playoffs / Llaves</h3>
-          <p id="playoffStatusText" class="text-[10px] text-slate-400">Estado: Sin playoffs configurados</p>
-        </div>
-        <div class="flex gap-2">
-          <button onclick="openPlayoffMatchModal()" class="bg-blue-600/30 text-blue-300 px-3 py-1.5 rounded-lg text-xs font-bold">+ Manual</button>
-          <button onclick="generatePlayoffBrackets()" class="btn-green text-white text-xs font-bold px-3 py-1.5 rounded-lg">⚡ Generar Automáticas</button>
-        </div>
-      </div>
-      <div id="adminPlayoffsContainer" class="space-y-3"></div>
+    <!-- Tab 2: Fixture -->
+    <div id="pub-fixture" class="public-tab-content glass-card rounded-xl p-4 space-y-3 hidden">
+      <h3 class="text-sm font-bold text-green-300">Fixture y Resultados</h3>
+      <div id="publicMatchesContainer" class="space-y-3 max-h-[500px] overflow-y-auto scrollbar-thin"></div>
     </div>
 
-    <!-- Tab 6: Sanciones y Tarjetas -->
-    <div id="adm-discipline" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-green-300">Tribunal de Disciplina y Acumulado de Tarjetas</h3>
-        <button onclick="openSuspensionModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Sanción Manual</button>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 space-y-3">
-          <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Amarillas</h4>
-          <div id="adminYellowCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
+    <!-- Tab 3: Playoffs -->
+    <div id="pub-playoffs" class="public-tab-content glass-card rounded-xl p-4 space-y-3 hidden">
+      <h3 class="text-sm font-bold text-green-300">Fase de Playoffs / Llaves</h3>
+      <div id="publicPlayoffsContainer" class="space-y-3"></div>
+    </div>
+
+    <!-- Tab 4: Equipos y Planteles -->
+    <div id="pub-teams" class="public-tab-content glass-card rounded-xl p-4 space-y-3 hidden">
+      <h3 class="text-sm font-bold text-green-300">Equipos y Planteles Registrados</h3>
+      <div id="publicTeamsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+    </div>
+
+    <!-- Tab 5: Goleadores -->
+    <div id="pub-scorers" class="public-tab-content glass-card rounded-xl p-4 space-y-3 hidden">
+      <h3 class="text-sm font-bold text-green-300">Tabla de Goleadores</h3>
+      <div id="publicScorersContainer" class="space-y-2"></div>
+    </div>
+
+    <!-- Tab 6: Sanciones -->
+    <div id="pub-discipline" class="public-tab-content glass-card rounded-xl p-4 space-y-3 hidden">
+      <h3 class="text-sm font-bold text-green-300">Tribunal de Disciplina (Sanciones y Tarjetas)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 space-y-2">
+          <h4 class="font-bold text-yellow-400 text-xs">🟨 Acumulado de Amarillas</h4>
+          <div id="pubYellowCardsList" class="space-y-1.5 max-h-60 overflow-y-auto scrollbar-thin"></div>
         </div>
-        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 space-y-3" id="adminBlueCardsBox">
-          <h4 class="font-bold text-blue-400 text-xs flex items-center gap-1.5">🟦 Tarjetas Azules</h4>
-          <div id="adminBlueCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 space-y-2">
+          <h4 class="font-bold text-red-400 text-xs">🟥 Jugadores Suspendidos / Rojas</h4>
+          <div id="pubSuspensionsList" class="space-y-1.5 max-h-60 overflow-y-auto scrollbar-thin"></div>
         </div>
-        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 space-y-3">
-          <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Rojas</h4>
-          <div id="adminRedCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
-        </div>
-      </div>
-      <div class="pt-2">
-        <h4 class="font-bold text-green-300 text-xs mb-2">Jugadores Suspendidos (Se descuentan por partido jugado)</h4>
-        <div id="adminSuspensionsList" class="space-y-2"></div>
       </div>
     </div>
 
   </main>
 
-  <!-- ==================== MODALES ==================== -->
-
-  <!-- Modal Torneo -->
-  <div id="categoryModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
-    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 my-auto text-xs">
-      <h3 id="catModalTitle" class="text-sm font-bold text-green-400">Crear Torneo</h3>
-      <input type="hidden" id="modalCatId">
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Torneo:</label>
-        <input type="text" id="modalCatName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Disciplina / Modalidad:</label>
-        <select id="modalSportType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
-          <option value="football_11">Fútbol 11 (3 pts ganado)</option>
-          <option value="futsal">Fútbol 5 / Futsal (2 pts ganado)</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Formato:</label>
-        <select id="modalCatType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
-          <option value="league">Liga (Todos contra todos)</option>
-          <option value="cup">Copa (Por Grupos)</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Cantidad Máxima de Equipos:</label>
-        <input type="number" id="modalCatMaxTeams" value="8" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
-      </div>
-
-      <div class="border-t border-green-900/40 pt-2 space-y-2">
-        <div class="flex items-center justify-between">
-          <label class="font-bold text-green-400 text-[11px]">¿Tiene Fase de Playoffs?</label>
-          <input type="checkbox" id="modalHasPlayoffs" onchange="togglePlayoffOptions(this.checked)" class="w-4 h-4 accent-green-600">
-        </div>
-        
-        <div id="playoffOptionsContainer" class="space-y-2 hidden bg-[#0b0f0d] p-2.5 rounded-lg border border-green-900/40">
-          <div>
-            <label class="block text-[10px] text-slate-300 mb-1">¿Cuántos clasifican a Playoffs?</label>
-            <select id="modalPlayoffCount" class="w-full bg-black border border-green-900 rounded p-1.5 text-white text-xs">
-              <option value="2">2 equipos (Gran Final)</option>
-              <option value="4">4 equipos (Semifinales y Final)</option>
-              <option value="8">8 equipos (Cuartos, Semis y Final)</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeModal('categoryModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="saveCategoryFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar Torneo</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Detalle Partido -->
-  <div id="matchDetailModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto">
-    <div class="glass-card p-4 rounded-2xl max-w-lg w-full space-y-4 border border-green-500/30 my-auto text-xs">
+  <!-- MODAL DETALLE DE PARTIDO PÚBLICO -->
+  <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto">
+    <div class="glass-card p-4 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 my-auto text-xs">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
-        <h3 class="text-sm font-bold text-green-400">Planilla y Estadísticas del Partido</h3>
-        <button onclick="closeModal('matchDetailModal')" class="text-slate-400 hover:text-white font-bold">✕</button>
+        <h3 class="text-sm font-bold text-green-400">Detalles del Partido</h3>
+        <button onclick="closeModal('publicMatchModal')" class="text-slate-400 hover:text-white font-bold">✕</button>
       </div>
-      <input type="hidden" id="modalMatchId">
-      
-      <div class="flex justify-between items-center bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 text-center">
-        <div class="flex-1 font-bold text-white truncate text-right pr-2" id="mdHomeName">Local</div>
-        <div class="flex items-center gap-1.5">
-          <input type="number" id="mdHomeScore" class="w-12 bg-black text-center border border-green-900 rounded py-1 text-white text-sm font-bold" readonly>
-          <span class="text-green-400 font-bold">-</span>
-          <input type="number" id="mdAwayScore" class="w-12 bg-black text-center border border-green-900 rounded py-1 text-white text-sm font-bold" readonly>
-        </div>
-        <div class="flex-1 font-bold text-white truncate text-left pl-2" id="mdAwayName">Visitante</div>
-      </div>
-
-      <div class="space-y-4 max-h-[380px] overflow-y-auto scrollbar-thin pr-1">
-        <div class="bg-[#0b0f0d] rounded-xl border border-green-900/40 overflow-hidden">
-          <div onclick="toggleAccordion('home_accordion')" class="p-3 bg-green-950/20 flex justify-between items-center cursor-pointer font-bold text-green-300">
-            <span id="labelHomeTeamTitle">Plantel Local</span>
-            <span>▼</span>
-          </div>
-          <div id="home_accordion" class="hidden p-2.5 space-y-2 border-t border-green-900/30">
-            <div id="homeTeamStatsList" class="space-y-2"></div>
-          </div>
-        </div>
-
-        <div class="bg-[#0b0f0d] rounded-xl border border-green-900/40 overflow-hidden">
-          <div onclick="toggleAccordion('away_accordion')" class="p-3 bg-green-950/20 flex justify-between items-center cursor-pointer font-bold text-green-300">
-            <span id="labelAwayTeamTitle">Plantel Visitante</span>
-            <span>▼</span>
-          </div>
-          <div id="away_accordion" class="hidden p-2.5 space-y-2 border-t border-green-900/30">
-            <div id="awayTeamStatsList" class="space-y-2"></div>
-          </div>
+      <div class="text-center py-2 bg-[#0b0f0d] rounded-xl border border-green-900/40">
+        <span id="pmRoundName" class="text-[10px] text-green-400 font-bold block mb-1">Fecha</span>
+        <div class="flex justify-around items-center font-bold text-white text-xs px-2">
+          <span id="pmHomeName" class="flex-1 text-right truncate">Local</span>
+          <span id="pmScore" class="mx-3 bg-black px-2.5 py-1 rounded border border-green-900 text-green-400 text-sm">0 - 0</span>
+          <span id="pmAwayName" class="flex-1 text-left truncate">Visitante</span>
         </div>
       </div>
-
-      <div class="flex justify-end gap-2 pt-2 border-t border-green-900/40">
-        <button onclick="closeModal('matchDetailModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="saveMatchDetail()" class="btn-green px-4 py-1.5 text-white rounded-lg font-bold">Guardar Planilla</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Estadísticas Detalladas del Jugador -->
-  <div id="playerStatsModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3">
-    <div class="glass-card p-5 rounded-2xl max-w-xs w-full space-y-4 border border-green-500/30 text-xs">
-      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
-        <h3 class="text-sm font-bold text-green-400">Estadísticas del Jugador</h3>
-        <button onclick="closeModal('playerStatsModal')" class="text-slate-400 hover:text-white font-bold">✕</button>
-      </div>
-      <div class="space-y-3 text-center">
-        <div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-full flex items-center justify-center mx-auto text-xl border border-green-500/30">👤</div>
+      <div class="space-y-3 max-h-60 overflow-y-auto scrollbar-thin">
         <div>
-          <h4 id="statPlayerName" class="text-sm font-bold text-white">Nombre</h4>
-          <p id="statPlayerTeam" class="text-[10px] text-slate-400">Equipo</p>
+          <h4 class="font-bold text-green-300 text-[11px] mb-1">Goles y Tarjetas Local</h4>
+          <div id="pmHomeStats" class="space-y-1 text-slate-300"></div>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
-          <div>
-            <span class="text-[9px] text-slate-400 block">⚽ Goles</span>
-            <span id="statPlayerGoals" class="text-sm font-black text-green-400">0</span>
-          </div>
-          <div>
-            <span class="text-[9px] text-slate-400 block">🟨 Amarillas</span>
-            <span id="statPlayerYellows" class="text-sm font-black text-yellow-400">0</span>
-          </div>
-          <div id="statBoxBlue" class="hidden">
-            <span class="text-[9px] text-slate-400 block">🟦 Azules</span>
-            <span id="statPlayerBlues" class="text-sm font-black text-blue-400">0</span>
-          </div>
-          <div>
-            <span class="text-[9px] text-slate-400 block">🟥 Rojas</span>
-            <span id="statPlayerReds" class="text-sm font-black text-red-400">0</span>
-          </div>
+        <div>
+          <h4 class="font-bold text-green-300 text-[11px] mb-1">Goles y Tarjetas Visitante</h4>
+          <div id="pmAwayStats" class="space-y-1 text-slate-300"></div>
         </div>
       </div>
       <div class="flex justify-end pt-2">
-        <button onclick="closeModal('playerStatsModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg font-semibold">Cerrar</button>
+        <button onclick="closeModal('publicMatchModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded-lg font-semibold">Cerrar</button>
       </div>
     </div>
   </div>
 
-  <!-- Modal Equipo -->
-  <div id="teamModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
-    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
-      <h3 id="teamModalTitle" class="text-sm font-bold text-green-400">Registrar Equipo</h3>
-      <input type="hidden" id="modalTeamId">
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Equipo:</label>
-        <input type="text" id="modalTeamName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Los Amigos FC">
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Escudo / Foto desde Dispositivo:</label>
-        <input type="file" id="modalTeamFile" accept="image/*" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2 text-white text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700">
-      </div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeModal('teamModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="saveTeamFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Jugador -->
-  <div id="playerModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
-    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
-      <h3 class="text-sm font-bold text-green-400">Registrar Jugador</h3>
-      <select id="modalPlayerTeam" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
-      <input type="text" id="modalPlayerName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Nombre y Apellido">
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeModal('playerModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="savePlayerFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Sanción -->
-  <div id="suspensionModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
-    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
-      <h3 class="text-sm font-bold text-green-400">Tribunal de Disciplina - Sanción</h3>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Jugador:</label>
-        <input type="text" id="modalSuspName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Nombre">
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Equipo del Jugador:</label>
-        <select id="modalSuspTeam" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Partidos de Suspensión:</label>
-        <input type="number" id="modalSuspMatches" value="1" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Motivo / Observación:</label>
-        <textarea id="modalSuspReason" rows="2" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Doble amarilla, conducta antideportiva..."></textarea>
-      </div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeModal('suspensionModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="saveSuspensionFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar Sanción</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Llave Playoff Manual -->
-  <div id="playoffMatchModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
-    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
-      <h3 class="text-sm font-bold text-green-400">Crear Llave de Playoff Manual</h3>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Fase / Ronda:</label>
-        <input type="text" id="modalPlayoffRound" value="Semifinal" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Equipo Local:</label>
-        <select id="modalPlayoffHome" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
-      </div>
-      <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Equipo Visitante:</label>
-        <select id="modalPlayoffAway" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
-      </div>
-      <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeModal('playoffMatchModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="saveManualPlayoffMatch()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar Llave</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SCRIPT -->
+  <!-- SCRIPT PÚBLICO -->
   <script>
-    let dbData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
-    let activeCategoryId = null;
+    let pubData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
+    let currentPublicCatId = null;
 
-    function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
-    function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
-    function toggleAccordion(id) { document.getElementById(id).classList.toggle('hidden'); }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     window.addEventListener('DOMContentLoaded', async () => {
-      if (supabaseClient) {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session) unlockAdminPanel();
-      }
+      await loadPublicData();
     });
 
-    async function loginWithGoogle() {
-      if (!supabaseClient) return;
-      await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
-    }
-
-    function unlockAdminPanel() {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('adminMainPanel').classList.remove('hidden');
-      loadAdminData();
-    }
-
-    async function logoutAdmin() {
-      if (supabaseClient) await supabaseClient.auth.signOut();
-      window.location.reload();
-    }
-
-    async function loadAdminData() {
+    async function loadPublicData() {
       if (!supabaseClient) return;
       try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const userEmail = session ? session.user.email : '';
-
         const [cat, team, player, match, susp] = await Promise.all([
           supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
           supabaseClient.from('torneos_data').select('*').eq('type', 'team'),
@@ -439,194 +158,74 @@
           supabaseClient.from('torneos_data').select('*').eq('type', 'suspension')
         ]);
 
-        dbData.categories = (cat.data || []).filter(c => !c.owner_email || c.owner_email === userEmail);
-        dbData.teams = team.data || [];
-        dbData.players = player.data || [];
-        dbData.matches = match.data || [];
-        dbData.suspensions = susp.data || [];
+        pubData.categories = cat.data || [];
+        pubData.teams = team.data || [];
+        pubData.players = player.data || [];
+        pubData.matches = match.data || [];
+        pubData.suspensions = susp.data || [];
 
-        populateCategorySelect();
+        populatePublicCategorySelect();
       } catch (err) { console.error(err); }
     }
 
-    function populateCategorySelect() {
-      const select = document.getElementById('globalCategorySelect');
-      select.innerHTML = '<option value="">-- Selecciona un torneo --</option>' +
-        dbData.categories.map(c => `<option value="${c.id}">🏆 ${c.name} (${c.tournament_type === 'cup' ? 'Copa' : 'Liga'})</option>`).join('');
-
-      if (dbData.categories.length > 0 && (!activeCategoryId || !dbData.categories.some(c => c.id === activeCategoryId))) {
-        activeCategoryId = dbData.categories[0].id;
+    function populatePublicCategorySelect() {
+      const select = document.getElementById('publicCategorySelect');
+      if (pubData.categories.length === 0) {
+        select.innerHTML = '<option value="">No hay torneos disponibles</option>';
+        return;
       }
-      if (activeCategoryId) select.value = activeCategoryId;
-      renderActiveCategoryViews();
+      select.innerHTML = pubData.categories.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
+      if (!currentPublicCatId || !pubData.categories.some(c => c.id === currentPublicCatId)) {
+        currentPublicCatId = pubData.categories[0].id;
+      }
+      select.value = currentPublicCatId;
+      renderPublicViews();
     }
 
-    function changeActiveCategory(catId) {
-      activeCategoryId = catId;
-      renderActiveCategoryViews();
+    function changePublicCategory(catId) {
+      currentPublicCatId = catId;
+      renderPublicViews();
     }
 
-    function switchAdminTab(tabKey, evt) {
-      document.querySelectorAll('.admin-tab').forEach(t => {
+    function switchPublicTab(tabKey, evt) {
+      document.querySelectorAll('.public-tab').forEach(t => {
         t.classList.remove('tab-active', 'text-green-400');
         t.classList.add('text-slate-400');
       });
       evt.target.classList.add('tab-active', 'text-green-400');
       evt.target.classList.remove('text-slate-400');
 
-      document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
-      document.getElementById(`adm-${tabKey}`).classList.remove('hidden');
+      document.querySelectorAll('.public-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`pub-${tabKey}`).classList.remove('hidden');
     }
 
-    function renderActiveCategoryViews() {
-      if (!activeCategoryId) return;
-      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+    function renderPublicViews() {
+      if (!currentPublicCatId) return;
+      const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       if (!cat) return;
 
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'}`;
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
+      const playoffMatches = pubData.matches.filter(m => m.category_id === currentPublicCatId && m.is_playoff);
+      const teamIds = teams.map(t => t.id);
+      const players = pubData.players.filter(p => teamIds.includes(p.team_id));
 
-      document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
-        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
-          <div class="flex items-center gap-2.5">
-            ${t.logo ? `<img src="${t.logo}" class="w-7 h-7 object-cover rounded-full border border-green-500/30" onerror="this.style.display='none'">` : '<div class="w-7 h-7 bg-green-950 text-green-400 rounded-full flex items-center justify-center font-bold">🛡️</div>'}
-            <span class="font-bold text-white truncate">${t.name}</span>
-          </div>
-          <div class="flex gap-1">
-            <button onclick="openTeamModal(true, '${t.id}')" class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-[11px]">✏️</button>
-            <button onclick="deleteRecord('${t.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️</button>
-          </div>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-xs">No hay equipos.</p>';
-
-      renderRostersView(teams);
-
-      const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
-      
-      if (matches.length === 0) {
-        document.getElementById('adminMatchesList').innerHTML = '<p class="text-slate-500 text-xs">No hay partidos de liga.</p>';
-      } else {
-        let roundsMap = {};
-        matches.forEach(m => {
-          let rName = m.round_name || 'Partidos';
-          if (!roundsMap[rName]) roundsMap[rName] = [];
-          roundsMap[rName].push(m);
-        });
-
-        document.getElementById('adminMatchesList').innerHTML = Object.keys(roundsMap).map(roundName => `
-          <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2">
-            <h4 class="text-xs font-black text-green-400 uppercase tracking-wider border-b border-green-900/40 pb-1">${roundName}</h4>
-            <div class="space-y-2">
-              ${roundsMap[roundName].map(m => {
-                const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
-                const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
-                return `
-                  <div class="bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 space-y-1.5">
-                    <div class="flex items-center justify-between gap-1 text-xs">
-                      <span class="flex-1 font-semibold text-white truncate text-right">${hTeam.name}</span>
-                      <span class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</span>
-                      <span class="flex-1 font-semibold text-white truncate text-left">${aTeam.name}</span>
-                    </div>
-                    <div class="flex justify-between items-center pt-1 border-t border-green-900/30">
-                      <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[11px] px-3 py-1 rounded font-semibold">⚙️ Cargar Planilla</button>
-                      <button onclick="deleteRecord('${m.id}')" class="text-red-400 text-xs">🗑️</button>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `).join('');
-      }
-
-      renderStandingsView(teams, matches, cat);
-      renderPlayoffsView(cat, teams);
-      renderDisciplineViews(teams, cat);
+      // 1. Posiciones
+      renderPublicStandings(teams, matches, cat);
+      // 2. Fixture
+      renderPublicMatches(teams, matches);
+      // 3. Playoffs
+      renderPublicPlayoffs(cat, playoffMatches, teams);
+      // 4. Equipos y Planteles
+      renderPublicTeamsAndRosters(teams, players, cat.sport_type === 'futsal');
+      // 5. Goleadores
+      renderPublicScorers(players, teams);
+      // 6. Disciplina
+      renderPublicDiscipline(players, teams);
     }
 
-    function renderRostersView(teams) {
-      const container = document.getElementById('adminRostersContainer');
-      const cat = dbData.categories.find(c => c.id === activeCategoryId);
-      const isFutsal = cat && cat.sport_type === 'futsal';
-
-      if (teams.length === 0) {
-        container.innerHTML = '<p class="text-slate-500 text-xs">No hay equipos registrados.</p>';
-        return;
-      }
-
-      container.innerHTML = teams.map(team => {
-        const teamPlayers = dbData.players.filter(p => p.team_id === team.id);
-        return `
-          <div class="bg-[#0b0f0d] border border-green-900/40 rounded-xl overflow-hidden">
-            <div onclick="toggleTeamRoster('${team.id}')" class="p-3 bg-green-950/20 flex justify-between items-center cursor-pointer hover:bg-green-900/20 transition">
-              <div class="flex items-center gap-2">
-                ${team.logo ? `<img src="${team.logo}" class="w-6 h-6 object-cover rounded-full" onerror="this.style.display='none'">` : '<span>🛡️</span>'}
-                <span class="font-bold text-white text-xs">${team.name}</span>
-                <span class="text-[10px] bg-black/40 px-2 py-0.5 rounded text-slate-400 border border-green-900/30">${teamPlayers.length} jugadores</span>
-              </div>
-              <span id="icon_team_${team.id}" class="text-green-400 font-bold text-xs">▼</span>
-            </div>
-
-            <div id="roster_team_${team.id}" class="hidden p-2.5 space-y-1.5 border-t border-green-900/30 bg-[#060a08]">
-              ${teamPlayers.length > 0 ? teamPlayers.map(p => `
-                <div onclick="openPlayerStatsModal('${p.id}')" class="p-2 rounded-lg bg-[#0b0f0d] border border-green-900/20 flex justify-between items-center cursor-pointer hover:border-green-500/50 transition">
-                  <div class="flex items-center gap-2">
-                    <span class="text-slate-400 text-xs">👤</span>
-                    <span class="font-semibold text-white text-xs">${p.name}</span>
-                  </div>
-                  <div class="flex items-center gap-3 text-[11px]">
-                    <span class="text-green-400 font-bold">⚽ ${p.goals || 0}</span>
-                    <span class="text-yellow-400">🟨 ${p.yellows || 0}</span>
-                    ${isFutsal ? `<span class="text-blue-400">🟦 ${p.blues || 0}</span>` : ''}
-                    <span class="text-red-400">🟥 ${p.reds || 0}</span>
-                    <button onclick="event.stopPropagation(); deleteRecord('${p.id}')" class="text-red-400 hover:text-red-300 text-[10px]">🗑️</button>
-                  </div>
-                </div>
-              `).join('') : '<p class="text-slate-500 text-[11px] text-center py-2">No hay jugadores registrados.</p>'}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function toggleTeamRoster(teamId) {
-      const rosterDiv = document.getElementById(`roster_team_${teamId}`);
-      const iconSpan = document.getElementById(`icon_team_${teamId}`);
-      if (rosterDiv.classList.contains('hidden')) {
-        rosterDiv.classList.remove('hidden');
-        iconSpan.textContent = '▲';
-      } else {
-        rosterDiv.classList.add('hidden');
-        iconSpan.textContent = '▼';
-      }
-    }
-
-    function openPlayerStatsModal(playerId) {
-      const player = dbData.players.find(p => p.id === playerId);
-      if (!player) return;
-      const team = dbData.teams.find(t => t.id === player.team_id);
-      const cat = dbData.categories.find(c => c.id === activeCategoryId);
-      const isFutsal = cat && cat.sport_type === 'futsal';
-
-      document.getElementById('statPlayerName').textContent = player.name;
-      document.getElementById('statPlayerTeam').textContent = team ? team.name : 'Sin equipo';
-      document.getElementById('statPlayerGoals').textContent = player.goals || 0;
-      document.getElementById('statPlayerYellows').textContent = player.yellows || 0;
-      document.getElementById('statPlayerReds').textContent = player.reds || 0;
-
-      const statBoxBlue = document.getElementById('statBoxBlue');
-      if (isFutsal) {
-        statBoxBlue.classList.remove('hidden');
-        document.getElementById('statPlayerBlues').textContent = player.blues || 0;
-      } else {
-        statBoxBlue.classList.add('hidden');
-      }
-
-      openModal('playerStatsModal');
-    }
-
-    function renderStandingsView(teams, matches, cat) {
-      const container = document.getElementById('adminStandingsContainer');
+    function renderPublicStandings(teams, matches, cat) {
+      const container = document.getElementById('publicStandingsContainer');
       const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
 
       const stats = teams.map(team => {
@@ -656,7 +255,10 @@
             ${stats.map((t, idx) => `
               <tr class="${idx < 4 ? 'bg-green-900/10' : ''}">
                 <td class="p-2 font-bold text-green-400">${idx + 1}</td>
-                <td class="p-2 font-semibold text-white truncate max-w-[100px]">${t.name}</td>
+                <td class="p-2 font-semibold text-white truncate max-w-[120px] flex items-center gap-1.5">
+                  ${t.logo ? `<img src="${t.logo}" class="w-4 h-4 object-cover rounded-full">` : ''}
+                  ${t.name}
+                </td>
                 <td class="p-2 text-center">${t.played}</td><td class="p-2 text-center">${t.won}</td><td class="p-2 text-center">${t.drawn}</td><td class="p-2 text-center">${t.lost}</td><td class="p-2 text-center">${t.gd}</td><td class="p-2 text-center font-bold text-green-400">${t.points}</td>
               </tr>
             `).join('')}
@@ -665,597 +267,176 @@
       `;
     }
 
-    function renderPlayoffsView(cat, teams) {
-      const container = document.getElementById('adminPlayoffsContainer');
-      const statusText = document.getElementById('playoffStatusText');
-
-      if (!cat.has_playoffs) {
-        statusText.textContent = "Estado: Desactivado para este torneo";
-        container.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">Los playoffs no están habilitados en la configuración de este torneo.</p>`;
+    function renderPublicMatches(teams, matches) {
+      const container = document.getElementById('publicMatchesContainer');
+      if (matches.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-xs text-center py-4">No hay partidos programados.</p>';
         return;
       }
 
-      const playoffMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff);
-      statusText.textContent = `Estado: Activado (${cat.playoff_config?.count || 4} clasificados)`;
+      let roundsMap = {};
+      matches.forEach(m => {
+        let rName = m.round_name || 'Partidos';
+        if (!roundsMap[rName]) roundsMap[rName] = [];
+        roundsMap[rName].push(m);
+      });
+
+      container.innerHTML = Object.keys(roundsMap).map(roundName => `
+        <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2">
+          <h4 class="text-xs font-black text-green-400 uppercase tracking-wider border-b border-green-900/40 pb-1">${roundName}</h4>
+          <div class="space-y-2">
+            ${roundsMap[roundName].map(m => {
+              const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+              const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+              return `
+                <div class="bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 flex items-center justify-between gap-1 text-xs">
+                  <span class="flex-1 font-semibold text-white truncate text-right">${hTeam.name}</span>
+                  <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-3 py-1 rounded text-green-400 font-bold border border-green-900 hover:border-green-500 transition">
+                    ${m.played ? `${m.home_score} - ${m.away_score}` : 'vs'}
+                  </button>
+                  <span class="flex-1 font-semibold text-white truncate text-left">${aTeam.name}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openPublicMatchDetail(matchId) {
+      const match = pubData.matches.find(m => m.id === matchId);
+      if (!match) return;
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
+
+      document.getElementById('pmRoundName').textContent = match.round_name || 'Partido';
+      document.getElementById('pmHomeName').textContent = hTeam.name;
+      document.getElementById('pmAwayName').textContent = aTeam.name;
+      document.getElementById('pmScore').textContent = match.played ? `${match.home_score} - ${match.away_score}` : 'vs';
+
+      const details = match.match_details || {};
+      const playerStats = details.playerStats || {};
+
+      let hStatsHtml = '';
+      let aStatsHtml = '';
+
+      const hPlayers = pubData.players.filter(p => p.team_id === hTeam.id);
+      hPlayers.forEach(p => {
+        const st = playerStats[p.id];
+        if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
+          hStatsHtml += `<div class="flex justify-between text-[11px]"><span>${p.name}</span><span>${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+        }
+      });
+
+      const aPlayers = pubData.players.filter(p => p.team_id === aTeam.id);
+      aPlayers.forEach(p => {
+        const st = playerStats[p.id];
+        if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
+          aStatsHtml += `<div class="flex justify-between text-[11px]"><span>${p.name}</span><span>${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+        }
+      });
+
+      document.getElementById('pmHomeStats').innerHTML = hStatsHtml || '<span class="text-slate-500 text-[10px]">Sin incidencias</span>';
+      document.getElementById('pmAwayStats').innerHTML = aStatsHtml || '<span class="text-slate-500 text-[10px]">Sin incidencias</span>';
+
+      openModal('publicMatchModal');
+    }
+
+    function renderPublicPlayoffs(cat, playoffMatches, teams) {
+      const container = document.getElementById('publicPlayoffsContainer');
+      if (!cat.has_playoffs) {
+        container.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">Este torneo no tiene fase de playoffs habilitada.</p>`;
+        return;
+      }
 
       container.innerHTML = playoffMatches.map(m => {
         const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Por definir' };
         const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
         return `
           <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex items-center justify-between gap-2 text-xs">
-            <span class="text-green-400 font-bold w-20">${m.round_name || 'Llave'}</span>
+            <span class="text-green-400 font-bold w-24">${m.round_name || 'Llave'}</span>
             <div class="flex-1 text-right font-semibold text-white truncate">${hTeam.name}</div>
-            <div class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</div>
+            <div class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900">${m.played ? `${m.home_score} - ${m.away_score}` : 'vs'}</div>
             <div class="flex-1 text-left font-semibold text-white truncate">${aTeam.name}</div>
-            <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 text-blue-300 p-1.5 rounded">⚙️</button>
-            <button onclick="deleteRecord('${m.id}')" class="text-red-400 p-1.5">🗑️</button>
           </div>
         `;
-      }).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de playoffs generadas.</p>`;
+      }).join('') || `<p class="text-slate-500 text-xs text-center py-4">Aún no se han generado las llaves de playoffs.</p>`;
     }
 
-    function renderDisciplineViews(teams, cat) {
-      const teamIds = teams.map(t => t.id);
-      const players = dbData.players.filter(p => teamIds.includes(p.team_id));
-      const isFutsal = cat && cat.sport_type === 'futsal';
-
-      const blueBox = document.getElementById('adminBlueCardsBox');
-      if (isFutsal) {
-        blueBox.classList.remove('hidden');
-      } else {
-        blueBox.classList.add('hidden');
+    function renderPublicTeamsAndRosters(teams, players, isFutsal) {
+      const container = document.getElementById('publicTeamsContainer');
+      if (teams.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-xs text-center py-4">No hay equipos registrados.</p>';
+        return;
       }
 
-      const yellows = players.filter(p => (p.yellows || 0) > 0).sort((a,b) => b.yellows - a.yellows);
-      const blues = players.filter(p => (p.blues || 0) > 0).sort((a,b) => b.blues - a.blues);
-      const reds = players.filter(p => (p.reds || 0) > 0).sort((a,b) => b.reds - a.reds);
-
-      document.getElementById('adminYellowCardsList').innerHTML = yellows.map(p => {
-        const t = teams.find(x => x.id === p.team_id);
+      container.innerHTML = teams.map(team => {
+        const teamPlayers = players.filter(p => p.team_id === team.id);
         return `
-          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
-            <div>
-              <span class="font-bold text-white block">${p.name}</span>
-              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+          <div class="bg-[#0b0f0d] border border-green-900/40 rounded-xl p-3 space-y-2">
+            <div class="flex items-center gap-2.5 border-b border-green-900/40 pb-2">
+              ${team.logo ? `<img src="${team.logo}" class="w-7 h-7 object-cover rounded-full border border-green-500/30" onerror="this.style.display='none'">` : '<div class="w-7 h-7 bg-green-950 text-green-400 rounded-full flex items-center justify-center font-bold text-xs">🛡️</div>'}
+              <span class="font-bold text-white text-xs">${team.name}</span>
             </div>
-            <span class="font-black text-yellow-400 text-sm">🟨 ${p.yellows}</span>
+            <div class="space-y-1 max-h-40 overflow-y-auto scrollbar-thin">
+              ${teamPlayers.length > 0 ? teamPlayers.map(p => `
+                <div class="flex justify-between items-center bg-[#060a08] p-1.5 rounded-lg border border-green-900/20 text-[11px]">
+                  <span class="text-slate-300">👤 ${p.name}</span>
+                  <div class="flex gap-2 text-[10px]">
+                    <span class="text-green-400 font-bold">⚽ ${p.goals || 0}</span>
+                    <span class="text-yellow-400">🟨 ${p.yellows || 0}</span>
+                    ${isFutsal ? `<span class="text-blue-400">🟦 ${p.blues || 0}</span>` : ''}
+                    <span class="text-red-400">🟥 ${p.reds || 0}</span>
+                  </div>
+                </div>
+              `).join('') : '<p class="text-slate-500 text-[11px]">Sin jugadores inscriptos.</p>'}
+            </div>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin amarillas</p>';
+      }).join('');
+    }
 
-      document.getElementById('adminBlueCardsList').innerHTML = blues.map(p => {
+    function renderPublicScorers(players, teams) {
+      const container = document.getElementById('publicScorersContainer');
+      const sorted = [...players].filter(p => (p.goals || 0) > 0).sort((a, b) => b.goals - a.goals);
+
+      container.innerHTML = sorted.map((p, idx) => {
         const t = teams.find(x => x.id === p.team_id);
         return `
-          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
-            <div>
-              <span class="font-bold text-white block">${p.name}</span>
-              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+          <div class="flex justify-between items-center bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 text-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="font-bold text-green-400 w-4">${idx + 1}</span>
+              <div>
+                <span class="font-bold text-white block">${p.name}</span>
+                <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+              </div>
             </div>
-            <span class="font-black text-blue-400 text-sm">🟦 ${p.blues}</span>
+            <span class="font-black text-green-400 text-sm">⚽ ${p.goals}</span>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin azules</p>';
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-4">No hay goles registrados todavía.</p>';
+    }
 
-      document.getElementById('adminRedCardsList').innerHTML = reds.map(p => {
+    function renderPublicDiscipline(players, teams) {
+      const yellows = [...players].filter(p => (p.yellows || 0) > 0).sort((a, b) => b.yellows - a.yellows);
+      document.getElementById('pubYellowCardsList').innerHTML = yellows.map(p => {
         const t = teams.find(x => x.id === p.team_id);
         return `
-          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
-            <div>
-              <span class="font-bold text-white block">${p.name}</span>
-              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
-            </div>
-            <span class="font-black text-red-400 text-sm">🟥 ${p.reds}</span>
+          <div class="flex justify-between items-center bg-[#060a08] p-2 rounded border border-green-900/20 text-xs">
+            <div><span class="font-bold text-white block">${p.name}</span><span class="text-[10px] text-slate-400">${t ? t.name : ''}</span></div>
+            <span class="font-bold text-yellow-400">🟨 ${p.yellows}</span>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin rojas</p>';
+      }).join('') || '<p class="text-slate-500 text-xs">Sin amonestados.</p>';
 
-      const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
-      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
-        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
-          <div>
-            <span class="font-bold text-white">${s.player_name} (${s.team_name || ''})</span>
-            <span class="text-[10px] text-slate-400 block">Fechas restantes: <strong>${s.remaining_matches ?? 1} partidos</strong> — Motivo: ${s.reason || 'Sin observación'}</span>
-          </div>
-          <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
+      const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId);
+      document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
+        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2 text-xs">
+          <span class="font-bold text-white">${s.player_name} (${s.team_name || ''})</span>
+          <span class="text-[10px] text-slate-400 block">Sanción: <strong>${s.remaining_matches ?? 1} partidos</strong> — ${s.reason || 'Sin observación'}</span>
         </div>
-      `).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
-    }
-
-    function openPlayoffMatchModal() {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      if (teams.length < 2) return alert("Registra al menos 2 equipos primero.");
-      const optionsHtml = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-      document.getElementById('modalPlayoffHome').innerHTML = optionsHtml;
-      document.getElementById('modalPlayoffAway').innerHTML = optionsHtml;
-      openModal('playoffMatchModal');
-    }
-
-    async function saveManualPlayoffMatch() {
-      const round_name = document.getElementById('modalPlayoffRound').value || 'Final';
-      const home_team = document.getElementById('modalPlayoffHome').value;
-      const away_team = document.getElementById('modalPlayoffAway').value;
-
-      if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
-
-      const newMatch = {
-        id: 'play_' + Date.now(),
-        type: 'match',
-        category_id: activeCategoryId,
-        is_playoff: true,
-        round_name,
-        home_team,
-        away_team,
-        home_score: 0,
-        away_score: 0,
-        played: false
-      };
-
-      await supabaseClient.from('torneos_data').insert([newMatch]);
-      closeModal('playoffMatchModal');
-      loadAdminData();
-      alert("¡Llave de playoff creada con éxito!");
-    }
-
-    async function generatePlayoffBrackets() {
-      const cat = dbData.categories.find(c => c.id === activeCategoryId);
-      if (!cat.has_playoffs) return alert("Activa los playoffs editando el torneo.");
-
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const count = cat.playoff_config?.count || 4;
-      if (teams.length < count) return alert(`Se necesitan al menos ${count} equipos.`);
-
-      const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff && m.played);
-      const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
-
-      const stats = teams.map(team => {
-        let won = 0, drawn = 0, gf = 0, gc = 0;
-        matches.forEach(m => {
-          if (m.home_team === team.id) {
-            gf += (m.home_score || 0); gc += (m.away_score || 0);
-            if (m.home_score > m.away_score) won++; else if (m.home_score === m.away_score) drawn++;
-          } else if (m.away_team === team.id) {
-            gf += (m.away_score || 0); gc += (m.home_score || 0);
-            if (m.away_score > m.home_score) won++; else if (m.away_score === m.home_score) drawn++;
-          }
-        });
-        return { ...team, points: (won * winPoints) + drawn, gd: gf - gc };
-      }).sort((a, b) => b.points - a.points || b.gd - a.gd);
-
-      const oldPlayoffs = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff);
-      for (let op of oldPlayoffs) {
-        await supabaseClient.from('torneos_data').delete().eq('id', op.id);
-      }
-
-      let newBrackets = [];
-      if (count === 4) {
-        newBrackets.push(
-          { id: 'play_' + Date.now() + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Semifinal 1', home_team: stats[0]?.id, away_team: stats[3]?.id, home_score: 0, away_score: 0, played: false },
-          { id: 'play_' + Date.now() + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Semifinal 2', home_team: stats[1]?.id, away_team: stats[2]?.id, home_score: 0, away_score: 0, played: false },
-          { id: 'play_' + Date.now() + '_3', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Gran Final', home_team: null, away_team: null, home_score: 0, away_score: 0, played: false }
-        );
-      } else if (count === 2) {
-        newBrackets.push(
-          { id: 'play_' + Date.now() + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Gran Final', home_team: stats[0]?.id, away_team: stats[1]?.id, home_score: 0, away_score: 0, played: false }
-        );
-      }
-
-      for (let nb of newBrackets) {
-        await supabaseClient.from('torneos_data').insert([nb]);
-      }
-
-      alert("¡Llaves de playoffs generadas con éxito!");
-      loadAdminData();
-    }
-
-    function togglePlayoffOptions(isChecked) {
-      document.getElementById('playoffOptionsContainer').style.display = isChecked ? 'block' : 'none';
-    }
-
-    function openCategoryModal(isEdit) {
-      document.getElementById('catModalTitle').textContent = isEdit ? 'Editar Torneo' : 'Crear Torneo';
-      if (isEdit && activeCategoryId) {
-        const cat = dbData.categories.find(c => c.id === activeCategoryId);
-        document.getElementById('modalCatId').value = cat.id;
-        document.getElementById('modalCatName').value = cat.name;
-        document.getElementById('modalSportType').value = cat.sport_type || 'football_11';
-        document.getElementById('modalCatType').value = cat.tournament_type || 'league';
-        document.getElementById('modalCatMaxTeams').value = cat.max_teams || 8;
-        
-        const hasP = cat.has_playoffs || false;
-        document.getElementById('modalHasPlayoffs').checked = hasP;
-        document.getElementById('playoffOptionsContainer').style.display = hasP ? 'block' : 'none';
-        if (cat.playoff_config) {
-          document.getElementById('modalPlayoffCount').value = cat.playoff_config.count || 4;
-        }
-      } else {
-        document.getElementById('modalCatId').value = '';
-        document.getElementById('modalCatName').value = '';
-        document.getElementById('modalHasPlayoffs').checked = false;
-        document.getElementById('playoffOptionsContainer').style.display = 'none';
-      }
-      openModal('categoryModal');
-    }
-
-    async function saveCategoryFromModal() {
-      const id = document.getElementById('modalCatId').value;
-      const name = document.getElementById('modalCatName').value;
-      const sport_type = document.getElementById('modalSportType').value;
-      const tournament_type = document.getElementById('modalCatType').value;
-      const max_teams = parseInt(document.getElementById('modalCatMaxTeams').value) || 8;
-      
-      const has_playoffs = document.getElementById('modalHasPlayoffs').checked;
-      const playoff_config = has_playoffs ? { count: parseInt(document.getElementById('modalPlayoffCount').value) || 4 } : null;
-
-      if (!name) return alert("Ingresa un nombre para el torneo.");
-
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const userEmail = session ? session.user.email : null;
-
-      if (id) {
-        await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, has_playoffs, playoff_config }).eq('id', id);
-      } else {
-        const newCat = { 
-          id: 'cat_' + Date.now(), 
-          type: 'category', 
-          name, 
-          sport_type, 
-          tournament_type, 
-          max_teams, 
-          has_playoffs, 
-          playoff_config, 
-          fixture_type: tournament_type,
-          owner_email: userEmail 
-        };
-        await supabaseClient.from('torneos_data').insert([newCat]);
-      }
-      
-      closeModal('categoryModal');
-      loadAdminData();
-      alert("¡Torneo guardado con éxito!");
-    }
-
-    async function deleteActiveCategory() {
-      if (!activeCategoryId) return;
-      if (!confirm("¿Eliminar torneo?")) return;
-      await supabaseClient.from('torneos_data').delete().eq('id', activeCategoryId);
-      activeCategoryId = null;
-      loadAdminData();
-    }
-
-    function openTeamModal(isEdit, teamId) {
-      if (!activeCategoryId) return alert("Selecciona un torneo.");
-      if (isEdit) {
-        document.getElementById('teamModalTitle').textContent = 'Editar Equipo';
-        const team = dbData.teams.find(t => t.id === teamId);
-        document.getElementById('modalTeamId').value = team.id;
-        document.getElementById('modalTeamName').value = team.name;
-        document.getElementById('modalTeamFile').value = '';
-      } else {
-        document.getElementById('teamModalTitle').textContent = 'Registrar Equipo';
-        document.getElementById('modalTeamId').value = '';
-        document.getElementById('modalTeamName').value = '';
-        document.getElementById('modalTeamFile').value = '';
-      }
-      openModal('teamModal');
-    }
-
-    async function saveTeamFromModal() {
-      const id = document.getElementById('modalTeamId').value;
-      const name = document.getElementById('modalTeamName').value;
-      const fileInput = document.getElementById('modalTeamFile');
-      if (!name) return alert("Ingresa el nombre del equipo.");
-
-      let logoUrl = '';
-      if (id) {
-        const existingTeam = dbData.teams.find(t => t.id === id);
-        logoUrl = existingTeam ? (existingTeam.logo || '') : '';
-      }
-
-      if (fileInput.files && fileInput.files[0]) {
-        const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-        const { error } = await supabaseClient.storage.from('escudos').upload(fileName, file);
-        if (error) {
-          alert("Error al subir la imagen: " + error.message);
-          return;
-        }
-        const { data: publicURLData } = supabaseClient.storage.from('escudos').getPublicUrl(fileName);
-        logoUrl = publicURLData.publicUrl;
-      }
-
-      if (id) {
-        await supabaseClient.from('torneos_data').update({ name, logo: logoUrl }).eq('id', id);
-      } else {
-        await supabaseClient.from('torneos_data').insert([{
-          id: 'team_' + Date.now(), type: 'team', name, logo: logoUrl, category_id: activeCategoryId
-        }]);
-      }
-      closeModal('teamModal');
-      loadAdminData();
-    }
-
-    function openPlayerModal() {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      if (teams.length === 0) return alert("Registra equipos primero.");
-      document.getElementById('modalPlayerTeam').innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-      document.getElementById('modalPlayerName').value = '';
-      openModal('playerModal');
-    }
-
-    async function savePlayerFromModal() {
-      const team_id = document.getElementById('modalPlayerTeam').value;
-      const name = document.getElementById('modalPlayerName').value;
-      if (!name) return;
-      
-      await supabaseClient.from('torneos_data').insert([{
-        id: 'player_' + Date.now(), 
-        type: 'player', 
-        name, 
-        team_id, 
-        category_id: activeCategoryId, 
-        goals: 0, 
-        yellows: 0, 
-        blues: 0, 
-        reds: 0
-      }]);
-      closeModal('playerModal');
-      loadAdminData();
-    }
-
-    function openMatchDetailModal(matchId) {
-      const match = dbData.matches.find(m => m.id === matchId);
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const cat = dbData.categories.find(c => c.id === activeCategoryId);
-      const isFutsal = cat && cat.sport_type === 'futsal';
-      
-      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
-      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
-
-      document.getElementById('modalMatchId').value = match.id;
-      document.getElementById('mdHomeName').textContent = hTeam.name;
-      document.getElementById('mdAwayName').textContent = aTeam.name;
-
-      const details = match.match_details || {};
-      const playerStats = details.playerStats || {};
-
-      const hPlayers = dbData.players.filter(p => p.team_id === hTeam.id);
-      document.getElementById('labelHomeTeamTitle').textContent = `Plantel Local (${hTeam.name})`;
-      document.getElementById('homeTeamStatsList').innerHTML = hPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, blues: 0, reds: 0 };
-        return `
-          <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
-            <span class="font-semibold text-white truncate w-24">${p.name}</span>
-            <div class="flex items-center gap-1.5 text-center">
-              <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-green-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
-              ${isFutsal ? `<div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-blue-400"></div>` : ''}
-              <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-red-400"></div>
-            </div>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores.</p>';
-
-      const aPlayers = dbData.players.filter(p => p.team_id === aTeam.id);
-      document.getElementById('labelAwayTeamTitle').textContent = `Plantel Visitante (${aTeam.name})`;
-      document.getElementById('awayTeamStatsList').innerHTML = aPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, blues: 0, reds: 0 };
-        return `
-          <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
-            <span class="font-semibold text-white truncate w-24">${p.name}</span>
-            <div class="flex items-center gap-1.5 text-center">
-              <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-green-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
-              ${isFutsal ? `<div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-blue-400"></div>` : ''}
-              <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-7 bg-black text-center border border-green-900 rounded text-red-400"></div>
-            </div>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores.</p>';
-
-      openModal('matchDetailModal');
-    }
-
-    async function saveMatchDetail() {
-      const matchId = document.getElementById('modalMatchId').value;
-      const match = dbData.matches.find(m => m.id === matchId);
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const allCategoryPlayers = dbData.players.filter(p => teams.map(t => t.id).includes(p.team_id));
-
-      let playerStats = {};
-      let totalHomeGoals = 0;
-      let totalAwayGoals = 0;
-
-      for (let p of allCategoryPlayers) {
-        const gInput = document.getElementById(`p_g_${p.id}`);
-        const yInput = document.getElementById(`p_y_${p.id}`);
-        const bInput = document.getElementById(`p_b_${p.id}`);
-        const rInput = document.getElementById(`p_r_${p.id}`);
-        if (!gInput) continue;
-
-        const goals = parseInt(gInput.value) || 0;
-        const yellows = parseInt(yInput.value) || 0;
-        const blues = bInput ? (parseInt(bInput.value) || 0) : 0;
-        const reds = parseInt(rInput.value) || 0;
-
-        playerStats[p.id] = { goals, yellows, blues, reds };
-
-        if (p.team_id === match.home_team) totalHomeGoals += goals;
-        if (p.team_id === match.away_team) totalAwayGoals += goals;
-      }
-
-      await supabaseClient.from('torneos_data').update({
-        home_score: totalHomeGoals,
-        away_score: totalAwayGoals,
-        played: true,
-        match_details: { playerStats }
-      }).eq('id', matchId);
-
-      // Recalcular acumulados globales de goles y tarjetas por jugador
-      for (let p of allCategoryPlayers) {
-        let totalG = 0, totalY = 0, totalB = 0, totalR = 0;
-        dbData.matches.forEach(m => {
-          if (m.match_details && m.match_details.playerStats && m.match_details.playerStats[p.id]) {
-            totalG += (m.match_details.playerStats[p.id].goals || 0);
-            totalY += (m.match_details.playerStats[p.id].yellows || 0);
-            totalB += (m.match_details.playerStats[p.id].blues || 0);
-            totalR += (m.match_details.playerStats[p.id].reds || 0);
-          }
-        });
-
-        await supabaseClient.from('torneos_data').update({
-          goals: totalG,
-          yellows: totalY,
-          blues: totalB,
-          reds: totalR
-        }).eq('id', p.id);
-      }
-
-      // Descuento automático de suspensiones si el partido no estaba jugado previamente
-      if (!match.played) {
-        const playingTeamIds = [match.home_team, match.away_team];
-        const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
-
-        for (let susp of activeSuspensions) {
-          const playerRecord = dbData.players.find(p => p.name.toLowerCase() === susp.player_name.toLowerCase());
-          if (playerRecord && playingTeamIds.includes(playerRecord.team_id)) {
-            let newRemaining = (susp.remaining_matches || 1) - 1;
-            if (newRemaining <= 0) {
-              await supabaseClient.from('torneos_data').delete().eq('id', susp.id);
-            } else {
-              await supabaseClient.from('torneos_data').update({ remaining_matches: newRemaining }).eq('id', susp.id);
-            }
-          }
-        }
-      }
-
-      closeModal('matchDetailModal');
-      loadAdminData();
-      alert("¡Planilla guardada y suspensiones descontadas con éxito!");
-    }
-
-    function openMatchModal() {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
-      const hName = prompt("Equipo Local:");
-      const aName = prompt("Equipo Visitante:");
-      const hTeam = teams.find(t => t.name.toLowerCase() === hName?.toLowerCase());
-      const aTeam = teams.find(t => t.name.toLowerCase() === aName?.toLowerCase());
-      if (!hTeam || !aTeam) return alert("Equipos no encontrados.");
-
-      supabaseClient.from('torneos_data').insert([{
-        id: 'match_' + Date.now(), type: 'match', category_id: activeCategoryId,
-        home_team: hTeam.id, away_team: aTeam.id, home_score: 0, away_score: 0, played: false, is_playoff: false
-      }]).then(() => loadAdminData());
-    }
-
-    async function generateAutomaticFixture() {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
-      
-      const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
-      if (existingLeagueMatches.length > 0) {
-        if (!confirm("Ya existe un fixture de liga. ¿Deseas borrarlo y generar uno nuevo?")) return;
-        for (let m of existingLeagueMatches) {
-          await supabaseClient.from('torneos_data').delete().eq('id', m.id);
-        }
-      }
-
-      let list = [...teams];
-      if (list.length % 2 !== 0) {
-        list.push({ id: 'BYE', name: 'LIBRE' });
-      }
-
-      const numTeams = list.length;
-      const totalRounds = numTeams - 1;
-      const matchesPerRound = numTeams / 2;
-
-      let fixtureRounds = [];
-
-      for (let round = 0; round < totalRounds; round++) {
-        let roundMatches = [];
-        for (let i = 0; i < matchesPerRound; i++) {
-          let home = list[i];
-          let away = list[numTeams - 1 - i];
-
-          if (home.id !== 'BYE' && away.id !== 'BYE') {
-            if (round % 2 === 1 && i === 0) {
-              roundMatches.push({ home: away, away: home });
-            } else {
-              roundMatches.push({ home: home, away: away });
-            }
-          }
-        }
-        fixtureRounds.push(roundMatches);
-
-        let temp = list.pop();
-        list.splice(1, 0, temp);
-      }
-
-      let timestamp = Date.now();
-      let counter = 0;
-
-      for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-        let roundNumber = rIndex + 1;
-        let matchesInRound = fixtureRounds[rIndex];
-
-        for (let m of matchesInRound) {
-          counter++;
-          const newMatch = {
-            id: `match_${timestamp}_${counter}`,
-            type: 'match',
-            category_id: activeCategoryId,
-            home_team: m.home.id,
-            away_team: m.away.id,
-            home_score: 0,
-            away_score: 0,
-            played: false,
-            is_playoff: false,
-            round_name: `Fecha ${roundNumber}`
-          };
-
-          await supabaseClient.from('torneos_data').insert([newMatch]);
-        }
-      }
-
-      await loadAdminData();
-      alert(`¡Fixture generado en ${totalRounds} fechas!`);
-    }
-
-    function openSuspensionModal() {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      document.getElementById('modalSuspTeam').innerHTML = teams.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
-      document.getElementById('modalSuspName').value = '';
-      document.getElementById('modalSuspReason').value = '';
-      openModal('suspensionModal');
-    }
-
-    async function saveSuspensionFromModal() {
-      const player_name = document.getElementById('modalSuspName').value;
-      const team_name = document.getElementById('modalSuspTeam').value;
-      const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
-      const reason = document.getElementById('modalSuspReason').value;
-      if (!player_name) return alert("Ingresa el nombre del jugador sancionado.");
-
-      await supabaseClient.from('torneos_data').insert([{
-        id: 'susp_' + Date.now(),
-        type: 'suspension',
-        category_id: activeCategoryId,
-        player_name,
-        team_name,
-        remaining_matches,
-        reason
-      }]);
-
-      closeModal('suspensionModal');
-      loadAdminData();
-      alert("¡Sanción guardada con éxito!");
-    }
-
-    async function deleteRecord(id) {
-      if (!confirm("¿Eliminar este registro?")) return;
-      await supabaseClient.from('torneos_data').delete().eq('id', id);
-      loadAdminData();
+      `).join('') || '<p class="text-slate-500 text-xs">No hay suspensiones vigentes.</p>';
     }
   </script>
 </body>
