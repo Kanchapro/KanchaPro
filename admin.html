@@ -944,15 +944,13 @@
       const name = document.getElementById('modalPlayerName').value;
       if (!name) return alert("Ingresa el nombre del jugador.");
 
+      // Se guarda exclusivamente la estructura básica compatible con la tabla
       const newPlayer = {
         id: 'player_' + Date.now(), 
         type: 'player', 
         name, 
         team_id, 
-        category_id: activeCategoryId,
-        goals: 0, 
-        yellows: 0, 
-        reds: 0
+        category_id: activeCategoryId
       };
 
       const { error } = await supabaseClient.from('torneos_data').insert([newPlayer]);
@@ -1053,9 +1051,9 @@
         return;
       }
 
-      for (let p of allCategoryPlayers) {
+      // Cálculo de acumulados directos en memoria local para mostrar en pantallas sin requerir columnas extra en DB
+      dbData.players.forEach(p => {
         let totalG = 0, totalY = 0, totalR = 0;
-        
         dbData.matches.forEach(m => {
           let details = m.id === matchId ? { playerStats } : (m.match_details || {});
           if (details.playerStats && details.playerStats[p.id]) {
@@ -1064,13 +1062,10 @@
             totalR += (details.playerStats[p.id].reds || 0);
           }
         });
-
-        await supabaseClient.from('torneos_data').update({
-          goals: totalG,
-          yellows: totalY,
-          reds: totalR
-        }).eq('id', p.id);
-      }
+        p.goals = totalG;
+        p.yellows = totalY;
+        p.reds = totalR;
+      });
 
       if (!match.played) {
         const playingTeamIds = [match.home_team, match.away_team];
