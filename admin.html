@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KanchaPro - Panel Admin Pro con Sanciones Automáticas</title>
+  <title>KanchaPro - Panel Admin Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -21,7 +21,6 @@
 </head>
 <body class="h-full flex flex-col overflow-auto">
 
-  <!-- CONFIGURACIÓN SUPABASE -->
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
@@ -37,7 +36,7 @@
       <div class="w-14 h-14 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-green-500/30">⚽</div>
       <div>
         <h2 class="text-xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
-        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Playoffs, Futsal y Sanciones por Amarillas</p>
+        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Torneos, Escudos y Sanciones</p>
       </div>
       <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-xs">
         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -67,7 +66,10 @@
           <button onclick="deleteActiveCategory()" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️</button>
         </div>
       </div>
-      <div class="flex gap-2">
+      <div class="flex gap-2 items-center">
+        <div id="activeTournamentLogoContainer" class="w-8 h-8 rounded-full bg-green-950 flex items-center justify-center border border-green-500/30 overflow-hidden shrink-0">
+          <span class="text-xs">🏆</span>
+        </div>
         <select id="globalCategorySelect" onchange="changeActiveCategory(this.value)" class="bg-[#0b0f0d] border border-green-900/50 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-green-500 flex-1">
           <option value="">-- Selecciona un torneo --</option>
         </select>
@@ -203,6 +205,17 @@
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Nombre del Torneo:</label>
         <input type="text" id="modalCatName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Logo / Escudo del Torneo:</label>
+        <input type="file" id="modalCatFile" accept="image/*" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2 text-white text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700">
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Color Identificativo del Torneo:</label>
+        <div class="flex items-center gap-2">
+          <input type="color" id="modalCatColor" value="#16a34a" class="w-10 h-8 bg-[#0b0f0d] border border-green-900 rounded cursor-pointer">
+          <span class="text-[10px] text-slate-400">Este color personalizará el portal público.</span>
+        </div>
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Disciplina / Modalidad:</label>
@@ -610,6 +623,13 @@
       if (!activeCategoryId) return;
       const cat = dbData.categories.find(c => c.id === activeCategoryId);
       if (!cat) return;
+
+      const logoContainer = document.getElementById('activeTournamentLogoContainer');
+      if (cat.logo) {
+        logoContainer.innerHTML = `<img src="${cat.logo}" class="w-full h-full object-cover rounded-full">`;
+      } else {
+        logoContainer.innerHTML = `<span class="text-xs">🏆</span>`;
+      }
 
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'}`;
@@ -1053,14 +1073,22 @@
       container.innerHTML = playoffMatches.map(m => {
         const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Por definir' };
         const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
+        const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
         return `
-          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex items-center justify-between gap-2 text-xs">
-            <span class="text-green-400 font-bold w-20">${m.round_name || 'Llave'}</span>
-            <div class="flex-1 text-right font-semibold text-white truncate">${hTeam.name}</div>
-            <div class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</div>
-            <div class="flex-1 text-left font-semibold text-white truncate">${aTeam.name}</div>
-            <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 text-blue-300 p-1.5 rounded">⚙️</button>
-            <button onclick="deleteRecord('${m.id}')" class="text-red-400 p-1.5">🗑️</button>
+          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex flex-col gap-1.5 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="text-green-400 font-bold">${m.round_name || 'Llave'}</span>
+              <div class="flex gap-1">
+                <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 text-blue-300 p-1.5 rounded">⚙️ Planilla</button>
+                <button onclick="deleteRecord('${m.id}')" class="text-red-400 p-1.5">🗑️</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex-1 text-right font-semibold text-white truncate">${hTeam.name}</div>
+              <div class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</div>
+              <div class="flex-1 text-left font-semibold text-white truncate">${aTeam.name}</div>
+            </div>
+            ${infoText ? `<div class="text-[10px] text-slate-400 text-center">🗓️ ${infoText}</div>` : ''}
           </div>
         `;
       }).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de playoffs generadas.</p>`;
@@ -1568,7 +1596,9 @@
         const cat = dbData.categories.find(c => c.id === activeCategoryId);
         document.getElementById('modalCatId').value = cat.id;
         document.getElementById('modalCatName').value = cat.name;
+        document.getElementById('modalCatColor').value = cat.theme_color || '#16a34a';
         document.getElementById('modalSportType').value = cat.sport_type || 'football_11';
+        document.getElementById('modalCatFile').value = '';
         
         const tType = cat.tournament_type || 'league';
         document.getElementById('modalCatType').value = tType;
@@ -1589,6 +1619,8 @@
       } else {
         document.getElementById('modalCatId').value = '';
         document.getElementById('modalCatName').value = '';
+        document.getElementById('modalCatColor').value = '#16a34a';
+        document.getElementById('modalCatFile').value = '';
         document.getElementById('modalCatType').value = 'league';
         toggleTournamentFormatOptions('league');
         document.getElementById('modalHasPlayoffs').checked = false;
@@ -1600,9 +1632,11 @@
     async function saveCategoryFromModal() {
       const id = document.getElementById('modalCatId').value;
       const name = document.getElementById('modalCatName').value;
+      const theme_color = document.getElementById('modalCatColor').value;
       const sport_type = document.getElementById('modalSportType').value;
       const tournament_type = document.getElementById('modalCatType').value;
       const max_teams = parseInt(document.getElementById('modalCatMaxTeams').value) || 8;
+      const fileInput = document.getElementById('modalCatFile');
       
       const group_config = tournament_type === 'cup' ? { count: parseInt(document.getElementById('modalGroupCount').value) || 2 } : null;
       const has_playoffs = document.getElementById('modalHasPlayoffs').checked;
@@ -1610,17 +1644,38 @@
 
       if (!name) return alert("Ingresa un nombre para el torneo.");
 
+      let logoUrl = '';
+      if (id) {
+        const existingCat = dbData.categories.find(c => c.id === id);
+        logoUrl = existingCat ? (existingCat.logo || '') : '';
+      }
+
+      if (fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `cat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+        const { error } = await supabaseClient.storage.from('escudos').upload(fileName, file);
+        if (error) {
+          alert("Error al subir el logo: " + error.message);
+          return;
+        }
+        const { data: publicURLData } = supabaseClient.storage.from('escudos').getPublicUrl(fileName);
+        logoUrl = publicURLData.publicUrl;
+      }
+
       const { data: { session } } = await supabaseClient.auth.getSession();
       const userEmail = session ? session.user.email : null;
 
       if (id) {
-        const { error } = await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, group_config, has_playoffs, playoff_config }).eq('id', id);
+        const { error } = await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, theme_color, sport_type, tournament_type, max_teams, group_config, has_playoffs, playoff_config }).eq('id', id);
         if (error) { alert("Error al actualizar: " + error.message); return; }
       } else {
         const newCat = { 
           id: 'cat_' + Date.now(), 
           type: 'category', 
           name, 
+          logo: logoUrl,
+          theme_color,
           sport_type, 
           tournament_type, 
           max_teams, 
