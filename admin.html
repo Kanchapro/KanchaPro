@@ -81,7 +81,7 @@
       <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📅 Fixture</button>
       <button onclick="switchAdminTab('standings', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">📊 Posiciones</button>
       <button onclick="switchAdminTab('playoffs', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🏆 Playoffs / Llaves</button>
-      <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones</button>
+      <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-3 py-1.5 rounded-lg text-xs whitespace-nowrap text-slate-400 font-semibold">🟥 Sanciones y Tarjetas</button>
     </div>
 
     <!-- Tab 1: Equipos -->
@@ -141,13 +141,26 @@
       <div id="adminPlayoffsContainer" class="space-y-3"></div>
     </div>
 
-    <!-- Tab 6: Sanciones -->
+    <!-- Tab 6: Sanciones y Tarjetas -->
     <div id="adm-discipline" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-green-300">Sanciones</h3>
-        <button onclick="openSuspensionModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Sanción</button>
+        <h3 class="text-sm font-bold text-green-300">Tribunal de Disciplina y Acumulado de Tarjetas</h3>
+        <button onclick="openSuspensionModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Sanción Manual</button>
       </div>
-      <div id="adminSuspensionsList" class="space-y-2"></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
+          <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Tabla de Tarjetas Amarillas</h4>
+          <div id="adminYellowCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
+        </div>
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
+          <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Tabla de Tarjetas Rojas</h4>
+          <div id="adminRedCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
+        </div>
+      </div>
+      <div class="pt-2">
+        <h4 class="font-bold text-green-300 text-xs mb-2">Jugadores Suspendidos (Se descuentan por partido jugado)</h4>
+        <div id="adminSuspensionsList" class="space-y-2"></div>
+      </div>
     </div>
 
   </main>
@@ -207,7 +220,7 @@
     </div>
   </div>
 
-  <!-- Modal Detalle Partido (Goles y Tarjetas completas por jugador) -->
+  <!-- Modal Detalle Partido -->
   <div id="matchDetailModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto">
     <div class="glass-card p-4 rounded-2xl max-w-lg w-full space-y-4 border border-green-500/30 my-auto text-xs">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
@@ -227,7 +240,6 @@
       </div>
 
       <div class="space-y-4 max-h-[380px] overflow-y-auto scrollbar-thin pr-1">
-        <!-- Acordeón Local -->
         <div class="bg-[#0b0f0d] rounded-xl border border-green-900/40 overflow-hidden">
           <div onclick="toggleAccordion('home_accordion')" class="p-3 bg-green-950/20 flex justify-between items-center cursor-pointer font-bold text-green-300">
             <span id="labelHomeTeamTitle">Plantel Local</span>
@@ -238,7 +250,6 @@
           </div>
         </div>
 
-        <!-- Acordeón Visitante -->
         <div class="bg-[#0b0f0d] rounded-xl border border-green-900/40 overflow-hidden">
           <div onclick="toggleAccordion('away_accordion')" class="p-3 bg-green-950/20 flex justify-between items-center cursor-pointer font-bold text-green-300">
             <span id="labelAwayTeamTitle">Plantel Visitante</span>
@@ -291,7 +302,7 @@
     </div>
   </div>
 
-  <!-- Modal Equipo (Con Edición de Nombre y Foto/Escudo desde Dispositivo) -->
+  <!-- Modal Equipo -->
   <div id="teamModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 id="teamModalTitle" class="text-sm font-bold text-green-400">Registrar Equipo</h3>
@@ -324,13 +335,17 @@
     </div>
   </div>
 
-  <!-- Modal Sanción con Motivo u Observación -->
+  <!-- Modal Sanción -->
   <div id="suspensionModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 class="text-sm font-bold text-green-400">Tribunal de Disciplina - Sanción</h3>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Nombre del Jugador:</label>
         <input type="text" id="modalSuspName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Nombre">
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Equipo del Jugador:</label>
+        <select id="modalSuspTeam" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Partidos de Suspensión:</label>
@@ -463,7 +478,6 @@
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'}`;
 
-      // Equipos con foto/escudo y botón de editar
       document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
         <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
           <div class="flex items-center gap-2.5">
@@ -519,18 +533,7 @@
 
       renderStandingsView(teams, matches, cat);
       renderPlayoffsView(cat, teams);
-
-      // Sanciones con motivo
-      const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
-      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
-        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
-          <div>
-            <span class="font-bold text-white">${s.player_name}</span>
-            <span class="text-[10px] text-slate-400 block">Sanción: <strong>${s.remaining_matches ?? 1} partidos</strong> — Motivo: ${s.reason || 'Sin observación'}</span>
-          </div>
-          <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-xs">Sin sanciones.</p>';
+      renderDisciplineViews(teams);
     }
 
     function renderRostersView(teams) {
@@ -667,6 +670,51 @@
           </div>
         `;
       }).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de playoffs generadas.</p>`;
+    }
+
+    function renderDisciplineViews(teams) {
+      const teamIds = teams.map(t => t.id);
+      const players = dbData.players.filter(p => teamIds.includes(p.team_id));
+
+      const yellows = players.filter(p => (p.yellows || 0) > 0).sort((a,b) => b.yellows - a.yellows);
+      const reds = players.filter(p => (p.reds || 0) > 0).sort((a,b) => b.reds - a.reds);
+
+      document.getElementById('adminYellowCardsList').innerHTML = yellows.map(p => {
+        const t = teams.find(x => x.id === p.team_id);
+        return `
+          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
+            <div>
+              <span class="font-bold text-white block">${p.name}</span>
+              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+            </div>
+            <span class="font-black text-yellow-400 text-sm">🟨 ${p.yellows}</span>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin tarjetas amarillas</p>';
+
+      document.getElementById('adminRedCardsList').innerHTML = reds.map(p => {
+        const t = teams.find(x => x.id === p.team_id);
+        return `
+          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
+            <div>
+              <span class="font-bold text-white block">${p.name}</span>
+              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+            </div>
+            <span class="font-black text-red-400 text-sm">🟥 ${p.reds}</span>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin tarjetas rojas</p>';
+
+      const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
+      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
+        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold text-white">${s.player_name} (${s.team_name || ''})</span>
+            <span class="text-[10px] text-slate-400 block">Fechas restantes: <strong>${s.remaining_matches ?? 1} partidos</strong> — Motivo: ${s.reason || 'Sin observación'}</span>
+          </div>
+          <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
     }
 
     function openPlayoffMatchModal() {
@@ -1002,9 +1050,28 @@
         }).eq('id', p.id);
       }
 
+      // Descuento automático de suspensiones si el partido no estaba jugado previamente
+      if (!match.played) {
+        const playingTeamIds = [match.home_team, match.away_team];
+        const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
+
+        for (let susp of activeSuspensions) {
+          // Verificar si el jugador suspendido pertenece a alguno de los dos equipos que jugaron
+          const playerRecord = dbData.players.find(p => p.name.toLowerCase() === susp.player_name.toLowerCase());
+          if (playerRecord && playingTeamIds.includes(playerRecord.team_id)) {
+            let newRemaining = (susp.remaining_matches || 1) - 1;
+            if (newRemaining <= 0) {
+              await supabaseClient.from('torneos_data').delete().eq('id', susp.id);
+            } else {
+              await supabaseClient.from('torneos_data').update({ remaining_matches: newRemaining }).eq('id', susp.id);
+            }
+          }
+        }
+      }
+
       closeModal('matchDetailModal');
       loadAdminData();
-      alert("¡Planilla y estadísticas guardadas con éxito!");
+      alert("¡Planilla guardada y suspensiones descontadas con éxito!");
     }
 
     function openMatchModal() {
@@ -1096,6 +1163,8 @@
     }
 
     function openSuspensionModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      document.getElementById('modalSuspTeam').innerHTML = teams.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
       document.getElementById('modalSuspName').value = '';
       document.getElementById('modalSuspReason').value = '';
       openModal('suspensionModal');
@@ -1103,6 +1172,7 @@
 
     async function saveSuspensionFromModal() {
       const player_name = document.getElementById('modalSuspName').value;
+      const team_name = document.getElementById('modalSuspTeam').value;
       const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
       const reason = document.getElementById('modalSuspReason').value;
       if (!player_name) return alert("Ingresa el nombre del jugador sancionado.");
@@ -1112,6 +1182,7 @@
         type: 'suspension',
         category_id: activeCategoryId,
         player_name,
+        team_name,
         remaining_matches,
         reason
       }]);
