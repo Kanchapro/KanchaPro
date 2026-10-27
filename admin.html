@@ -36,7 +36,7 @@
       <div class="w-14 h-14 bg-green-600/20 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-green-500/30">⚽</div>
       <div>
         <h2 class="text-xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
-        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Playoffs</p>
+        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Playoffs y Futsal</p>
       </div>
       <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-xs">
         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -147,13 +147,17 @@
         <h3 class="text-sm font-bold text-green-300">Tribunal de Disciplina y Acumulado de Tarjetas</h3>
         <button onclick="openSuspensionModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Sanción Manual</button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
         <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
-          <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Tabla de Tarjetas Amarillas</h4>
+          <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Tarjetas Amarillas</h4>
           <div id="adminYellowCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
         </div>
+        <div id="adminBlueCardContainer" class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
+          <h4 class="font-bold text-blue-400 text-xs flex items-center gap-1.5">🟦 Tarjetas Azules (Futsal)</h4>
+          <div id="adminBlueCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
+        </div>
         <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
-          <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Tabla de Tarjetas Rojas</h4>
+          <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Tarjetas Rojas</h4>
           <div id="adminRedCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
         </div>
       </div>
@@ -180,7 +184,7 @@
         <label class="block text-[11px] text-slate-300 mb-1">Disciplina / Modalidad:</label>
         <select id="modalSportType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
           <option value="football_11">Fútbol 11 (3 pts ganado)</option>
-          <option value="futsal">Fútbol 5 / Futsal (2 pts ganado)</option>
+          <option value="futsal">Fútbol 5 / Futsal (2 pts ganado + Tarjetas Azules)</option>
         </select>
       </div>
       <div>
@@ -281,7 +285,7 @@
           <h4 id="statPlayerName" class="text-sm font-bold text-white">Nombre</h4>
           <p id="statPlayerTeam" class="text-[10px] text-slate-400">Equipo</p>
         </div>
-        <div class="grid grid-cols-3 gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
+        <div id="statPlayerGridContainer" class="grid grid-cols-3 gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
           <div>
             <span class="text-[9px] text-slate-400 block">⚽ Goles</span>
             <span id="statPlayerGoals" class="text-sm font-black text-green-400">0</span>
@@ -289,6 +293,10 @@
           <div>
             <span class="text-[9px] text-slate-400 block">🟨 Amarillas</span>
             <span id="statPlayerYellows" class="text-sm font-black text-yellow-400">0</span>
+          </div>
+          <div id="statPlayerBlueBox" class="hidden">
+            <span class="text-[9px] text-slate-400 block">🟦 Azules</span>
+            <span id="statPlayerBlues" class="text-sm font-black text-blue-400">0</span>
           </div>
           <div>
             <span class="text-[9px] text-slate-400 block">🟥 Rojas</span>
@@ -353,7 +361,7 @@
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Motivo / Observación:</label>
-        <textarea id="modalSuspReason" rows="2" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Doble amarilla, conducta antideportiva..."></textarea>
+        <textarea id="modalSuspReason" rows="2" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Doble amarilla, tarjeta azul, conducta antideportiva..."></textarea>
       </div>
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('suspensionModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
@@ -478,6 +486,13 @@
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       document.getElementById('teamLimitCounter').textContent = `Equipos: ${teams.length} / ${cat.max_teams || '∞'}`;
 
+      // Mostrar u ocultar sección de Tarjetas Azules según deporte
+      const isFutsal = cat.sport_type === 'futsal';
+      const blueCardContainer = document.getElementById('adminBlueCardContainer');
+      if (blueCardContainer) {
+        blueCardContainer.style.display = isFutsal ? 'block' : 'none';
+      }
+
       document.getElementById('adminTeamsList').innerHTML = teams.map(t => `
         <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
           <div class="flex items-center gap-2.5">
@@ -491,7 +506,7 @@
         </div>
       `).join('') || '<p class="text-slate-500 text-xs">No hay equipos.</p>';
 
-      renderRostersView(teams);
+      renderRostersView(teams, isFutsal);
 
       const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
       
@@ -533,10 +548,10 @@
 
       renderStandingsView(teams, matches, cat);
       renderPlayoffsView(cat, teams);
-      renderDisciplineViews(teams);
+      renderDisciplineViews(teams, isFutsal);
     }
 
-    function renderRostersView(teams) {
+    function renderRostersView(teams, isFutsal) {
       const container = document.getElementById('adminRostersContainer');
       if (teams.length === 0) {
         container.innerHTML = '<p class="text-slate-500 text-xs">No hay equipos registrados.</p>';
@@ -566,6 +581,7 @@
                   <div class="flex items-center gap-3 text-[11px]">
                     <span class="text-green-400 font-bold">⚽ ${p.goals || 0}</span>
                     <span class="text-yellow-400">🟨 ${p.yellows || 0}</span>
+                    ${isFutsal ? `<span class="text-blue-400">🟦 ${p.blues || 0}</span>` : ''}
                     <span class="text-red-400">🟥 ${p.reds || 0}</span>
                     <button onclick="event.stopPropagation(); deleteRecord('${p.id}')" class="text-red-400 hover:text-red-300 text-[10px]">🗑️</button>
                   </div>
@@ -593,12 +609,25 @@
       const player = dbData.players.find(p => p.id === playerId);
       if (!player) return;
       const team = dbData.teams.find(t => t.id === player.team_id);
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const isFutsal = cat && cat.sport_type === 'futsal';
 
       document.getElementById('statPlayerName').textContent = player.name;
       document.getElementById('statPlayerTeam').textContent = team ? team.name : 'Sin equipo';
       document.getElementById('statPlayerGoals').textContent = player.goals || 0;
       document.getElementById('statPlayerYellows').textContent = player.yellows || 0;
+      document.getElementById('statPlayerBlues').textContent = player.blues || 0;
       document.getElementById('statPlayerReds').textContent = player.reds || 0;
+
+      const blueBox = document.getElementById('statPlayerBlueBox');
+      const gridContainer = document.getElementById('statPlayerGridContainer');
+      if (isFutsal) {
+        blueBox.classList.remove('hidden');
+        gridContainer.className = 'grid grid-cols-4 gap-1.5 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40';
+      } else {
+        blueBox.classList.add('hidden');
+        gridContainer.className = 'grid grid-cols-3 gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40';
+      }
 
       openModal('playerStatsModal');
     }
@@ -672,11 +701,12 @@
       }).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de playoffs generadas.</p>`;
     }
 
-    function renderDisciplineViews(teams) {
+    function renderDisciplineViews(teams, isFutsal) {
       const teamIds = teams.map(t => t.id);
       const players = dbData.players.filter(p => teamIds.includes(p.team_id));
 
       const yellows = players.filter(p => (p.yellows || 0) > 0).sort((a,b) => b.yellows - a.yellows);
+      const blues = players.filter(p => (p.blues || 0) > 0).sort((a,b) => b.blues - a.blues);
       const reds = players.filter(p => (p.reds || 0) > 0).sort((a,b) => b.reds - a.reds);
 
       document.getElementById('adminYellowCardsList').innerHTML = yellows.map(p => {
@@ -691,6 +721,22 @@
           </div>
         `;
       }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin tarjetas amarillas</p>';
+
+      const blueCardsListEl = document.getElementById('adminBlueCardsList');
+      if (blueCardsListEl) {
+        blueCardsListEl.innerHTML = blues.map(p => {
+          const t = teams.find(x => x.id === p.team_id);
+          return `
+            <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
+              <div>
+                <span class="font-bold text-white block">${p.name}</span>
+                <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+              </div>
+              <span class="font-black text-blue-400 text-sm">🟦 ${p.blues}</span>
+            </div>
+          `;
+        }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin tarjetas azules</p>';
+      }
 
       document.getElementById('adminRedCardsList').innerHTML = reds.map(p => {
         const t = teams.find(x => x.id === p.team_id);
@@ -944,7 +990,7 @@
       const name = document.getElementById('modalPlayerName').value;
       if (!name) return;
       await supabaseClient.from('torneos_data').insert([{
-        id: 'player_' + Date.now(), type: 'player', name, team_id, goals: 0, yellows: 0, reds: 0
+        id: 'player_' + Date.now(), type: 'player', name, team_id, goals: 0, yellows: 0, blues: 0, reds: 0
       }]);
       closeModal('playerModal');
       loadAdminData();
@@ -953,6 +999,8 @@
     function openMatchDetailModal(matchId) {
       const match = dbData.matches.find(m => m.id === matchId);
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const isFutsal = cat && cat.sport_type === 'futsal';
       
       const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
       const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
@@ -967,13 +1015,14 @@
       const hPlayers = dbData.players.filter(p => p.team_id === hTeam.id);
       document.getElementById('labelHomeTeamTitle').textContent = `Plantel Local (${hTeam.name})`;
       document.getElementById('homeTeamStatsList').innerHTML = hPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0 };
+        const stats = playerStats[p.id] || { goals: 0, yellows: 0, blues: 0, reds: 0 };
         return `
           <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
             <span class="font-semibold text-white truncate w-24">${p.name}</span>
             <div class="flex items-center gap-1.5 text-center">
               <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-green-400"></div>
               <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
+              ${isFutsal ? `<div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-blue-400"></div>` : ''}
               <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-red-400"></div>
             </div>
           </div>
@@ -983,13 +1032,14 @@
       const aPlayers = dbData.players.filter(p => p.team_id === aTeam.id);
       document.getElementById('labelAwayTeamTitle').textContent = `Plantel Visitante (${aTeam.name})`;
       document.getElementById('awayTeamStatsList').innerHTML = aPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0 };
+        const stats = playerStats[p.id] || { goals: 0, yellows: 0, blues: 0, reds: 0 };
         return `
           <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
             <span class="font-semibold text-white truncate w-24">${p.name}</span>
             <div class="flex items-center gap-1.5 text-center">
               <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-green-400"></div>
               <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
+              ${isFutsal ? `<div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-blue-400"></div>` : ''}
               <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-red-400"></div>
             </div>
           </div>
@@ -1012,14 +1062,16 @@
       for (let p of allCategoryPlayers) {
         const gInput = document.getElementById(`p_g_${p.id}`);
         const yInput = document.getElementById(`p_y_${p.id}`);
+        const bInput = document.getElementById(`p_b_${p.id}`);
         const rInput = document.getElementById(`p_r_${p.id}`);
         if (!gInput) continue;
 
         const goals = parseInt(gInput.value) || 0;
         const yellows = parseInt(yInput.value) || 0;
+        const blues = bInput ? (parseInt(bInput.value) || 0) : 0;
         const reds = parseInt(rInput.value) || 0;
 
-        playerStats[p.id] = { goals, yellows, reds };
+        playerStats[p.id] = { goals, yellows, blues, reds };
 
         if (p.team_id === match.home_team) totalHomeGoals += goals;
         if (p.team_id === match.away_team) totalAwayGoals += goals;
@@ -1034,11 +1086,12 @@
 
       // Recalcular acumulados globales de goles y tarjetas por jugador
       for (let p of allCategoryPlayers) {
-        let totalG = 0, totalY = 0, totalR = 0;
+        let totalG = 0, totalY = 0, totalB = 0, totalR = 0;
         dbData.matches.forEach(m => {
           if (m.match_details && m.match_details.playerStats && m.match_details.playerStats[p.id]) {
             totalG += (m.match_details.playerStats[p.id].goals || 0);
             totalY += (m.match_details.playerStats[p.id].yellows || 0);
+            totalB += (m.match_details.playerStats[p.id].blues || 0);
             totalR += (m.match_details.playerStats[p.id].reds || 0);
           }
         });
@@ -1046,6 +1099,7 @@
         await supabaseClient.from('torneos_data').update({
           goals: totalG,
           yellows: totalY,
+          blues: totalB,
           reds: totalR
         }).eq('id', p.id);
       }
@@ -1056,7 +1110,6 @@
         const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
 
         for (let susp of activeSuspensions) {
-          // Verificar si el jugador suspendido pertenece a alguno de los dos equipos que jugaron
           const playerRecord = dbData.players.find(p => p.name.toLowerCase() === susp.player_name.toLowerCase());
           if (playerRecord && playingTeamIds.includes(playerRecord.team_id)) {
             let newRemaining = (susp.remaining_matches || 1) - 1;
