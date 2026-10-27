@@ -46,15 +46,19 @@
       </div>
     </div>
 
-    <!-- Buscador y Selector -->
+    <!-- Buscador, Selector y Botón Favorito -->
     <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-1 max-w-md justify-end">
-      <div class="relative flex-1 max-w-[180px]">
-        <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar torneo..." oninput="filterTournaments(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-green-500 transition shadow-inner">
+      <div class="relative flex-1 max-w-[150px]">
+        <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar..." oninput="filterTournaments(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-green-500 transition shadow-inner">
       </div>
-      <div class="flex-1 min-w-[150px]">
+      <div class="flex-1 min-w-[140px] flex items-center gap-1.5">
         <select id="publicCategorySelect" onchange="changePublicCategory(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-green-500 font-semibold transition shadow-inner">
           <option value="">Cargando torneos...</option>
         </select>
+        <!-- Botón de Favorito Local -->
+        <button id="favBtn" onclick="toggleFavoriteTournament()" title="Marcar como torneo favorito" class="bg-[#0b140e] hover:bg-green-950/40 border border-green-900/50 px-2.5 py-1.5 rounded-xl text-slate-500 text-sm transition shadow-inner">
+          ⭐
+        </button>
       </div>
     </div>
 
@@ -204,6 +208,7 @@
   <script>
     let pubData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
     let currentPublicCatId = null;
+    const STORAGE_FAV_KEY = 'kanchapro_favorite_tournament';
 
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
@@ -243,10 +248,21 @@
       }
       select.innerHTML = catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
       
-      if (!currentPublicCatId || !catsToUse.some(c => c.id === currentPublicCatId)) {
+      // Comprobar si hay un favorito guardado localmente
+      const savedFav = localStorage.getItem(STORAGE_FAV_KEY);
+
+      if (!currentPublicCatId) {
+        if (savedFav && catsToUse.some(c => c.id === savedFav)) {
+          currentPublicCatId = savedFav;
+        } else {
+          currentPublicCatId = catsToUse[0].id;
+        }
+      } else if (!catsToUse.some(c => c.id === currentPublicCatId)) {
         currentPublicCatId = catsToUse[0].id;
       }
+
       select.value = currentPublicCatId;
+      updateFavoriteButtonUI();
       renderPublicViews();
     }
 
@@ -262,7 +278,38 @@
 
     function changePublicCategory(catId) {
       currentPublicCatId = catId;
+      updateFavoriteButtonUI();
       renderPublicViews();
+    }
+
+    function toggleFavoriteTournament() {
+      if (!currentPublicCatId) return;
+      const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
+
+      if (currentFav === currentPublicCatId) {
+        // Si ya era favorito, lo quitamos
+        localStorage.removeItem(STORAGE_FAV_KEY);
+        alert("Torneo removido de favoritos.");
+      } else {
+        // Guardamos como favorito
+        localStorage.setItem(STORAGE_FAV_KEY, currentPublicCatId);
+        alert("¡Torneo guardado como favorito en este dispositivo!");
+      }
+      updateFavoriteButtonUI();
+    }
+
+    function updateFavoriteButtonUI() {
+      const favBtn = document.getElementById('favBtn');
+      const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
+      if (currentFav === currentPublicCatId) {
+        favBtn.classList.remove('text-slate-500', 'border-green-900/50');
+        favBtn.classList.add('text-yellow-400', 'border-yellow-500/50', 'bg-yellow-500/10');
+        favBtn.title = "Torneo marcado como favorito";
+      } else {
+        favBtn.classList.add('text-slate-500', 'border-green-900/50');
+        favBtn.classList.remove('text-yellow-400', 'border-yellow-500/50', 'bg-yellow-500/10');
+        favBtn.title = "Marcar como torneo favorito";
+      }
     }
 
     function switchPublicTab(tabKey, evt) {
