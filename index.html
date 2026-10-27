@@ -87,14 +87,14 @@
     <div id="pub-standings" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4">
       <div class="flex flex-wrap justify-between items-center gap-2">
         <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla General de Posiciones
+          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla de Posiciones
         </h3>
         <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-green text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
           📸 Capturar Tabla para WhatsApp
         </button>
       </div>
-      <div id="captureAreaStandings" class="space-y-3 bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 shadow-inner">
-        <div id="publicStandingsContainer" class="overflow-x-auto"></div>
+      <div id="captureAreaStandings" class="space-y-4 bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 shadow-inner">
+        <div id="publicStandingsContainer" class="space-y-4"></div>
       </div>
     </div>
 
@@ -344,44 +344,100 @@
       const container = document.getElementById('publicStandingsContainer');
       const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
 
-      const stats = teams.map(team => {
-        let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
-        matches.filter(m => m.played).forEach(m => {
-          if (m.home_team === team.id) {
-            played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
-            if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
-          } else if (m.away_team === team.id) {
-            played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
-            if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
-          }
-        });
-        return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
-      }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+      if (cat.tournament_type === 'cup') {
+        const groupCount = cat.group_config?.count || 2;
+        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+        let groupsHtml = '';
 
-      container.innerHTML = `
-        <div class="text-xs font-black text-green-400 pb-2.5 mb-2 border-b border-green-900/40 uppercase tracking-wider">🏆 Posiciones Oficiales — ${cat.name}</div>
-        <table class="w-full text-xs">
-          <thead class="bg-[#050806] text-slate-400 text-[10px] uppercase font-bold tracking-wider">
-            <tr>
-              <th class="p-2.5 text-left">#</th>
-              <th class="p-2.5 text-left">Equipo</th>
-              <th class="p-2.5 text-center">PJ</th><th class="p-2.5 text-center">G</th><th class="p-2.5 text-center">E</th><th class="p-2.5 text-center">P</th><th class="p-2.5 text-center">DG</th><th class="p-2.5 text-center font-black text-green-400">Pts</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-green-900/20">
-            ${stats.map((t, idx) => `
-              <tr class="${idx < 4 ? 'bg-green-900/10 font-bold' : ''}">
-                <td class="p-2.5 font-black text-green-400">${idx + 1}</td>
-                <td class="p-2.5 font-bold text-white truncate max-w-[140px] flex items-center gap-2">
-                  ${t.logo ? `<img src="${t.logo}" class="w-5 h-5 object-cover rounded-full border border-green-500/30">` : '<span class="text-xs">🛡️</span>'}
-                  <span class="truncate">${t.name}</span>
-                </td>
-                <td class="p-2.5 text-center text-slate-300">${t.played}</td><td class="p-2.5 text-center text-slate-300">${t.won}</td><td class="p-2.5 text-center text-slate-300">${t.drawn}</td><td class="p-2.5 text-center text-slate-300">${t.lost}</td><td class="p-2.5 text-center text-slate-300">${t.gd}</td><td class="p-2.5 text-center font-black text-green-400 text-sm">${t.points}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
+        groupLetters.forEach(l => {
+          let gName = 'Grupo ' + l;
+          let gTeams = teams.filter(t => t.group_name === gName);
+          let stats = gTeams.map(team => {
+            let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+            matches.filter(m => m.played).forEach(m => {
+              if (m.home_team === team.id) {
+                played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+                if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+              } else if (m.away_team === team.id) {
+                played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+                if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+              }
+            });
+            return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+          }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+          groupsHtml += `
+            <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2">
+              <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">Tabla - ${gName}</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                  <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
+                    <tr>
+                      <th class="p-2.5 text-left">#</th>
+                      <th class="p-2.5 text-left">Equipo</th>
+                      <th class="p-2.5 text-center">PJ</th><th class="p-2.5 text-center">G</th><th class="p-2.5 text-center">E</th><th class="p-2.5 text-center">P</th><th class="p-2.5 text-center">DG</th><th class="p-2.5 text-center font-bold text-green-400">Pts</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-green-900/20">
+                    ${stats.map((t, idx) => `
+                      <tr class="${idx < 2 ? 'bg-green-900/10 font-bold' : ''}">
+                        <td class="p-2.5 font-black text-green-400">${idx + 1}</td>
+                        <td class="p-2.5 font-bold text-white truncate max-w-[140px] flex items-center gap-2">
+                          ${t.logo ? `<img src="${t.logo}" class="w-5 h-5 object-cover rounded-full border border-green-500/30">` : '<span class="text-xs">🛡️</span>'}
+                          <span class="truncate">${t.name}</span>
+                        </td>
+                        <td class="p-2.5 text-center text-slate-300">${t.played}</td><td class="p-2.5 text-center text-slate-300">${t.won}</td><td class="p-2.5 text-center text-slate-300">${t.drawn}</td><td class="p-2.5 text-center text-slate-300">${t.lost}</td><td class="p-2.5 text-center text-slate-300">${t.gd}</td><td class="p-2.5 text-center font-black text-green-400 text-sm">${t.points}</td>
+                      </tr>
+                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-500 py-3">Sin equipos en este grupo</td></tr>'}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = groupsHtml;
+      } else {
+        const stats = teams.map(team => {
+          let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+          matches.filter(m => m.played).forEach(m => {
+            if (m.home_team === team.id) {
+              played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+              if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+            } else if (m.away_team === team.id) {
+              played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+              if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+            }
+          });
+          return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+        }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+        container.innerHTML = `
+          <div class="text-xs font-black text-green-400 pb-2.5 mb-2 border-b border-green-900/40 uppercase tracking-wider">🏆 Posiciones Oficiales — ${cat.name}</div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead class="bg-[#050806] text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                <tr>
+                  <th class="p-2.5 text-left">#</th>
+                  <th class="p-2.5 text-left">Equipo</th>
+                  <th class="p-2.5 text-center">PJ</th><th class="p-2.5 text-center">G</th><th class="p-2.5 text-center">E</th><th class="p-2.5 text-center">P</th><th class="p-2.5 text-center">DG</th><th class="p-2.5 text-center font-black text-green-400">Pts</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-green-900/20">
+                ${stats.map((t, idx) => `
+                  <tr class="${idx < 4 ? 'bg-green-900/10 font-bold' : ''}">
+                    <td class="p-2.5 font-black text-green-400">${idx + 1}</td>
+                    <td class="p-2.5 font-bold text-white truncate max-w-[140px] flex items-center gap-2">
+                      ${t.logo ? `<img src="${t.logo}" class="w-5 h-5 object-cover rounded-full border border-green-500/30">` : '<span class="text-xs">🛡️</span>'}
+                      <span class="truncate">${t.name}</span>
+                    </td>
+                    <td class="p-2.5 text-center text-slate-300">${t.played}</td><td class="p-2.5 text-center text-slate-300">${t.won}</td><td class="p-2.5 text-center text-slate-300">${t.drawn}</td><td class="p-2.5 text-center text-slate-300">${t.lost}</td><td class="p-2.5 text-center text-slate-300">${t.gd}</td><td class="p-2.5 text-center font-black text-green-400 text-sm">${t.points}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
     }
 
     async function captureScreenshot(elementId, filename) {
@@ -406,7 +462,7 @@
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       const catName = cat ? cat.name : 'Torneo KanchaPro';
       const url = window.location.href;
-      const text = `⚽ ¡Sigue las estadísticas, fixture y tabla de posiciones del torneo *${catName}* en KanchaPro!\n\n🔗 ${url}`;
+      const text = `⚽ ¡Sigue las estadísticas, fixture y tabla de posiciones del torneo *${catName}* em KanchaPro!\n\n🔗 ${url}`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
