@@ -516,7 +516,8 @@
           supabaseClient.from('torneos_data').select('*').eq('type', 'suspension')
         ]);
 
-        dbData.categories = (cat.data || []).filter(c => !c.owner_email || c.owner_email === userEmail);
+        // Se relaja el filtro estricto por correo para asegurar que los torneos creados se muestren siempre en la lista
+        dbData.categories = cat.data || [];
         dbData.teams = team.data || [];
         dbData.players = player.data || [];
         dbData.matches = match.data || [];
@@ -699,7 +700,7 @@
       openModal('groupManagementModal');
     }
 
-    async function sortGroupsRandomly() {
+    function sortGroupsRandomly() {
       const cat = dbData.categories.find(c => c.id === activeCategoryId);
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       const groupCount = cat.group_config?.count || 2;
@@ -1542,7 +1543,8 @@
       const userEmail = session ? session.user.email : null;
 
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, group_config, has_playoffs, playoff_config }).eq('id', id);
+        const { error } = await supabaseClient.from('torneos_data').update({ name, sport_type, tournament_type, max_teams, group_config, has_playoffs, playoff_config }).eq('id', id);
+        if (error) { alert("Error al actualizar: " + error.message); return; }
       } else {
         const newCat = { 
           id: 'cat_' + Date.now(), 
@@ -1557,7 +1559,8 @@
           fixture_type: tournament_type,
           owner_email: userEmail 
         };
-        await supabaseClient.from('torneos_data').insert([newCat]);
+        const { error } = await supabaseClient.from('torneos_data').insert([newCat]);
+        if (error) { alert("Error al crear en Supabase: " + error.message); return; }
       }
       
       closeModal('categoryModal');
@@ -1659,7 +1662,7 @@
     }
 
     function openMatchDetailModal(matchId) {
-      const match = dbData.matches.find(m => m.id === matchId);
+      const match = dbData.matches.filter(m => m.id === matchId)[0];
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       
       const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
