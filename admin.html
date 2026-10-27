@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kanchapro - Panel Admin Pro con Playoffs</title>
+  <title>Kanchapro - Panel Admin Pro con Playoffs y Futsal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -147,7 +147,7 @@
         <h3 class="text-sm font-bold text-green-300">Tribunal de Disciplina y Acumulado de Tarjetas</h3>
         <button onclick="openSuspensionModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Sanción Manual</button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
         <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
           <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Tarjetas Amarillas</h4>
           <div id="adminYellowCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
@@ -155,6 +155,10 @@
         <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
           <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Tarjetas Rojas</h4>
           <div id="adminRedCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
+        </div>
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-3">
+          <h4 class="font-bold text-blue-400 text-xs flex items-center gap-1.5">🟦 Tarjetas Azules</h4>
+          <div id="adminBlueCardsList" class="space-y-2 max-h-60 overflow-y-auto scrollbar-thin pr-1"></div>
         </div>
       </div>
       <div class="pt-2">
@@ -270,7 +274,7 @@
 
   <!-- Modal Estadísticas Detalladas del Jugador -->
   <div id="playerStatsModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3">
-    <div class="glass-card p-5 rounded-2xl max-w-xs w-full space-y-4 border border-green-500/30 text-xs">
+    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-4 border border-green-500/30 text-xs">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
         <h3 class="text-sm font-bold text-green-400">Estadísticas del Jugador</h3>
         <button onclick="closeModal('playerStatsModal')" class="text-slate-400 hover:text-white font-bold">✕</button>
@@ -281,7 +285,7 @@
           <h4 id="statPlayerName" class="text-sm font-bold text-white">Nombre</h4>
           <p id="statPlayerTeam" class="text-[10px] text-slate-400">Equipo</p>
         </div>
-        <div class="grid grid-cols-3 gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
+        <div class="grid grid-cols-2 gap-2 bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40">
           <div>
             <span class="text-[9px] text-slate-400 block">⚽ Goles</span>
             <span id="statPlayerGoals" class="text-sm font-black text-green-400">0</span>
@@ -293,6 +297,10 @@
           <div>
             <span class="text-[9px] text-slate-400 block">🟥 Rojas</span>
             <span id="statPlayerReds" class="text-sm font-black text-red-400">0</span>
+          </div>
+          <div>
+            <span class="text-[9px] text-slate-400 block">🟦 Azules</span>
+            <span id="statPlayerBlues" class="text-sm font-black text-blue-400">0</span>
           </div>
         </div>
       </div>
@@ -340,12 +348,12 @@
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 class="text-sm font-bold text-green-400">Tribunal de Disciplina - Sanción</h3>
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Jugador:</label>
-        <input type="text" id="modalSuspName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Nombre">
+        <label class="block text-[11px] text-slate-300 mb-1">Equipo:</label>
+        <select id="modalSuspTeam" onchange="updateSuspensionPlayerOptions(this.value)" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Equipo del Jugador:</label>
-        <select id="modalSuspTeam" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
+        <label class="block text-[11px] text-slate-300 mb-1">Jugador:</label>
+        <select id="modalSuspPlayer" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
       <div>
         <label class="block text-[11px] text-slate-300 mb-1">Partidos de Suspensión:</label>
@@ -557,20 +565,33 @@
             </div>
 
             <div id="roster_team_${team.id}" class="hidden p-2.5 space-y-1.5 border-t border-green-900/30 bg-[#060a08]">
-              ${teamPlayers.length > 0 ? teamPlayers.map(p => `
-                <div onclick="openPlayerStatsModal('${p.id}')" class="p-2 rounded-lg bg-[#0b0f0d] border border-green-900/20 flex justify-between items-center cursor-pointer hover:border-green-500/50 transition">
-                  <div class="flex items-center gap-2">
-                    <span class="text-slate-400 text-xs">👤</span>
-                    <span class="font-semibold text-white text-xs">${p.name}</span>
+              ${teamPlayers.length > 0 ? teamPlayers.map(p => {
+                let g = 0, y = 0, r = 0, b = 0;
+                dbData.matches.forEach(m => {
+                  const st = m.match_details?.playerStats?.[p.id];
+                  if (st) { 
+                    g += (st.goals || 0); 
+                    y += (st.yellows || 0); 
+                    r += (st.reds || 0); 
+                    b += (st.blues || 0); 
+                  }
+                });
+                return `
+                  <div onclick="openPlayerStatsModal('${p.id}')" class="p-2 rounded-lg bg-[#0b0f0d] border border-green-900/20 flex justify-between items-center cursor-pointer hover:border-green-500/50 transition">
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-400 text-xs">👤</span>
+                      <span class="font-semibold text-white text-xs">${p.name}</span>
+                    </div>
+                    <div class="flex items-center gap-2.5 text-[11px]">
+                      <span class="text-green-400 font-bold">⚽ ${g}</span>
+                      <span class="text-yellow-400">🟨 ${y}</span>
+                      <span class="text-red-400">🟥 ${r}</span>
+                      <span class="text-blue-400">🟦 ${b}</span>
+                      <button onclick="event.stopPropagation(); deleteRecord('${p.id}')" class="text-red-400 hover:text-red-300 text-[10px]">🗑️</button>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-3 text-[11px]">
-                    <span class="text-green-400 font-bold">⚽ ${p.goals || 0}</span>
-                    <span class="text-yellow-400">🟨 ${p.yellows || 0}</span>
-                    <span class="text-red-400">🟥 ${p.reds || 0}</span>
-                    <button onclick="event.stopPropagation(); deleteRecord('${p.id}')" class="text-red-400 hover:text-red-300 text-[10px]">🗑️</button>
-                  </div>
-                </div>
-              `).join('') : '<p class="text-slate-500 text-[11px] text-center py-2">No hay jugadores registrados.</p>'}
+                `;
+              }).join('') : '<p class="text-slate-500 text-[11px] text-center py-2">No hay jugadores registrados.</p>'}
             </div>
           </div>
         `;
@@ -594,11 +615,23 @@
       if (!player) return;
       const team = dbData.teams.find(t => t.id === player.team_id);
 
+      let g = 0, y = 0, r = 0, b = 0;
+      dbData.matches.forEach(m => {
+        const st = m.match_details?.playerStats?.[playerId];
+        if (st) { 
+          g += (st.goals || 0); 
+          y += (st.yellows || 0); 
+          r += (st.reds || 0); 
+          b += (st.blues || 0); 
+        }
+      });
+
       document.getElementById('statPlayerName').textContent = player.name;
       document.getElementById('statPlayerTeam').textContent = team ? team.name : 'Sin equipo';
-      document.getElementById('statPlayerGoals').textContent = player.goals || 0;
-      document.getElementById('statPlayerYellows').textContent = player.yellows || 0;
-      document.getElementById('statPlayerReds').textContent = player.reds || 0;
+      document.getElementById('statPlayerGoals').textContent = g;
+      document.getElementById('statPlayerYellows').textContent = y;
+      document.getElementById('statPlayerReds').textContent = r;
+      document.getElementById('statPlayerBlues').textContent = b;
 
       openModal('playerStatsModal');
     }
@@ -676,34 +709,67 @@
       const teamIds = teams.map(t => t.id);
       const players = dbData.players.filter(p => teamIds.includes(p.team_id));
 
-      const yellows = players.filter(p => (p.yellows || 0) > 0).sort((a,b) => b.yellows - a.yellows);
-      const reds = players.filter(p => (p.reds || 0) > 0).sort((a,b) => b.reds - a.reds);
+      let yellowMap = {};
+      let redMap = {};
+      let blueMap = {};
 
-      document.getElementById('adminYellowCardsList').innerHTML = yellows.map(p => {
-        const t = teams.find(x => x.id === p.team_id);
+      players.forEach(p => {
+        let totalY = 0, totalR = 0, totalB = 0;
+        dbData.matches.forEach(m => {
+          const st = m.match_details?.playerStats?.[p.id];
+          if (st) {
+            totalY += (st.yellows || 0);
+            totalR += (st.reds || 0);
+            totalB += (st.blues || 0);
+          }
+        });
+        if (totalY > 0) yellowMap[p.id] = { player: p, count: totalY };
+        if (totalR > 0) redMap[p.id] = { player: p, count: totalR };
+        if (totalB > 0) blueMap[p.id] = { player: p, count: totalB };
+      });
+
+      const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
+      const redsSorted = Object.values(redMap).sort((a,b) => b.count - a.count);
+      const bluesSorted = Object.values(blueMap).sort((a,b) => b.count - a.count);
+
+      document.getElementById('adminYellowCardsList').innerHTML = yellowsSorted.map(item => {
+        const t = teams.find(x => x.id === item.player.team_id);
         return `
           <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
             <div>
-              <span class="font-bold text-white block">${p.name}</span>
+              <span class="font-bold text-white block">${item.player.name}</span>
               <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
             </div>
-            <span class="font-black text-yellow-400 text-sm">🟨 ${p.yellows}</span>
+            <span class="font-black text-yellow-400 text-sm">🟨 ${item.count}</span>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin tarjetas amarillas</p>';
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin amarillas</p>';
 
-      document.getElementById('adminRedCardsList').innerHTML = reds.map(p => {
-        const t = teams.find(x => x.id === p.team_id);
+      document.getElementById('adminRedCardsList').innerHTML = redsSorted.map(item => {
+        const t = teams.find(x => x.id === item.player.team_id);
         return `
           <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
             <div>
-              <span class="font-bold text-white block">${p.name}</span>
+              <span class="font-bold text-white block">${item.player.name}</span>
               <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
             </div>
-            <span class="font-black text-red-400 text-sm">🟥 ${p.reds}</span>
+            <span class="font-black text-red-400 text-sm">🟥 ${item.count}</span>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin tarjetas rojas</p>';
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin rojas</p>';
+
+      document.getElementById('adminBlueCardsList').innerHTML = bluesSorted.map(item => {
+        const t = teams.find(x => x.id === item.player.team_id);
+        return `
+          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
+            <div>
+              <span class="font-bold text-white block">${item.player.name}</span>
+              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+            </div>
+            <span class="font-black text-blue-400 text-sm">🟦 ${item.count}</span>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin azules</p>';
 
       const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
       document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
@@ -944,7 +1010,6 @@
       const name = document.getElementById('modalPlayerName').value;
       if (!name) return alert("Ingresa el nombre del jugador.");
 
-      // Se guarda exclusivamente la estructura básica compatible con la tabla
       const newPlayer = {
         id: 'player_' + Date.now(), 
         type: 'player', 
@@ -981,7 +1046,7 @@
       const hPlayers = dbData.players.filter(p => p.team_id === hTeam.id);
       document.getElementById('labelHomeTeamTitle').textContent = `Plantel Local (${hTeam.name})`;
       document.getElementById('homeTeamStatsList').innerHTML = hPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0 };
+        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0, blues: 0 };
         return `
           <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
             <span class="font-semibold text-white truncate w-24">${p.name}</span>
@@ -989,6 +1054,7 @@
               <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-green-400"></div>
               <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
               <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-red-400"></div>
+              <div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-blue-400"></div>
             </div>
           </div>
         `;
@@ -997,7 +1063,7 @@
       const aPlayers = dbData.players.filter(p => p.team_id === aTeam.id);
       document.getElementById('labelAwayTeamTitle').textContent = `Plantel Visitante (${aTeam.name})`;
       document.getElementById('awayTeamStatsList').innerHTML = aPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0 };
+        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0, blues: 0 };
         return `
           <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
             <span class="font-semibold text-white truncate w-24">${p.name}</span>
@@ -1005,6 +1071,7 @@
               <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-green-400"></div>
               <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
               <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-red-400"></div>
+              <div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-blue-400"></div>
             </div>
           </div>
         `;
@@ -1027,13 +1094,15 @@
         const gInput = document.getElementById(`p_g_${p.id}`);
         const yInput = document.getElementById(`p_y_${p.id}`);
         const rInput = document.getElementById(`p_r_${p.id}`);
+        const bInput = document.getElementById(`p_b_${p.id}`);
         if (!gInput) continue;
 
         const goals = parseInt(gInput.value) || 0;
         const yellows = parseInt(yInput.value) || 0;
         const reds = parseInt(rInput.value) || 0;
+        const blues = parseInt(bInput.value) || 0;
 
-        playerStats[p.id] = { goals, yellows, reds };
+        playerStats[p.id] = { goals, yellows, reds, blues };
 
         if (p.team_id === match.home_team) totalHomeGoals += goals;
         if (p.team_id === match.away_team) totalAwayGoals += goals;
@@ -1051,28 +1120,12 @@
         return;
       }
 
-      // Cálculo de acumulados directos en memoria local para mostrar en pantallas sin requerir columnas extra en DB
-      dbData.players.forEach(p => {
-        let totalG = 0, totalY = 0, totalR = 0;
-        dbData.matches.forEach(m => {
-          let details = m.id === matchId ? { playerStats } : (m.match_details || {});
-          if (details.playerStats && details.playerStats[p.id]) {
-            totalG += (details.playerStats[p.id].goals || 0);
-            totalY += (details.playerStats[p.id].yellows || 0);
-            totalR += (details.playerStats[p.id].reds || 0);
-          }
-        });
-        p.goals = totalG;
-        p.yellows = totalY;
-        p.reds = totalR;
-      });
-
       if (!match.played) {
         const playingTeamIds = [match.home_team, match.away_team];
         const activeSuspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
 
         for (let susp of activeSuspensions) {
-          const playerRecord = dbData.players.find(p => p.name.toLowerCase() === susp.player_name.toLowerCase());
+          const playerRecord = dbData.players.find(p => p.id === susp.player_id);
           if (playerRecord && playingTeamIds.includes(playerRecord.team_id)) {
             let newRemaining = (susp.remaining_matches || 1) - 1;
             if (newRemaining <= 0) {
@@ -1179,25 +1232,44 @@
 
     function openSuspensionModal() {
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      document.getElementById('modalSuspTeam').innerHTML = teams.map(t => `<option value="${t.name}">${t.name}</option>`).join('');
-      document.getElementById('modalSuspName').value = '';
+      if (teams.length === 0) return alert("Registra equipos primero.");
+      
+      document.getElementById('modalSuspTeam').innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      updateSuspensionPlayerOptions(teams[0].id);
+
+      document.getElementById('modalSuspMatches').value = '1';
       document.getElementById('modalSuspReason').value = '';
       openModal('suspensionModal');
     }
 
+    function updateSuspensionPlayerOptions(teamId) {
+      const players = dbData.players.filter(p => p.team_id === teamId);
+      const playerSelect = document.getElementById('modalSuspPlayer');
+      if (players.length === 0) {
+        playerSelect.innerHTML = '<option value="">Sin jugadores en este equipo</option>';
+        return;
+      }
+      playerSelect.innerHTML = players.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    }
+
     async function saveSuspensionFromModal() {
-      const player_name = document.getElementById('modalSuspName').value;
-      const team_name = document.getElementById('modalSuspTeam').value;
+      const teamId = document.getElementById('modalSuspTeam').value;
+      const playerId = document.getElementById('modalSuspPlayer').value;
       const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
       const reason = document.getElementById('modalSuspReason').value;
-      if (!player_name) return alert("Ingresa el nombre del jugador sancionado.");
+
+      if (!playerId) return alert("Selecciona un jugador válido.");
+
+      const team = dbData.teams.find(t => t.id === teamId);
+      const player = dbData.players.find(p => p.id === playerId);
 
       await supabaseClient.from('torneos_data').insert([{
         id: 'susp_' + Date.now(),
         type: 'suspension',
         category_id: activeCategoryId,
-        player_name,
-        team_name,
+        player_id: playerId,
+        player_name: player ? player.name : 'Jugador',
+        team_name: team ? team.name : '',
         remaining_matches,
         reason
       }]);
