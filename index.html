@@ -116,11 +116,11 @@
             <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Posiciones
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaStandings', 'Tabla_Posiciones')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
-            📸 Capturar Tabla para WhatsApp
+            📸 Compartir / Enviar a WhatsApp
           </button>
         </div>
         <div id="captureAreaStandings" class="space-y-3 bg-[#060a08] p-4 rounded-2xl border border-green-900/50 shadow-inner relative">
-          <!-- Encabezado con alineación superior y fuente adaptada para evitar cortes -->
+          <!-- Encabezado perfectamente alineado e imitando la prolijidad del fixture -->
           <div class="flex items-start justify-between border-b border-green-900/40 pb-3 mb-2 gap-2">
             <div class="flex items-start gap-2.5 min-w-0 flex-1">
               <div id="captureLogoStandings" class="w-9 h-9 rounded-xl bg-green-950 border border-green-500/40 flex items-center justify-center overflow-hidden shrink-0 mt-0.5">
@@ -154,7 +154,7 @@
             <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Fase Final y Llaves
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaPlayoffs', 'Playoffs')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
-            📸 Capturar Playoffs para WhatsApp
+            📸 Compartir / Enviar a WhatsApp
           </button>
         </div>
         <div id="captureAreaPlayoffs" class="space-y-3 bg-[#060a08] p-4 rounded-2xl border border-green-900/50 shadow-inner relative">
@@ -191,7 +191,7 @@
             <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Goleadores
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaScorers', 'Tabla_Goleadores')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
-            📸 Capturar Goleadores para WhatsApp
+            📸 Compartir / Enviar a WhatsApp
           </button>
         </div>
         <div id="captureAreaScorers" class="space-y-3 bg-[#060a08] p-4 rounded-2xl border border-green-900/50 shadow-inner relative">
@@ -220,7 +220,7 @@
             <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span> Tribunal de Disciplina y Tarjetas
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaDiscipline', 'Tribunal_Disciplina')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
-            📸 Capturar Sanciones para WhatsApp
+            📸 Compartir / Enviar a WhatsApp
           </button>
         </div>
         <div id="captureAreaDiscipline" class="space-y-3 bg-[#060a08] p-4 rounded-2xl border border-green-900/50 shadow-inner relative">
@@ -615,14 +615,41 @@
         const filename = `${filePrefix}_${catNameClean}.png`;
 
         const canvas = await html2canvas(captureArea, { backgroundColor: '#060a08', scale: 2, useCORS: true });
-        const imageURL = canvas.toDataURL('image/png');
         
-        const link = document.createElement('a');
-        link.href = imageURL;
-        link.download = filename;
-        link.click();
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            alert("No se pudo generar la imagen.");
+            return;
+          }
+          const file = new File([blob], filename, { type: 'image/png' });
 
-        alert("¡Imagen guardada! Ya puedes abrir WhatsApp y adjuntar la captura descargada.");
+          // Intentar compartir de forma nativa (permite elegir WhatsApp o cualquier app)
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'KanchaPro',
+                text: `⚽ Compartido desde KanchaPro — Torneo: ${cat ? cat.name : ''}`
+              });
+              return;
+            } catch (shareErr) {
+              if (shareErr.name !== 'AbortError') {
+                console.log("Error en share nativo, usando respaldo:", shareErr);
+              } else {
+                return; // Usuario canceló el menú de compartir
+              }
+            }
+          }
+
+          // Respaldo por si el navegador no soporta compartir archivos directamente
+          const imageURL = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = imageURL;
+          link.download = filename;
+          link.click();
+          alert("¡Imagen guardada! Ya puedes abrir WhatsApp y adjuntarla.");
+        }, 'image/png');
+
       } catch (err) {
         console.error(err);
         alert("Hubo un error al generar la captura.");
@@ -638,15 +665,38 @@
           useCORS: true,
           ignoreElements: (el) => el.classList && el.classList.contains('no-capture-btn')
         });
-        const imageURL = canvas.toDataURL('image/png');
-        
-        // Descargar la imagen
-        const link = document.createElement('a');
-        link.href = imageURL;
-        link.download = filename;
-        link.click();
 
-        alert("¡Imagen guardada! Ya puedes abrir WhatsApp y adjuntar la captura descargada.");
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            alert("No se pudo generar la imagen.");
+            return;
+          }
+          const file = new File([blob], filename, { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'KanchaPro',
+                text: `⚽ Partido / Fecha compartido desde KanchaPro`
+              });
+              return;
+            } catch (shareErr) {
+              if (shareErr.name !== 'AbortError') {
+                console.log("Error en share nativo, usando respaldo:", shareErr);
+              } else {
+                return;
+              }
+            }
+          }
+
+          const imageURL = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = imageURL;
+          link.download = filename;
+          link.click();
+          alert("¡Imagen guardada! Ya puedes abrir WhatsApp y adjuntarla.");
+        }, 'image/png');
 
       } catch (err) {
         console.error(err);
@@ -705,7 +755,7 @@
             </div>
             <!-- Botón de captura visible en la web, oculto en la foto final -->
             <button onclick="captureScreenshot('${safeRoundId}', 'Fixture_${roundNameClean}_${catNameClean}.png')" class="no-capture-btn text-[10px] px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm shrink-0 ml-2">
-              <span>📸</span> <span class="hidden sm:inline">Capturar Fecha</span><span class="inline sm:hidden">Capturar</span>
+              <span>📸</span> <span class="hidden sm:inline">Compartir Fecha</span><span class="inline sm:hidden">Compartir</span>
             </button>
           </div>
           <div class="space-y-1.5">
@@ -735,7 +785,7 @@
                   ${infoText ? `<div class="text-[9px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
                   <div class="flex justify-end pt-1">
                     <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2 py-0.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-md font-bold border border-emerald-500/30 transition flex items-center gap-1">
-                      <span>📸</span> Capturar Partido
+                      <span>📸</span> Compartir Partido
                     </button>
                   </div>
                 </div>
@@ -855,7 +905,7 @@
               </button>
               <div class="flex items-center gap-2 shrink-0">
                 <button onclick="captureScreenshot('${safeTeamBoxId}', 'Plantel_${teamNameClean}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm">
-                  <span>📸</span> Capturar
+                  <span>📸</span> Compartir
                 </button>
                 <button onclick="toggleTeamAccordion('${team.id}')" class="text-green-400 font-bold transition-transform duration-200 text-xs px-1">
                   <span id="team-icon-${team.id}">▼</span>
