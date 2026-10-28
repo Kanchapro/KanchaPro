@@ -28,6 +28,18 @@
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
+
+    // Función para registrar visitas automáticamente
+    async function registrarVisita(tipoPagina) {
+      if (!supabaseClient) return;
+      try {
+        await supabaseClient.from('visitor_stats').insert([
+          { page_type: tipoPagina }
+        ]);
+      } catch (err) {
+        console.error("Error al registrar visita:", err);
+      }
+    }
   </script>
 
   <!-- LOGIN GOOGLE -->
@@ -77,15 +89,16 @@
       </div>
     </div>
 
-    <!-- Pestañas (Modificado a grilla de 2 columnas en celulares para que no salgan de la pantalla) -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1.5 glass-card rounded-xl p-2 border border-green-900/30">
-      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center tab-active font-semibold transition">🛡️ Equipos y Grupos</button>
+    <!-- Pestañas (Ampliadas a 8 pestañas con la sección de Estadísticas) -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-1.5 glass-card rounded-xl p-2 border border-green-900/30">
+      <button onclick="switchAdminTab('teams', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center tab-active font-semibold transition">🛡️ Equipos</button>
       <button onclick="switchAdminTab('players', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">👥 Planteles</button>
       <button onclick="switchAdminTab('fixture', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">📅 Fixture</button>
       <button onclick="switchAdminTab('standings', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">📊 Posiciones</button>
       <button onclick="switchAdminTab('playoffs', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">🏆 Playoffs</button>
       <button onclick="switchAdminTab('discipline', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">🟥 Sanciones</button>
       <button onclick="switchAdminTab('moderators', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">👥 Moderadores</button>
+      <button onclick="switchAdminTab('stats', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">📈 Estadísticas</button>
     </div>
 
     <!-- Tab 1: Equipos y Grupos -->
@@ -197,6 +210,29 @@
         <button onclick="openModeratorModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Moderador</button>
       </div>
       <div id="adminModeratorsList" class="space-y-2"></div>
+    </div>
+
+    <!-- Tab 8: Estadísticas de Tráfico -->
+    <div id="adm-stats" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
+        <div>
+          <h3 class="text-sm font-bold text-green-300">📊 Estadísticas de Tráfico y Visitas</h3>
+          <p class="text-[10px] text-slate-400">Control de accesos registrados en el Portal Público (Index) y el Panel Admin</p>
+        </div>
+        <button onclick="loadVisitorStats()" class="bg-emerald-600/20 text-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-500/30 hover:bg-emerald-600/30 transition">🔄 Actualizar</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-2 shadow-inner">
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Portal Público (Index)</span>
+          <div id="statIndexVisits" class="text-3xl font-black text-green-400">Cargando...</div>
+          <p class="text-[11px] text-slate-500">Total de visitas de los usuarios para ver fixtures, posiciones y planteles.</p>
+        </div>
+        <div class="bg-[#0b0f0d] p-4 rounded-xl border border-green-900/40 space-y-2 shadow-inner">
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Panel de Administración (Admin)</span>
+          <div id="statAdminVisits" class="text-3xl font-black text-blue-400">Cargando...</div>
+          <p class="text-[11px] text-slate-500">Total de ingresos y sesiones abiertas en el panel de control.</p>
+        </div>
+      </div>
     </div>
 
   </main>
@@ -526,6 +562,9 @@
     function toggleAccordion(id) { document.getElementById(id).classList.toggle('hidden'); }
 
     window.addEventListener('DOMContentLoaded', async () => {
+      // Registrar visita de admin automáticamente al abrir la página
+      await registrarVisita('admin');
+
       if (supabaseClient) {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
@@ -627,6 +666,39 @@
 
       document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
       document.getElementById(`adm-${tabKey}`).classList.remove('hidden');
+
+      // Si hace clic en la pestaña de estadísticas, cargamos los datos
+      if (tabKey === 'stats') {
+        loadVisitorStats();
+      }
+    }
+
+    // Función para cargar los totales de visitas desde la tabla visitor_stats
+    async function loadVisitorStats() {
+      if (!supabaseClient) return;
+      document.getElementById('statIndexVisits').textContent = 'Cargando...';
+      document.getElementById('statAdminVisits').textContent = 'Cargando...';
+
+      try {
+        // Contar visitas del index
+        const { count: indexCount, error: errIndex } = await supabaseClient
+          .from('visitor_stats')
+          .select('*', { count: 'exact', head: true })
+          .eq('page_type', 'index');
+
+        // Contar visitas del admin
+        const { count: adminCount, error: errAdmin } = await supabaseClient
+          .from('visitor_stats')
+          .select('*', { count: 'exact', head: true })
+          .eq('page_type', 'admin');
+
+        document.getElementById('statIndexVisits').textContent = indexCount !== null ? indexCount : 0;
+        document.getElementById('statAdminVisits').textContent = adminCount !== null ? adminCount : 0;
+      } catch (err) {
+        console.error("Error al cargar estadísticas de visitas:", err);
+        document.getElementById('statIndexVisits').textContent = 'Error';
+        document.getElementById('statAdminVisits').textContent = 'Error';
+      }
     }
 
     function renderActiveCategoryViews() {
@@ -685,7 +757,6 @@
           roundsMap[rName].push(m);
         });
 
-        // Ordenamiento ascendente de las fechas/jornadas
         const sortedRoundNames = Object.keys(roundsMap).sort((a, b) => {
           const numA = parseInt((a.match(/\d+/) || [0])[0]);
           const numB = parseInt((b.match(/\d+/) || [0])[0]);
@@ -1356,7 +1427,6 @@
             list.splice(1, 0, temp);
           }
 
-          // Rueda de ida
           for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
             let roundNumber = rIndex + 1;
             let matchesInRound = fixtureRounds[rIndex];
@@ -1378,11 +1448,9 @@
             }
           }
 
-          // Rueda de vuelta (si está activado Ida y Vuelta)
           if (isHomeAway) {
             for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
               let roundNumber = fixtureRounds.length + rIndex + 1;
-              let originalRoundNumber = rIndex + 1;
               let matchesInRound = fixtureRounds[rIndex];
               for (let m of matchesInRound) {
                 counter++;
@@ -1390,7 +1458,7 @@
                   id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
                   type: 'match',
                   category_id: activeCategoryId,
-                  home_team: m.away.id, // Se invierten local y visitante
+                  home_team: m.away.id,
                   away_team: m.home.id,
                   home_score: 0,
                   away_score: 0,
@@ -1427,7 +1495,6 @@
           list.splice(1, 0, temp);
         }
 
-        // Rueda de ida
         for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
           let roundNumber = rIndex + 1;
           let matchesInRound = fixtureRounds[rIndex];
@@ -1449,7 +1516,6 @@
           }
         }
 
-        // Rueda de vuelta (si está activado Ida y Vuelta)
         if (isHomeAway) {
           for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
             let roundNumber = fixtureRounds.length + rIndex + 1;
@@ -1460,7 +1526,7 @@
                 id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
                 type: 'match',
                 category_id: activeCategoryId,
-                home_team: m.away.id, // Se invierten local y visitante
+                home_team: m.away.id,
                 away_team: m.home.id,
                 home_score: 0,
                 away_score: 0,
@@ -1592,7 +1658,7 @@
           category_id: activeCategoryId,
           is_playoff: true,
           round_name: `${round_name} (Vuelta)`,
-          home_team: away_team, // Se invierten local y visitante para la vuelta
+          home_team: away_team,
           away_team: home_team,
           home_score: 0,
           away_score: 0,
