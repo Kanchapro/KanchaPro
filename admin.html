@@ -725,11 +725,11 @@
                   const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
                   return `
                     <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
-                      <!-- ESTRUCTURA FLEXIBLE AMPLIADA PARA EVITAR CORTES DE TEXTO -->
-                      <div class="flex items-center justify-between gap-1 text-xs">
-                        <!-- Local (ocupa más espacio y alinea a la derecha) -->
+                      <!-- ESTRUCTURA FLEXIBLE CORREGIDA CON ALINEACIÓN VERTICAL Y PADDING -->
+                      <div class="flex items-center justify-between gap-1 text-xs py-1">
+                        <!-- Local -->
                         <div class="flex-1 flex items-center justify-end gap-2 overflow-hidden text-right">
-                          <span class="font-semibold text-white truncate">${hTeam.name}</span>
+                          <span class="font-semibold text-white truncate leading-normal">${hTeam.name}</span>
                           ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0 font-bold text-[10px]">🛡️</div>'}
                         </div>
                         
@@ -738,10 +738,10 @@
                           <span class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
                         </div>
 
-                        <!-- Visitante (ocupa más espacio y alinea a la izquierda) -->
+                        <!-- Visitante -->
                         <div class="flex-1 flex items-center justify-start gap-2 overflow-hidden text-left">
                           ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0 font-bold text-[10px]">🛡️</div>'}
-                          <span class="font-semibold text-white truncate">${aTeam.name}</span>
+                          <span class="font-semibold text-white truncate leading-normal">${aTeam.name}</span>
                         </div>
                       </div>
 
@@ -861,7 +861,6 @@
           if (!blob) return;
           const file = new File([blob], `${roundName.replace(/\s+/g, '_')}_fixture.png`, { type: 'image/png' });
           
-          // Se incluye la URL del portal / torneo actual en el texto compartido
           const portalUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
           const shareText = `⚽ ¡Fixture de la ${roundName}! Revisa los horarios, tablas y posiciones completas en KanchaPro:\n👉 ${portalUrl}`;
 
