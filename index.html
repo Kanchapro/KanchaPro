@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KanchaPro — Portal Oficial de Torneos</title>
-  <!-- Chosen Palette: Emerald Stadium Dark -->
-  <!-- Application Structure Plan: Mobile-first responsive single-page portal. Navigation is organized into horizontal scrollable tab pills for easy thumb swiping. Header uses a two-tier layout on mobile: top row for branding and share actions, bottom row for tournament search and dropdown selection. Tables feature dedicated horizontal scroll containers with truncated text to preserve alignment on narrow viewports without clipping columns. -->
-  <!-- Visualization & Content Choices: HTML tables and card grids dynamically rendered with Vanilla JS from Supabase data. No SVG graphics or Mermaid JS used. Dynamic badges and unicode emojis serve as visual indicators. Canvas screenshot capture supported via html2canvas library. -->
-  <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+  <!-- Configuración PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#16a34a">
+  <link rel="apple-touch-icon" href="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png">
+  
   <link rel="icon" type="image/png" href="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -220,6 +221,13 @@
 
     window.addEventListener('DOMContentLoaded', async () => {
       await loadPublicData();
+      
+      // Registro del Service Worker para PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado con éxito:', reg.scope))
+          .catch(err => console.log('Error al registrar el Service Worker:', err));
+      }
     });
 
     async function loadPublicData() {
