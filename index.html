@@ -551,7 +551,7 @@
               <span>📸</span> Capturar Fecha
             </button>
           </div>
-          <div class="space-y-1.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
             ${roundsMap[roundName].map(m => {
               const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
               const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
