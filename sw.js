@@ -1,7 +1,9 @@
-const CACHE_NAME = 'kanchapro-cache-v2';
+const CACHE_NAME = 'kanchapro-cache-v3';
 const urlsToCache = [
   '/KanchaPro/',
   '/KanchaPro/index.html',
+  '/KanchaPro/manifest.json',
+  '/KanchaPro/icon.png',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
