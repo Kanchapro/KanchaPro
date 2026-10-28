@@ -1,0 +1,21 @@
+{
+  "name": "KanchaPro - Portal Oficial",
+  "short_name": "KanchaPro",
+  "start_url": "/KanchaPro/index.html",
+  "scope": "/KanchaPro/",
+  "display": "standalone",
+  "background_color": "#060907",
+  "theme_color": "#16a34a",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
