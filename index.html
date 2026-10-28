@@ -465,7 +465,6 @@
         if (el) el.innerHTML = logoHtml;
       });
 
-      // Actualizar subtítulos en las áreas de captura con el nombre del torneo actual
       ['captureSubtitleStandings', 'captureSubtitlePlayoffs', 'captureSubtitleScorers', 'captureSubtitleDiscipline'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = cat.name;
@@ -624,7 +623,6 @@
         link.click();
       } catch (err) {
         console.error(err);
-        alert("Hubo un error al generar la captura.");
       }
     }
 
@@ -640,7 +638,6 @@
         link.click();
       } catch (err) {
         console.error(err);
-        alert("Hubo un error al generar la captura.");
       }
     }
 
@@ -689,20 +686,17 @@
         const roundNameClean = roundName.replace(/[^a-zA-Z0-9]/g, '_');
         return `
         <div id="${safeRoundId}" class="bg-[#060a08] border border-green-900/40 rounded-2xl p-3 sm:p-4 space-y-2.5 shadow-md relative">
-          <!-- Cabecera incorporada para la captura de fecha con escudo -->
+          <!-- Cabecera incorporada para la captura con el escudo y nombre del torneo arriba -->
           <div class="flex items-center justify-between border-b border-green-900/40 pb-2.5">
-            <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-lg bg-green-950 border border-green-500/40 flex items-center justify-center overflow-hidden shrink-0">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <div class="w-8 h-8 rounded-xl bg-green-950 border border-green-500/40 flex items-center justify-center overflow-hidden shrink-0">
                 <img src="${logoUrl}" class="w-full h-full object-cover">
               </div>
-              <div>
-                <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">${roundName}</h4>
-                <span class="text-[9px] text-slate-400 font-semibold uppercase truncate block max-w-[180px] sm:max-w-xs">${cat ? cat.name : ''}</span>
+              <div class="min-w-0 flex-1">
+                <h4 class="text-xs font-black text-green-400 uppercase tracking-wider truncate leading-tight">${roundName}</h4>
+                <span class="text-[10px] text-slate-300 font-bold uppercase truncate block leading-tight">${cat ? cat.name : ''}</span>
               </div>
             </div>
-            <button onclick="captureScreenshot('${safeRoundId}', 'Fixture_${roundNameClean}_${catNameClean}.png')" class="text-[10px] px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm">
-              <span>📸</span> Capturar Fecha
-            </button>
           </div>
           <div class="space-y-1.5">
             ${roundsMap[roundName].map(m => {
