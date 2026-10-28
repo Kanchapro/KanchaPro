@@ -276,9 +276,9 @@
       <div class="text-center py-2.5 bg-[#060a08] rounded-xl border border-green-900/40 space-y-1 shadow-inner">
         <span id="pmRoundName" class="text-[9px] text-green-400 font-bold uppercase tracking-wider block">Fecha</span>
         <div class="flex justify-between items-center font-bold text-white text-xs px-2 gap-1">
-          <span id="pmHomeName" class="flex-1 text-right truncate font-black align-top">Local</span>
+          <span id="pmHomeName" class="flex-1 text-right truncate font-black align-middle">Local</span>
           <span id="pmScore" class="mx-1 bg-black px-2.5 py-1 rounded-xl border border-green-900 text-green-400 text-xs font-black shadow shrink-0">0 - 0</span>
-          <span id="pmAwayName" class="flex-1 text-left truncate font-black align-top">Visitante</span>
+          <span id="pmAwayName" class="flex-1 text-left truncate font-black align-middle">Visitante</span>
         </div>
       </div>
       <div class="space-y-2.5 max-h-56 overflow-y-auto scrollbar-thin pr-1">
@@ -512,34 +512,34 @@
                 <table class="w-full text-[10px] sm:text-xs min-w-[300px]">
                   <thead class="bg-[#0b0f0d] text-slate-400 uppercase text-[9px]">
                     <tr>
-                      <th class="p-1.5 text-left w-5 align-top">#</th>
-                      <th class="p-1.5 text-left align-top">Equipo</th>
-                      <th class="p-1.5 text-center w-6 align-top">PJ</th>
-                      <th class="p-1.5 text-center w-6 align-top">G</th>
-                      <th class="p-1.5 text-center w-6 align-top">E</th>
-                      <th class="p-1.5 text-center w-6 align-top">P</th>
-                      <th class="p-1.5 text-center w-7 align-top">DG</th>
-                      <th class="p-1.5 text-center font-bold text-green-400 w-7 align-top">Pts</th>
+                      <th class="p-1.5 text-left w-5 align-middle">#</th>
+                      <th class="p-1.5 text-left align-middle">Equipo</th>
+                      <th class="p-1.5 text-center w-6 align-middle">PJ</th>
+                      <th class="p-1.5 text-center w-6 align-middle">G</th>
+                      <th class="p-1.5 text-center w-6 align-middle">E</th>
+                      <th class="p-1.5 text-center w-6 align-middle">P</th>
+                      <th class="p-1.5 text-center w-7 align-middle">DG</th>
+                      <th class="p-1.5 text-center font-bold text-green-400 w-7 align-middle">Pts</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-green-900/20">
                     ${stats.map((t, idx) => `
                       <tr class="${idx < 2 ? 'bg-green-900/10 font-bold' : ''}">
-                        <td class="p-1.5 font-black text-green-400 align-top">${idx + 1}</td>
-                        <td class="p-1.5 font-bold text-white max-w-[110px] align-top">
-                          <div class="flex items-center gap-1 truncate">
-                            ${t.logo ? `<img src="${t.logo}" class="w-4 h-4 object-cover rounded-full border border-green-500/30 shrink-0 align-top">` : '<span class="text-[9px]">🛡️</span>'}
-                            <span class="truncate">${t.name}</span>
+                        <td class="p-1.5 font-black text-green-400 align-middle">${idx + 1}</td>
+                        <td class="p-1.5 font-bold text-white max-w-[140px] align-middle">
+                          <div class="flex items-center gap-1.5">
+                            ${t.logo ? `<img src="${t.logo}" class="w-5 h-5 object-cover rounded-full border border-green-500/35 shrink-0 align-middle">` : '<span class="text-[10px]">🛡️</span>'}
+                            <span class="leading-snug break-words">${t.name}</span>
                           </div>
                         </td>
-                        <td class="p-1.5 text-center text-slate-300 align-top">${t.played}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-top">${t.won}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-top">${t.drawn}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-top">${t.lost}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-top">${t.gd}</td>
-                        <td class="p-1.5 text-center font-black text-green-400 text-xs align-top">${t.points}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.played}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.won}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.drawn}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.lost}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.gd}</td>
+                        <td class="p-1.5 text-center font-black text-green-400 text-xs align-middle">${t.points}</td>
                       </tr>
-                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-500 py-2 align-top">Sin equipos en este grupo</td></tr>'}
+                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-500 py-2 align-middle">Sin equipos en este grupo</td></tr>'}
                   </tbody>
                 </table>
               </div>
@@ -567,32 +567,32 @@
             <table class="w-full text-[10px] sm:text-xs min-w-[300px]">
               <thead class="bg-[#050806] text-slate-400 uppercase text-[9px] font-bold tracking-wider">
                 <tr>
-                  <th class="p-1.5 text-left w-5 align-top">#</th>
-                  <th class="p-1.5 text-left align-top">Equipo</th>
-                  <th class="p-1.5 text-center w-6 align-top">PJ</th>
-                  <th class="p-1.5 text-center w-6 align-top">G</th>
-                  <th class="p-1.5 text-center w-6 align-top">E</th>
-                  <th class="p-1.5 text-center w-6 align-top">P</th>
-                  <th class="p-1.5 text-center w-7 align-top">DG</th>
-                  <th class="p-1.5 text-center font-black text-green-400 w-7 align-top">Pts</th>
+                  <th class="p-1.5 text-left w-5 align-middle">#</th>
+                  <th class="p-1.5 text-left align-middle">Equipo</th>
+                  <th class="p-1.5 text-center w-6 align-middle">PJ</th>
+                  <th class="p-1.5 text-center w-6 align-middle">G</th>
+                  <th class="p-1.5 text-center w-6 align-middle">E</th>
+                  <th class="p-1.5 text-center w-6 align-middle">P</th>
+                  <th class="p-1.5 text-center w-7 align-middle">DG</th>
+                  <th class="p-1.5 text-center font-black text-green-400 w-7 align-middle">Pts</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-green-900/20">
                 ${stats.map((t, idx) => `
                   <tr class="${idx < 4 ? 'bg-green-900/10 font-bold' : ''}">
-                    <td class="p-1.5 font-black text-green-400 align-top">${idx + 1}</td>
-                    <td class="p-1.5 font-bold text-white max-w-[110px] align-top">
-                      <div class="flex items-center gap-1 truncate">
-                        ${t.logo ? `<img src="${t.logo}" class="w-4 h-4 object-cover rounded-full border border-green-500/30 shrink-0 align-top">` : '<span class="text-[9px]">🛡️</span>'}
-                        <span class="truncate">${t.name}</span>
+                    <td class="p-1.5 font-black text-green-400 align-middle">${idx + 1}</td>
+                    <td class="p-1.5 font-bold text-white max-w-[140px] align-middle">
+                      <div class="flex items-center gap-1.5">
+                        ${t.logo ? `<img src="${t.logo}" class="w-5 h-5 object-cover rounded-full border border-green-500/35 shrink-0 align-middle">` : '<span class="text-[10px]">🛡️</span>'}
+                        <span class="leading-snug break-words">${t.name}</span>
                       </div>
                     </td>
-                    <td class="p-1.5 text-center text-slate-300 align-top">${t.played}</td>
-                    <td class="p-1.5 text-center text-slate-300 align-top">${t.won}</td>
-                    <td class="p-1.5 text-center text-slate-300 align-top">${t.drawn}</td>
-                    <td class="p-1.5 text-center text-slate-300 align-top">${t.lost}</td>
-                    <td class="p-1.5 text-center text-slate-300 align-top">${t.gd}</td>
-                    <td class="p-1.5 text-center font-black text-green-400 text-xs align-top">${t.points}</td>
+                    <td class="p-1.5 text-center text-slate-300 align-middle">${t.played}</td>
+                    <td class="p-1.5 text-center text-slate-300 align-middle">${t.won}</td>
+                    <td class="p-1.5 text-center text-slate-300 align-middle">${t.drawn}</td>
+                    <td class="p-1.5 text-center text-slate-300 align-middle">${t.lost}</td>
+                    <td class="p-1.5 text-center text-slate-300 align-middle">${t.gd}</td>
+                    <td class="p-1.5 text-center font-black text-green-400 text-xs align-middle">${t.points}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -683,17 +683,20 @@
               const safeMatchId = 'match-box-' + m.id;
               return `
                 <div id="${safeMatchId}" class="bg-[#0b140e] p-3 rounded-xl border border-green-900/30 space-y-1 text-xs glass-card-hover relative group">
-                  <div class="flex items-center justify-between gap-1">
-                    <div class="flex items-center gap-1 flex-1 justify-end min-w-0">
-                      <span class="font-bold text-white truncate text-right text-[11px] sm:text-xs align-top">${hTeam.name}</span>
-                      ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-4 h-4 object-cover rounded-full shrink-0 align-top">` : ''}
+                  <div class="flex items-center justify-between gap-2">
+                    <!-- Local -->
+                    <div class="flex items-center gap-1.5 flex-1 justify-end min-w-0">
+                      <span class="font-bold text-white text-right text-[11px] sm:text-xs leading-snug break-words">${hTeam.name}</span>
+                      ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-5 h-5 object-cover rounded-full shrink-0 align-middle border border-green-500/30">` : ''}
                     </div>
+                    <!-- Botón VS / Resultado -->
                     <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-2.5 py-1 rounded-xl text-green-400 font-black border border-green-900/60 hover:border-green-500 transition shadow shrink-0 text-[11px]">
                       ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
                     </button>
-                    <div class="flex items-center gap-1 flex-1 min-w-0">
-                      ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-4 h-4 object-cover rounded-full shrink-0 align-top">` : ''}
-                      <span class="font-bold text-white truncate text-left text-[11px] sm:text-xs align-top">${aTeam.name}</span>
+                    <!-- Visitante -->
+                    <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                      ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-5 h-5 object-cover rounded-full shrink-0 align-middle border border-green-500/30">` : ''}
+                      <span class="font-bold text-white text-left text-[11px] sm:text-xs leading-snug break-words">${aTeam.name}</span>
                     </div>
                   </div>
                   ${infoText ? `<div class="text-[9px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
@@ -736,7 +739,7 @@
       hPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          hStatsHtml += `<div class="flex justify-between text-[10px] sm:text-[11px] py-0.5"><span class="font-semibold text-white truncate pr-1 align-top">${p.name}</span><span class="font-bold shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          hStatsHtml += `<div class="flex justify-between text-[10px] sm:text-[11px] py-0.5"><span class="font-semibold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-bold shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
@@ -744,7 +747,7 @@
       aPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          aStatsHtml += `<div class="flex justify-between text-[10px] sm:text-[11px] py-0.5"><span class="font-semibold text-white truncate pr-1 align-top">${p.name}</span><span class="font-bold shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          aStatsHtml += `<div class="flex justify-between text-[10px] sm:text-[11px] py-0.5"><span class="font-semibold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-bold shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
@@ -766,14 +769,14 @@
         const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
         const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
         return `
-          <div class="bg-[#0b140e] p-3 rounded-2xl border border-green-900/40 flex flex-col gap-1 text-xs shadow-md">
+          <div class="bg-[#0b140e] p-3 rounded-2xl border border-green-900/40 flex flex-col gap-1.5 text-xs shadow-md">
             <div class="flex items-center justify-between">
               <span class="text-green-400 font-black uppercase text-[10px] tracking-wider">${m.round_name || 'Llave'}</span>
             </div>
-            <div class="flex items-center justify-between gap-1">
-              <div class="flex-1 text-right font-bold text-white truncate text-[11px] align-top">${hTeam.name}</div>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex-1 text-right font-bold text-white text-[11px] leading-snug break-words">${hTeam.name}</div>
               <div class="bg-black px-2.5 py-1 rounded-xl text-green-400 font-black border border-green-900/60 shadow shrink-0 text-[11px]">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</div>
-              <div class="flex-1 text-left font-bold text-white truncate text-[11px] align-top">${aTeam.name}</div>
+              <div class="flex-1 text-left font-bold text-white text-[11px] leading-snug break-words">${aTeam.name}</div>
             </div>
             ${infoText ? `<div class="text-[9px] text-slate-400 text-center font-medium truncate">🗓️ ${infoText}</div>` : ''}
           </div>
@@ -808,13 +811,13 @@
 
         return `
           <div id="${safeTeamBoxId}" class="bg-[#060a08] border border-green-900/40 rounded-2xl overflow-hidden shadow-md">
-            <div class="flex items-center justify-between p-3 bg-[#0b140e] border-b border-green-900/30">
+            <div class="flex items-center justify-between p-3 bg-[#0b140e] border-b border-green-900/30 gap-2">
               <button onclick="toggleTeamAccordion('${team.id}')" class="flex items-center gap-2.5 min-w-0 text-left flex-1 cursor-pointer">
-                ${team.logo ? `<img src="${team.logo}" class="w-7 h-7 object-cover rounded-full border border-green-500/40 shadow shrink-0 align-top">` : '<div class="w-7 h-7 bg-green-950 text-green-400 rounded-full flex items-center justify-center font-bold text-xs border border-green-500/30 shrink-0">🛡️</div>'}
-                <span class="font-black text-white text-xs sm:text-sm tracking-wide truncate align-top">${team.name}</span>
+                ${team.logo ? `<img src="${team.logo}" class="w-6 h-6 object-cover rounded-full border border-green-500/40 shadow shrink-0 align-middle">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center font-bold text-xs border border-green-500/30 shrink-0">🛡️</div>'}
+                <span class="font-black text-white text-xs sm:text-sm tracking-wide leading-snug break-words">${team.name}</span>
                 <span class="text-[10px] text-slate-400 font-semibold shrink-0">(${teamPlayers.length} jug.)</span>
               </button>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 shrink-0">
                 <button onclick="captureScreenshot('${safeTeamBoxId}', 'Plantel_${team.name.replace(/[^a-zA-Z0-9]/g, '_')}_KanchaPro.png')" class="text-[9px] px-2 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm">
                   <span>📸</span> Capturar
                 </button>
@@ -835,9 +838,9 @@
                   if (st) { g += (st.goals || 0); y += (st.yellows || 0); b += (st.blues || 0); r += (st.reds || 0); }
                 });
                 return `
-                  <div class="flex justify-between items-center bg-[#0b140e] p-2 rounded-xl border border-green-900/20 text-[11px] gap-1">
-                    <span class="font-semibold text-slate-200 truncate pr-1 align-top">👤 ${p.name}</span>
-                    <div class="flex gap-1.5 text-[10px] font-bold shrink-0 align-top">
+                  <div class="flex justify-between items-center bg-[#0b140e] p-2 rounded-xl border border-green-900/20 text-[11px] gap-2">
+                    <span class="font-semibold text-slate-200 leading-snug break-words">👤 ${p.name}</span>
+                    <div class="flex gap-1.5 text-[10px] font-bold shrink-0 align-middle">
                       <span class="text-green-400">⚽ ${g}</span>
                       <span class="text-yellow-400">🟨 ${y}</span>
                       <span class="text-blue-400">🟦 ${b}</span>
@@ -877,13 +880,13 @@
             return `
               <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-2xl border border-green-900/40 text-xs shadow-md gap-2">
                 <div class="flex items-center gap-2 min-w-0">
-                  <span class="font-black text-green-400 text-xs w-4 text-center shrink-0 align-top">${idx + 1}</span>
+                  <span class="font-black text-green-400 text-xs w-4 text-center shrink-0 align-middle">${idx + 1}</span>
                   <div class="min-w-0">
-                    <span class="font-black text-white text-xs block truncate align-top">${item.player.name}</span>
-                    <span class="text-[10px] text-slate-400 font-semibold block truncate align-top">${t ? t.name : ''}</span>
+                    <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
+                    <span class="text-[10px] text-slate-400 font-semibold block leading-snug break-words">${t ? t.name : ''}</span>
                   </div>
                 </div>
-                <span class="font-black text-green-400 text-xs sm:text-sm shrink-0 align-top">⚽ ${item.goals}</span>
+                <span class="font-black text-green-400 text-xs sm:text-sm shrink-0 align-middle">⚽ ${item.goals}</span>
               </div>
             `;
           }).join('') || '<p class="text-slate-500 text-xs text-center py-6">No hay goles registrados todavía.</p>'}
@@ -913,12 +916,12 @@
       document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.map(item => {
         const t = teams.find(x => x.id === item.player.team_id);
         return `
-          <div class="flex justify-between items-center bg-[#0b140e] p-2 rounded-xl border border-green-900/30 text-xs gap-1.5">
+          <div class="flex justify-between items-center bg-[#0b140e] p-2 rounded-xl border border-green-900/30 text-xs gap-2">
             <div class="min-w-0">
-              <span class="font-bold text-white text-[11px] block truncate align-top">${item.player.name}</span>
-              <span class="text-[9px] text-slate-400 block truncate align-top">${t ? t.name : ''}</span>
+              <span class="font-bold text-white text-[11px] block leading-snug break-words">${item.player.name}</span>
+              <span class="text-[9px] text-slate-400 block leading-snug break-words">${t ? t.name : ''}</span>
             </div>
-            <span class="font-black text-yellow-400 text-xs shrink-0 align-top">🟨 ${item.count}</span>
+            <span class="font-black text-yellow-400 text-xs shrink-0 align-middle">🟨 ${item.count}</span>
           </div>
         `;
       }).join('') || '<p class="text-slate-500 text-[11px] text-center py-3">Sin tarjetas amarillas registradas.</p>';
@@ -926,9 +929,9 @@
       const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId);
       document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
         <div class="bg-red-950/20 border border-red-500/40 rounded-xl p-2.5 text-xs space-y-0.5 shadow-sm">
-          <span class="font-black text-white text-xs block truncate align-top">${s.player_name} <span class="text-[10px] font-normal text-slate-400 truncate">(${s.team_name || ''})</span></span>
-          <span class="text-[10px] text-slate-300 block align-top">Sanción activa: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
-          <span class="text-[9px] text-slate-400 italic block truncate align-top">Motivo: ${s.reason || 'Sin observación'}</span>
+          <span class="font-black text-white text-xs block leading-snug break-words">${s.player_name} <span class="text-[10px] font-normal text-slate-400 break-words">(${s.team_name || ''})</span></span>
+          <span class="text-[10px] text-slate-300 block align-middle">Sanción activa: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
+          <span class="text-[9px] text-slate-400 italic block leading-snug break-words">Motivo: ${s.reason || 'Sin observación'}</span>
         </div>
       `).join('') || '<p class="text-slate-500 text-[11px] text-center py-3">No hay suspensiones vigentes en el tribunal.</p>';
     }
