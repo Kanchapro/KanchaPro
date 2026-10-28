@@ -92,8 +92,8 @@
     
     <!-- SECCIÓN DE TORNEOS FAVORITOS / BIENVENIDA (Visible cuando no hay torneo seleccionado) -->
     <div id="welcomeFavoritesSection" class="glass-card rounded-2xl p-4 sm:p-6 text-center space-y-4 shadow-xl">
-      <div class="w-12 h-12 bg-green-950/60 border border-green-500/40 rounded-2xl mx-auto flex items-center justify-center text-xl shadow-inner">
-        ⭐
+      <div class="w-16 h-16 bg-green-950/60 border border-green-500/40 rounded-2xl mx-auto flex items-center justify-center overflow-hidden shadow-inner">
+        <img src="/KanchaPro/Icon.png" alt="KanchaPro Logo" class="w-full h-full object-cover">
       </div>
       <div class="space-y-1">
         <h2 class="text-sm sm:text-base font-black text-green-400">Bienvenido a KanchaPro</h2>
@@ -308,6 +308,11 @@
         select.value = "";
         document.getElementById('welcomeFavoritesSection').classList.remove('hidden');
         document.getElementById('tournamentContentArea').classList.add('hidden');
+        
+        // Restaurar logo de KanchaPro por defecto en la cabecera cuando no hay torneo seleccionado
+        const headerLogo = document.getElementById('headerTournamentLogo');
+        headerLogo.innerHTML = `<img src="/KanchaPro/Icon.png" alt="Logo" class="w-full h-full object-cover">`;
+        document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
       }
     }
 
@@ -413,7 +418,7 @@
       if (cat.logo) {
         headerLogo.innerHTML = `<img src="${cat.logo}" class="w-full h-full object-cover">`;
       } else {
-        headerLogo.innerHTML = `<span class="text-xs">🏆</span>`;
+        headerLogo.innerHTML = `<img src="/KanchaPro/Icon.png" class="w-full h-full object-cover">`;
       }
 
       document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-300 block font-normal truncate">${cat.name}</span>`;
