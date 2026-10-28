@@ -1,27 +1,34 @@
+```html
 <!DOCTYPE html>
 <html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KanchaPro — Portal Oficial de Torneos</title>
+  <!-- Chosen Palette: Emerald Stadium Dark -->
+  <!-- Application Structure Plan: Mobile-first responsive single-page portal. Navigation is organized into horizontal scrollable tab pills for easy thumb swiping. Header uses a two-tier layout on mobile: top row for branding and share actions, bottom row for tournament search and dropdown selection. Tables feature dedicated horizontal scroll containers with truncated text to preserve alignment on narrow viewports without clipping columns. -->
+  <!-- Visualization & Content Choices: HTML tables and card grids dynamically rendered with Vanilla JS from Supabase data. No SVG graphics or Mermaid JS used. Dynamic badges and unicode emojis serve as visual indicators. Canvas screenshot capture supported via html2canvas library. -->
+  <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
   <link rel="icon" type="image/png" href="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Montserrat', sans-serif; background-color: #060907; color: #f0fdf4; background-image: radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.12) 0%, transparent 60%); }
-    .glass-card { background: rgba(11, 20, 14, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.18); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-    .glass-card-hover { transition: all 0.25s ease; }
-    .glass-card-hover:hover { border-color: rgba(34, 197, 94, 0.4); transform: translateY(-2px); box-shadow: 0 15px 35px rgba(22, 163, 74, 0.15); }
+    body { font-family: 'Montserrat', sans-serif; background-color: #060907; color: #f0fdf4; background-image: radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.12) 0%, transparent 60%); -webkit-tap-highlight-color: transparent; }
+    .glass-card { background: rgba(11, 20, 14, 0.92); backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.18); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+    .glass-card-hover { transition: all 0.2s ease; }
+    .glass-card-hover:active, .glass-card-hover:hover { border-color: rgba(34, 197, 94, 0.4); transform: translateY(-1px); }
     .btn-theme { transition: all 0.2s; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
-    .tab-active { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.5); color: #4ade80; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2); }
-    .scrollbar-thin::-webkit-scrollbar { width: 5px; height: 5px; }
+    .tab-active { background: rgba(34, 197, 94, 0.25); border: 1px solid rgba(34, 197, 94, 0.6); color: #4ade80; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #060907; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
   </style>
 </head>
-<body class="h-full flex flex-col overflow-auto">
+<body class="min-h-screen flex flex-col overflow-x-hidden">
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
@@ -32,126 +39,129 @@
     }
   </script>
 
-  <!-- HEADER CON LOGO DINÁMICO DEL TORNEO -->
-  <header class="bg-[#050806]/90 border-b border-green-900/40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 backdrop-blur-md">
-    <div class="flex items-center gap-2.5">
-      <div id="headerTournamentLogo" class="w-10 h-10 object-cover rounded-xl border border-green-500/40 shadow-lg flex items-center justify-center bg-green-950 overflow-hidden">
-        <img src="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png" alt="Logo" class="w-full h-full object-cover">
+  <!-- HEADER ADAPTADO A CELULARES -->
+  <header class="bg-[#050806]/95 border-b border-green-950/60 px-3 py-2.5 sticky top-0 z-40 backdrop-blur-md space-y-2">
+    <div class="flex items-center justify-between gap-2">
+      <!-- Logo y Título del Portal -->
+      <div class="flex items-center gap-2 min-w-0">
+        <div id="headerTournamentLogo" class="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-xl border border-green-500/40 shadow flex items-center justify-center bg-green-950 overflow-hidden shrink-0">
+          <img src="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png" alt="Logo" class="w-full h-full object-cover">
+        </div>
+        <div class="min-w-0">
+          <h1 id="headerTournamentTitle" class="text-xs sm:text-sm font-black tracking-wider text-green-400 leading-tight truncate">KANCHA<span class="text-white">PRO</span></h1>
+          <p class="text-[8px] sm:text-[9px] text-slate-400 tracking-wider uppercase font-semibold truncate">Portal Oficial</p>
+        </div>
       </div>
-      <div>
-        <h1 id="headerTournamentTitle" class="text-sm font-black tracking-wider text-green-400">KANCHA<span class="text-white">PRO</span></h1>
-        <p class="text-[9px] text-slate-400 tracking-widest uppercase font-semibold">Portal Oficial de Torneos</p>
-      </div>
+
+      <!-- Botón Compartir en WhatsApp -->
+      <button onclick="shareTournamentWhatsApp()" class="text-[11px] px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-xl font-bold border border-emerald-500/30 transition flex items-center gap-1 shrink-0 shadow-sm" title="Compartir en WhatsApp">
+        <span>💬</span> <span class="hidden xs:inline text-[10px]">Compartir</span>
+      </button>
     </div>
 
-    <!-- Buscador, Selector y Favorito -->
-    <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap flex-1 max-w-md justify-end">
-      <div class="relative flex-1 max-w-[150px]">
-        <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar..." oninput="filterTournaments(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-green-500 transition shadow-inner">
+    <!-- Buscador y Selector de Categoria en Fila Inferior Adaptable -->
+    <div class="flex items-center gap-1.5 w-full">
+      <div class="relative w-28 sm:w-36 shrink-0">
+        <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar..." oninput="filterTournaments(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-green-500 transition shadow-inner">
       </div>
-      <div class="flex-1 min-w-[140px] flex items-center gap-1.5">
-        <select id="publicCategorySelect" onchange="changePublicCategory(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-3 py-1.5 text-white text-xs focus:outline-none focus:border-green-500 font-semibold transition shadow-inner">
+      <div class="flex-1 min-w-0 flex items-center gap-1">
+        <select id="publicCategorySelect" onchange="changePublicCategory(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-green-500 font-semibold truncate transition shadow-inner">
           <option value="">Cargando torneos...</option>
         </select>
-        <button id="favBtn" onclick="toggleFavoriteTournament()" title="Marcar como torneo favorito" class="bg-[#0b140e] hover:bg-green-950/40 border border-green-900/50 px-2.5 py-1.5 rounded-xl text-slate-500 text-sm transition shadow-inner">
+        <button id="favBtn" onclick="toggleFavoriteTournament()" title="Marcar como favorito" class="bg-[#0b140e] hover:bg-green-950/40 border border-green-900/50 px-2 py-1.5 rounded-xl text-slate-400 text-xs transition shadow-inner shrink-0">
           ⭐
         </button>
       </div>
     </div>
-
-    <!-- Botón Compartir -->
-    <div class="flex items-center gap-2">
-      <button onclick="shareTournamentWhatsApp()" class="text-xs px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-xl font-bold border border-emerald-500/30 transition flex items-center gap-1.5 shadow-sm" title="Compartir Torneo en WhatsApp">
-        <span>💬</span> Compartir
-      </button>
-    </div>
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->
-  <main class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-4 space-y-4">
+  <main class="flex-1 max-w-5xl w-full mx-auto p-2 sm:p-4 space-y-3">
     
-    <!-- Pestañas -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 glass-card rounded-2xl p-2 border border-green-900/30 shadow-xl">
-      <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center tab-active font-bold flex items-center justify-center gap-1.5 transition">📊 Posiciones</button>
-      <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">📅 Fixture</button>
-      <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">🏆 Playoffs</button>
-      <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">🛡️ Equipos</button>
-      <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">⚽ Goleadores</button>
-      <button onclick="switchPublicTab('discipline', event)" class="public-tab px-3 py-2.5 rounded-xl text-xs text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white">🟥 Sanciones</button>
+    <!-- PESTAÑAS NAVEGABLES CON SCROLL HORIZONTAL FLUIDO -->
+    <div class="glass-card rounded-2xl p-1.5 border border-green-900/30 shadow-xl overflow-x-auto scrollbar-none">
+      <div class="flex sm:grid sm:grid-cols-3 md:grid-cols-6 gap-1 min-w-max sm:min-w-0">
+        <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2 rounded-xl text-[11px] text-center tab-active font-bold flex items-center justify-center gap-1 transition shrink-0">📊 Posiciones</button>
+        <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white shrink-0">📅 Fixture</button>
+        <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-2 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white shrink-0">🏆 Playoffs</button>
+        <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-2 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white shrink-0">🛡️ Equipos</button>
+        <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-2 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white shrink-0">⚽ Goleadores</button>
+        <button onclick="switchPublicTab('discipline', event)" class="public-tab px-3 py-2 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white shrink-0">🟥 Sanciones</button>
+      </div>
     </div>
 
     <!-- Tab 1: Posiciones -->
-    <div id="pub-standings" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4">
-      <div class="flex flex-wrap justify-between items-center gap-2">
-        <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla de Posiciones
+    <div id="pub-standings" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Posiciones
         </h3>
-        <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-theme text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg bg-emerald-600 hover:bg-emerald-700">
+        <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
           📸 Capturar Tabla para WhatsApp
         </button>
       </div>
-      <div id="captureAreaStandings" class="space-y-4 bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 shadow-inner">
-        <div id="publicStandingsContainer" class="space-y-4"></div>
+      <div id="captureAreaStandings" class="space-y-3 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
+        <div id="publicStandingsContainer" class="space-y-3"></div>
       </div>
     </div>
 
     <!-- Tab 2: Fixture -->
-    <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4 hidden">
-      <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span> Calendario de Partidos y Resultados
+    <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+      <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+        <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
       </h3>
-      <div id="publicMatchesContainer" class="space-y-3 max-h-[550px] overflow-y-auto scrollbar-thin pr-1"></div>
+      <div id="publicMatchesContainer" class="space-y-3 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
     </div>
 
     <!-- Tab 3: Playoffs -->
-    <div id="pub-playoffs" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4 hidden">
-      <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span> Fase Final y Llaves
+    <div id="pub-playoffs" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+      <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+        <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Fase Final y Llaves
       </h3>
       <div id="publicPlayoffsContainer" class="space-y-3"></div>
     </div>
 
     <!-- Tab 4: Equipos y Planteles -->
-    <div id="pub-teams" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4 hidden">
-      <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2.5 h-2.5 bg-green-500 rounded-full"></span> Equipos Participantes y Planteles
+    <div id="pub-teams" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+      <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+        <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Equipos Participantes y Planteles
       </h3>
-      <div id="publicTeamsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+      <div id="publicTeamsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
     </div>
 
     <!-- Tab 5: Goleadores -->
-    <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4 hidden">
-      <div class="flex flex-wrap justify-between items-center gap-2">
-        <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></span> Tabla de Goleadores (Top Scorers)
+    <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Goleadores
         </h3>
-        <button onclick="captureScreenshot('captureAreaScorers', 'Tabla_De_Goleadores_KanchaPro.png')" class="btn-theme text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg bg-emerald-600 hover:bg-emerald-700">
+        <button onclick="captureScreenshot('captureAreaScorers', 'Tabla_De_Goleadores_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
           📸 Capturar Goleadores para WhatsApp
         </button>
       </div>
-      <div id="captureAreaScorers" class="space-y-2.5 bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 shadow-inner">
-        <div id="publicScorersContainer" class="space-y-2.5 max-h-[550px] overflow-y-auto scrollbar-thin pr-1"></div>
+      <div id="captureAreaScorers" class="space-y-2.5 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
+        <div id="publicScorersContainer" class="space-y-2 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
       </div>
     </div>
 
     <!-- Tab 6: Sanciones -->
-    <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-4 sm:p-5 space-y-4 hidden">
-      <div class="flex flex-wrap justify-between items-center gap-2">
-        <h3 class="text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span> Tribunal de Disciplina y Tarjetas
+    <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span> Tribunal de Disciplina y Tarjetas
         </h3>
-        <button onclick="captureScreenshot('captureAreaDiscipline', 'Tribunal_De_Disciplina_KanchaPro.png')" class="btn-theme text-white text-xs font-black px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg bg-emerald-600 hover:bg-emerald-700">
+        <button onclick="captureScreenshot('captureAreaDiscipline', 'Tribunal_De_Disciplina_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
           📸 Capturar Sanciones para WhatsApp
         </button>
       </div>
-      <div id="captureAreaDiscipline" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#060a08]/90 p-4 rounded-2xl border border-green-900/50 shadow-inner">
-        <div class="bg-[#0b140e] p-4 rounded-xl border border-green-900/40 space-y-3">
-          <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-2">🟨 Acumulado de Tarjetas Amarillas</h4>
-          <div id="pubYellowCardsList" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
+      <div id="captureAreaDiscipline" class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
+        <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/40 space-y-2.5">
+          <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Acumulado de Tarjetas Amarillas</h4>
+          <div id="pubYellowCardsList" class="space-y-1.5 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
         </div>
-        <div class="bg-[#0b140e] p-4 rounded-xl border border-green-900/40 space-y-3">
-          <h4 class="font-bold text-red-400 text-xs flex items-center gap-2">🟥 Jugadores Suspendidos / Sanciones</h4>
-          <div id="pubSuspensionsList" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
+        <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/40 space-y-2.5">
+          <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Jugadores Suspendidos / Sanciones</h4>
+          <div id="pubSuspensionsList" class="space-y-1.5 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
         </div>
       </div>
     </div>
@@ -159,7 +169,7 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="bg-[#050806] border-t border-green-900/30 py-4 px-4 text-center text-slate-500 text-[11px] mt-auto flex flex-col sm:flex-row items-center justify-between gap-2 max-w-5xl w-full mx-auto">
+  <footer class="bg-[#050806] border-t border-green-900/30 py-3 px-4 text-center text-slate-500 text-[11px] mt-auto flex flex-col sm:flex-row items-center justify-between gap-2 max-w-5xl w-full mx-auto">
     <div>
       <span class="text-green-400 font-bold">KanchaPro</span> &copy; 2026 — Todos los derechos reservados.
     </div>
@@ -172,31 +182,31 @@
 
   <!-- MODAL DETALLE DE PARTIDO -->
   <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
-    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-4 border border-green-500/30 my-auto text-xs shadow-2xl">
-      <div class="flex justify-between items-center border-b border-green-900/40 pb-2.5">
-        <h3 class="text-sm font-black text-green-400">Detalles del Partido</h3>
-        <button onclick="closeModal('publicMatchModal')" class="text-slate-400 hover:text-white font-bold text-sm">✕</button>
+    <div class="glass-card p-4 sm:p-5 rounded-2xl max-w-xs sm:max-w-sm w-full space-y-3.5 border border-green-500/30 my-auto text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <h3 class="text-xs sm:text-sm font-black text-green-400">Detalles del Partido</h3>
+        <button onclick="closeModal('publicMatchModal')" class="text-slate-400 hover:text-white font-bold text-sm px-1">✕</button>
       </div>
-      <div class="text-center py-3 bg-[#060a08] rounded-xl border border-green-900/40 space-y-1 shadow-inner">
-        <span id="pmRoundName" class="text-[10px] text-green-400 font-bold uppercase tracking-wider block">Fecha</span>
-        <div class="flex justify-around items-center font-bold text-white text-xs px-2">
+      <div class="text-center py-2.5 bg-[#060a08] rounded-xl border border-green-900/40 space-y-1 shadow-inner">
+        <span id="pmRoundName" class="text-[9px] text-green-400 font-bold uppercase tracking-wider block">Fecha</span>
+        <div class="flex justify-between items-center font-bold text-white text-xs px-2 gap-1">
           <span id="pmHomeName" class="flex-1 text-right truncate font-black">Local</span>
-          <span id="pmScore" class="mx-3 bg-black px-3 py-1.5 rounded-xl border border-green-900 text-green-400 text-sm font-black shadow">0 - 0</span>
+          <span id="pmScore" class="mx-1 bg-black px-2.5 py-1 rounded-xl border border-green-900 text-green-400 text-xs font-black shadow shrink-0">0 - 0</span>
           <span id="pmAwayName" class="flex-1 text-left truncate font-black">Visitante</span>
         </div>
       </div>
-      <div class="space-y-3 max-h-60 overflow-y-auto scrollbar-thin pr-1">
-        <div class="bg-[#060a08]/60 p-2.5 rounded-xl border border-green-900/30">
-          <h4 class="font-bold text-green-300 text-[11px] mb-1.5 border-b border-green-900/30 pb-1">Goles y Tarjetas Local</h4>
+      <div class="space-y-2.5 max-h-56 overflow-y-auto scrollbar-thin pr-1">
+        <div class="bg-[#060a08]/60 p-2 rounded-xl border border-green-900/30">
+          <h4 class="font-bold text-green-300 text-[10px] mb-1 border-b border-green-900/30 pb-0.5">Local</h4>
           <div id="pmHomeStats" class="space-y-1 text-slate-300"></div>
         </div>
-        <div class="bg-[#060a08]/60 p-2.5 rounded-xl border border-green-900/30">
-          <h4 class="font-bold text-green-300 text-[11px] mb-1.5 border-b border-green-900/30 pb-1">Goles y Tarjetas Visitante</h4>
+        <div class="bg-[#060a08]/60 p-2 rounded-xl border border-green-900/30">
+          <h4 class="font-bold text-green-300 text-[10px] mb-1 border-b border-green-900/30 pb-0.5">Visitante</h4>
           <div id="pmAwayStats" class="space-y-1 text-slate-300"></div>
         </div>
       </div>
       <div class="flex justify-end pt-1">
-        <button onclick="closeModal('publicMatchModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-xl font-bold transition shadow">Cerrar</button>
+        <button onclick="closeModal('publicMatchModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded-xl font-bold transition shadow text-xs">Cerrar</button>
       </div>
     </div>
   </div>
@@ -239,7 +249,7 @@
       const catsToUse = filteredCategories !== null ? filteredCategories : pubData.categories;
 
       if (catsToUse.length === 0) {
-        select.innerHTML = '<option value="">No hay torneos disponibles</option>';
+        select.innerHTML = '<option value="">Sin torneos</option>';
         return;
       }
       select.innerHTML = catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
@@ -286,7 +296,7 @@
         alert("Torneo removido de favoritos.");
       } else {
         localStorage.setItem(STORAGE_FAV_KEY, currentPublicCatId);
-        alert("¡Torneo guardado como favorito en este dispositivo!");
+        alert("¡Torneo guardado como favorito!");
       }
       updateFavoriteButtonUI();
     }
@@ -295,13 +305,11 @@
       const favBtn = document.getElementById('favBtn');
       const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
       if (currentFav === currentPublicCatId) {
-        favBtn.classList.remove('text-slate-500', 'border-green-900/50');
+        favBtn.classList.remove('text-slate-400', 'border-green-900/50');
         favBtn.classList.add('text-yellow-400', 'border-yellow-500/50', 'bg-yellow-500/10');
-        favBtn.title = "Torneo marcado como favorito";
       } else {
-        favBtn.classList.add('text-slate-500', 'border-green-900/50');
+        favBtn.classList.add('text-slate-400', 'border-green-900/50');
         favBtn.classList.remove('text-yellow-400', 'border-yellow-500/50', 'bg-yellow-500/10');
-        favBtn.title = "Marcar como torneo favorito";
       }
     }
 
@@ -322,7 +330,6 @@
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       if (!cat) return;
 
-      // Aplicar colores y logos del torneo actual
       const themeColor = cat.theme_color || '#16a34a';
       document.documentElement.style.setProperty('--theme-color', themeColor);
       
@@ -333,7 +340,7 @@
         headerLogo.innerHTML = `<span class="text-xs">🏆</span>`;
       }
 
-      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[10px] text-emerald-300 block font-normal">${cat.name}</span>`;
+      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-300 block font-normal truncate">${cat.name}</span>`;
 
       const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
       const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
@@ -376,28 +383,40 @@
           }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
           groupsHtml += `
-            <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2">
-              <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">Tabla - ${gName}</h4>
-              <div class="overflow-x-auto">
-                <table class="w-full text-xs">
-                  <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
+            <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-2 sm:p-3 space-y-1.5">
+              <h4 class="text-[11px] sm:text-xs font-black text-green-400 uppercase tracking-wider">Tabla - ${gName}</h4>
+              <div class="overflow-x-auto scrollbar-thin">
+                <table class="w-full text-[10px] sm:text-xs min-w-[300px]">
+                  <thead class="bg-[#0b0f0d] text-slate-400 uppercase text-[9px]">
                     <tr>
-                      <th class="p-2.5 text-left">#</th>
-                      <th class="p-2.5 text-left">Equipo</th>
-                      <th class="p-2.5 text-center">PJ</th><th class="p-2.5 text-center">G</th><th class="p-2.5 text-center">E</th><th class="p-2.5 text-center">P</th><th class="p-2.5 text-center">DG</th><th class="p-2.5 text-center font-bold text-green-400">Pts</th>
+                      <th class="p-1.5 text-left w-5">#</th>
+                      <th class="p-1.5 text-left">Equipo</th>
+                      <th class="p-1.5 text-center w-6">PJ</th>
+                      <th class="p-1.5 text-center w-6">G</th>
+                      <th class="p-1.5 text-center w-6">E</th>
+                      <th class="p-1.5 text-center w-6">P</th>
+                      <th class="p-1.5 text-center w-7">DG</th>
+                      <th class="p-1.5 text-center font-bold text-green-400 w-7">Pts</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-green-900/20">
                     ${stats.map((t, idx) => `
                       <tr class="${idx < 2 ? 'bg-green-900/10 font-bold' : ''}">
-                        <td class="p-2.5 font-black text-green-400">${idx + 1}</td>
-                        <td class="p-2.5 font-bold text-white truncate max-w-[140px] flex items-center gap-2">
-                          ${t.logo ? `<img src="${t.logo}" class="w-5 h-5 object-cover rounded-full border border-green-500/30">` : '<span class="text-xs">🛡️</span>'}
-                          <span class="truncate">${t.name}</span>
+                        <td class="p-1.5 font-black text-green-400">${idx + 1}</td>
+                        <td class="p-1.5 font-bold text-white max-w-[110px]">
+                          <div class="flex items-center gap-1 truncate">
+                            ${t.logo ? `<img src="${t.logo}" class="w-4 h-4 object-cover rounded-full border border-green-500/30 shrink-0">` : '<span class="text-[9px]">🛡️</span>'}
+                            <span class="truncate">${t.name}</span>
+                          </div>
                         </td>
-                        <td class="p-2.5 text-center text-slate-300">${t.played}</td><td class="p-2.5 text-center text-slate-300">${t.won}</td><td class="p-2.5 text-center text-slate-300">${t.drawn}</td><td class="p-2.5 text-center text-slate-300">${t.lost}</td><td class="p-2.5 text-center text-slate-300">${t.gd}</td><td class="p-2.5 text-center font-black text-green-400 text-sm">${t.points}</td>
+                        <td class="p-1.5 text-center text-slate-300">${t.played}</td>
+                        <td class="p-1.5 text-center text-slate-300">${t.won}</td>
+                        <td class="p-1.5 text-center text-slate-300">${t.drawn}</td>
+                        <td class="p-1.5 text-center text-slate-300">${t.lost}</td>
+                        <td class="p-1.5 text-center text-slate-300">${t.gd}</td>
+                        <td class="p-1.5 text-center font-black text-green-400 text-xs">${t.points}</td>
                       </tr>
-                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-500 py-3">Sin equipos en este grupo</td></tr>'}
+                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-500 py-2">Sin equipos en este grupo</td></tr>'}
                   </tbody>
                 </table>
               </div>
@@ -421,25 +440,37 @@
         }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
         container.innerHTML = `
-          <div class="text-xs font-black text-green-400 pb-2.5 mb-2 border-b border-green-900/40 uppercase tracking-wider">🏆 Posiciones Oficiales — ${cat.name}</div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-xs">
-              <thead class="bg-[#050806] text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+          <div class="text-[11px] sm:text-xs font-black text-green-400 pb-1.5 mb-1 border-b border-green-900/40 uppercase tracking-wider truncate">🏆 Posiciones Oficiales — ${cat.name}</div>
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-[10px] sm:text-xs min-w-[300px]">
+              <thead class="bg-[#050806] text-slate-400 uppercase text-[9px] font-bold tracking-wider">
                 <tr>
-                  <th class="p-2.5 text-left">#</th>
-                  <th class="p-2.5 text-left">Equipo</th>
-                  <th class="p-2.5 text-center">PJ</th><th class="p-2.5 text-center">G</th><th class="p-2.5 text-center">E</th><th class="p-2.5 text-center">P</th><th class="p-2.5 text-center">DG</th><th class="p-2.5 text-center font-black text-green-400">Pts</th>
+                  <th class="p-1.5 text-left w-5">#</th>
+                  <th class="p-1.5 text-left">Equipo</th>
+                  <th class="p-1.5 text-center w-6">PJ</th>
+                  <th class="p-1.5 text-center w-6">G</th>
+                  <th class="p-1.5 text-center w-6">E</th>
+                  <th class="p-1.5 text-center w-6">P</th>
+                  <th class="p-1.5 text-center w-7">DG</th>
+                  <th class="p-1.5 text-center font-black text-green-400 w-7">Pts</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-green-900/20">
                 ${stats.map((t, idx) => `
                   <tr class="${idx < 4 ? 'bg-green-900/10 font-bold' : ''}">
-                    <td class="p-2.5 font-black text-green-400">${idx + 1}</td>
-                    <td class="p-2.5 font-bold text-white truncate max-w-[140px] flex items-center gap-2">
-                      ${t.logo ? `<img src="${t.logo}" class="w-5 h-5 object-cover rounded-full border border-green-500/30">` : '<span class="text-xs">🛡️</span>'}
-                      <span class="truncate">${t.name}</span>
+                    <td class="p-1.5 font-black text-green-400">${idx + 1}</td>
+                    <td class="p-1.5 font-bold text-white max-w-[110px]">
+                      <div class="flex items-center gap-1 truncate">
+                        ${t.logo ? `<img src="${t.logo}" class="w-4 h-4 object-cover rounded-full border border-green-500/30 shrink-0">` : '<span class="text-[9px]">🛡️</span>'}
+                        <span class="truncate">${t.name}</span>
+                      </div>
                     </td>
-                    <td class="p-2.5 text-center text-slate-300">${t.played}</td><td class="p-2.5 text-center text-slate-300">${t.won}</td><td class="p-2.5 text-center text-slate-300">${t.drawn}</td><td class="p-2.5 text-center text-slate-300">${t.lost}</td><td class="p-2.5 text-center text-slate-300">${t.gd}</td><td class="p-2.5 text-center font-black text-green-400 text-sm">${t.points}</td>
+                    <td class="p-1.5 text-center text-slate-300">${t.played}</td>
+                    <td class="p-1.5 text-center text-slate-300">${t.won}</td>
+                    <td class="p-1.5 text-center text-slate-300">${t.drawn}</td>
+                    <td class="p-1.5 text-center text-slate-300">${t.lost}</td>
+                    <td class="p-1.5 text-center text-slate-300">${t.gd}</td>
+                    <td class="p-1.5 text-center font-black text-green-400 text-xs">${t.points}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -452,7 +483,7 @@
     async function captureScreenshot(elementId, filename) {
       const captureArea = document.getElementById(elementId);
       try {
-        const canvas = await html2canvas(captureArea, { backgroundColor: '#060a08', scale: 2 });
+        const canvas = await html2canvas(captureArea, { backgroundColor: '#060a08', scale: 2, useCORS: true });
         const imageURL = canvas.toDataURL('image/png');
         
         const link = document.createElement('a');
@@ -460,7 +491,7 @@
         link.download = filename;
         link.click();
 
-        alert("¡Imagen generada y descargada con éxito! Ya puedes enviarla por WhatsApp.");
+        alert("¡Captura generada y descargada con éxito!");
       } catch (err) {
         console.error(err);
         alert("Hubo un error al generar la captura.");
@@ -489,7 +520,6 @@
         roundsMap[rName].push(m);
       });
 
-      // Ordenar las fechas de forma ascendente (Ej. Fecha 1, Fecha 2, Fecha 3... o Grupo A - Fecha 1, etc.)
       const sortedRoundNames = Object.keys(roundsMap).sort((a, b) => {
         const numA = parseInt((a.match(/\d+/) || [0])[0]);
         const numB = parseInt((b.match(/\d+/) || [0])[0]);
@@ -498,23 +528,29 @@
       });
 
       container.innerHTML = sortedRoundNames.map(roundName => `
-        <div class="bg-[#060a08] border border-green-900/40 rounded-2xl p-3.5 space-y-2.5 shadow-md">
+        <div class="bg-[#060a08] border border-green-900/40 rounded-2xl p-2.5 sm:p-3 space-y-2 shadow-md">
           <h4 class="text-xs font-black text-green-400 uppercase tracking-wider border-b border-green-900/40 pb-1.5 flex items-center gap-1.5"><span>📅</span> ${roundName}</h4>
-          <div class="space-y-2">
+          <div class="space-y-1.5">
             ${roundsMap[roundName].map(m => {
               const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
               const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
               const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
               return `
-                <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/30 space-y-1.5 text-xs glass-card-hover">
-                  <div class="flex items-center justify-between gap-2">
-                    <span class="flex-1 font-bold text-white truncate text-right">${hTeam.name}</span>
-                    <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-3.5 py-1.5 rounded-xl text-green-400 font-black border border-green-900/60 hover:border-green-500 transition shadow">
+                <div class="bg-[#0b140e] p-2.5 rounded-xl border border-green-900/30 space-y-1 text-xs glass-card-hover">
+                  <div class="flex items-center justify-between gap-1">
+                    <div class="flex items-center gap-1 flex-1 justify-end min-w-0">
+                      <span class="font-bold text-white truncate text-right text-[11px] sm:text-xs">${hTeam.name}</span>
+                      ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-3.5 h-3.5 sm:w-4 sm:h-4 object-cover rounded-full shrink-0">` : ''}
+                    </div>
+                    <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-2.5 py-1 rounded-xl text-green-400 font-black border border-green-900/60 hover:border-green-500 transition shadow shrink-0 text-[11px]">
                       ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
                     </button>
-                    <span class="flex-1 font-bold text-white truncate text-left">${aTeam.name}</span>
+                    <div class="flex items-center gap-1 flex-1 min-w-0">
+                      ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-3.5 h-3.5 sm:w-4 sm:h-4 object-cover rounded-full shrink-0">` : ''}
+                      <span class="font-bold text-white truncate text-left text-[11px] sm:text-xs">${aTeam.name}</span>
+                    </div>
                   </div>
-                  ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-semibold">🗓️ ${infoText}</div>` : ''}
+                  ${infoText ? `<div class="text-[9px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
                 </div>
               `;
             }).join('')}
@@ -545,7 +581,7 @@
       hPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          hStatsHtml += `<div class="flex justify-between text-[11px] py-0.5"><span class="font-semibold text-white">${p.name}</span><span class="font-bold">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          hStatsHtml += `<div class="flex justify-between text-[10px] sm:text-[11px] py-0.5"><span class="font-semibold text-white truncate pr-1">${p.name}</span><span class="font-bold shrink-0">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
@@ -553,12 +589,12 @@
       aPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          aStatsHtml += `<div class="flex justify-between text-[11px] py-0.5"><span class="font-semibold text-white">${p.name}</span><span class="font-bold">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          aStatsHtml += `<div class="flex justify-between text-[10px] sm:text-[11px] py-0.5"><span class="font-semibold text-white truncate pr-1">${p.name}</span><span class="font-bold shrink-0">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
-      document.getElementById('pmHomeStats').innerHTML = hStatsHtml || '<span class="text-slate-500 text-[10px] italic">Sin incidencias registradas</span>';
-      document.getElementById('pmAwayStats').innerHTML = aStatsHtml || '<span class="text-slate-500 text-[10px] italic">Sin incidencias registradas</span>';
+      document.getElementById('pmHomeStats').innerHTML = hStatsHtml || '<span class="text-slate-500 text-[10px] italic">Sin incidencias</span>';
+      document.getElementById('pmAwayStats').innerHTML = aStatsHtml || '<span class="text-slate-500 text-[10px] italic">Sin incidencias</span>';
 
       openModal('publicMatchModal');
     }
@@ -566,7 +602,7 @@
     function renderPublicPlayoffs(cat, playoffMatches, teams) {
       const container = document.getElementById('publicPlayoffsContainer');
       if (!cat.has_playoffs) {
-        container.innerHTML = `<p class="text-slate-500 text-xs text-center py-8">Este torneo no tiene fase de playoffs habilitada.</p>`;
+        container.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">Este torneo no tiene fase de playoffs habilitada.</p>`;
         return;
       }
 
@@ -575,16 +611,16 @@
         const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
         const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
         return `
-          <div class="bg-[#0b140e] p-3.5 rounded-2xl border border-green-900/40 flex flex-col gap-1.5 text-xs shadow-md">
+          <div class="bg-[#0b140e] p-3 rounded-2xl border border-green-900/40 flex flex-col gap-1 text-xs shadow-md">
             <div class="flex items-center justify-between">
-              <span class="text-green-400 font-black uppercase tracking-wider">${m.round_name || 'Llave'}</span>
+              <span class="text-green-400 font-black uppercase text-[10px] tracking-wider">${m.round_name || 'Llave'}</span>
             </div>
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex-1 text-right font-bold text-white truncate">${hTeam.name}</div>
-              <div class="bg-black px-3.5 py-1.5 rounded-xl text-green-400 font-black border border-green-900/60 shadow">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</div>
-              <div class="flex-1 text-left font-bold text-white truncate">${aTeam.name}</div>
+            <div class="flex items-center justify-between gap-1">
+              <div class="flex-1 text-right font-bold text-white truncate text-[11px]">${hTeam.name}</div>
+              <div class="bg-black px-2.5 py-1 rounded-xl text-green-400 font-black border border-green-900/60 shadow shrink-0 text-[11px]">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</div>
+              <div class="flex-1 text-left font-bold text-white truncate text-[11px]">${aTeam.name}</div>
             </div>
-            ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-medium">🗓️ ${infoText}</div>` : ''}
+            ${infoText ? `<div class="text-[9px] text-slate-400 text-center font-medium truncate">🗓️ ${infoText}</div>` : ''}
           </div>
         `;
       }).join('') || `<p class="text-slate-500 text-xs text-center py-6">Aún no se han generado las llaves de playoffs.</p>`;
@@ -600,12 +636,12 @@
       container.innerHTML = teams.map(team => {
         const teamPlayers = players.filter(p => p.team_id === team.id);
         return `
-          <div class="bg-[#060a08] border border-green-900/40 rounded-2xl p-4 space-y-3 shadow-md">
-            <div class="flex items-center gap-3 border-b border-green-900/40 pb-2.5">
-              ${team.logo ? `<img src="${team.logo}" class="w-8 h-8 object-cover rounded-full border border-green-500/40 shadow">` : '<div class="w-8 h-8 bg-green-950 text-green-400 rounded-full flex items-center justify-center font-bold text-xs border border-green-500/30">🛡️</div>'}
-              <span class="font-black text-white text-sm tracking-wide">${team.name}</span>
+          <div class="bg-[#060a08] border border-green-900/40 rounded-2xl p-3 space-y-2.5 shadow-md">
+            <div class="flex items-center gap-2 border-b border-green-900/40 pb-2">
+              ${team.logo ? `<img src="${team.logo}" class="w-6 h-6 sm:w-7 sm:h-7 object-cover rounded-full border border-green-500/40 shadow shrink-0">` : '<div class="w-6 h-6 sm:w-7 sm:h-7 bg-green-950 text-green-400 rounded-full flex items-center justify-center font-bold text-[10px] border border-green-500/30 shrink-0">🛡️</div>'}
+              <span class="font-black text-white text-xs sm:text-sm tracking-wide truncate">${team.name}</span>
             </div>
-            <div class="space-y-1.5 max-h-48 overflow-y-auto scrollbar-thin pr-1">
+            <div class="space-y-1 max-h-48 overflow-y-auto scrollbar-thin pr-1">
               ${teamPlayers.length > 0 ? teamPlayers.map(p => {
                 let g = 0, y = 0, b = 0, r = 0;
                 pubData.matches.forEach(m => {
@@ -613,9 +649,9 @@
                   if (st) { g += (st.goals || 0); y += (st.yellows || 0); b += (st.blues || 0); r += (st.reds || 0); }
                 });
                 return `
-                  <div class="flex justify-between items-center bg-[#0b140e] p-2 rounded-xl border border-green-900/20 text-xs">
-                    <span class="font-semibold text-slate-200">👤 ${p.name}</span>
-                    <div class="flex gap-2 text-[11px] font-bold">
+                  <div class="flex justify-between items-center bg-[#0b140e] p-1.5 rounded-xl border border-green-900/20 text-[11px] gap-1">
+                    <span class="font-semibold text-slate-200 truncate pr-1">👤 ${p.name}</span>
+                    <div class="flex gap-1.5 text-[10px] font-bold shrink-0">
                       <span class="text-green-400">⚽ ${g}</span>
                       <span class="text-yellow-400">🟨 ${y}</span>
                       <span class="text-blue-400">🟦 ${b}</span>
@@ -623,7 +659,7 @@
                     </div>
                   </div>
                 `;
-              }).join('') : '<p class="text-slate-500 text-[11px] italic text-center py-2">Sin jugadores inscriptos.</p>'}
+              }).join('') : '<p class="text-slate-500 text-[10px] italic text-center py-2">Sin jugadores inscriptos.</p>'}
             </div>
           </div>
         `;
@@ -646,44 +682,41 @@
       const sorted = Object.values(scorerMap).sort((a, b) => b.goals - a.goals);
 
       container.innerHTML = `
-        <div class="text-xs font-black text-green-400 pb-2.5 mb-2 border-b border-green-900/40 uppercase tracking-wider">⚽ Tabla de Goleadores</div>
-        <div class="space-y-2.5">
+        <div class="text-[11px] font-black text-green-400 pb-2 mb-1.5 border-b border-green-900/40 uppercase tracking-wider">⚽ Tabla de Goleadores</div>
+        <div class="space-y-1.5">
           ${sorted.map((item, idx) => {
             const t = teams.find(x => x.id === item.player.team_id);
             return `
-              <div class="flex justify-between items-center bg-[#060a08] p-3 rounded-2xl border border-green-900/40 text-xs shadow-md">
-                <div class="flex items-center gap-3">
-                  <span class="font-black text-green-400 text-sm w-6 text-center">${idx + 1}</span>
-                  <div>
-                    <span class="font-black text-white text-sm block">${item.player.name}</span>
-                    <span class="text-[11px] text-slate-400 font-semibold">${t ? t.name : ''}</span>
+              <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-2xl border border-green-900/40 text-xs shadow-md gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="font-black text-green-400 text-xs w-4 text-center shrink-0">${idx + 1}</span>
+                  <div class="min-w-0">
+                    <span class="font-black text-white text-xs block truncate">${item.player.name}</span>
+                    <span class="text-[10px] text-slate-400 font-semibold block truncate">${t ? t.name : ''}</span>
                   </div>
                 </div>
-                <span class="font-black text-green-400 text-base">⚽ ${item.goals}</span>
+                <span class="font-black text-green-400 text-xs sm:text-sm shrink-0">⚽ ${item.goals}</span>
               </div>
             `;
-          }).join('') || '<p class="text-slate-500 text-xs text-center py-8">No hay goles registrados todavía.</p>'}
+          }).join('') || '<p class="text-slate-500 text-xs text-center py-6">No hay goles registrados todavía.</p>'}
         </div>
       `;
     }
 
     function renderPublicDiscipline(players, teams, teamIds) {
       let yellowMap = {};
-      let blueMap = {};
       let redMap = {};
 
       players.forEach(p => {
-        let totalY = 0, totalB = 0, totalR = 0;
+        let totalY = 0, totalR = 0;
         pubData.matches.forEach(m => {
           const st = m.match_details?.playerStats?.[p.id];
           if (st) {
             totalY += (st.yellows || 0);
-            totalB += (st.blues || 0);
             totalR += (st.reds || 0);
           }
         });
         if (totalY > 0) yellowMap[p.id] = { player: p, count: totalY };
-        if (totalB > 0) blueMap[p.id] = { player: p, count: totalB };
         if (totalR > 0) redMap[p.id] = { player: p, count: totalR };
       });
 
@@ -692,25 +725,26 @@
       document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.map(item => {
         const t = teams.find(x => x.id === item.player.team_id);
         return `
-          <div class="flex justify-between items-center bg-[#0b140e] p-2.5 rounded-xl border border-green-900/30 text-xs">
-            <div>
-              <span class="font-bold text-white block">${item.player.name}</span>
-              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
+          <div class="flex justify-between items-center bg-[#0b140e] p-2 rounded-xl border border-green-900/30 text-xs gap-1.5">
+            <div class="min-w-0">
+              <span class="font-bold text-white text-[11px] block truncate">${item.player.name}</span>
+              <span class="text-[9px] text-slate-400 block truncate">${t ? t.name : ''}</span>
             </div>
-            <span class="font-black text-yellow-400 text-sm">🟨 ${item.count}</span>
+            <span class="font-black text-yellow-400 text-xs shrink-0">🟨 ${item.count}</span>
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-4">Sin tarjetas amarillas registradas.</p>';
+      }).join('') || '<p class="text-slate-500 text-[11px] text-center py-3">Sin tarjetas amarillas registradas.</p>';
 
       const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId);
       document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
-        <div class="bg-red-950/20 border border-red-500/40 rounded-xl p-3 text-xs space-y-1 shadow-sm">
-          <span class="font-black text-white text-sm block">${s.player_name} <span class="text-xs font-normal text-slate-400">(${s.team_name || ''})</span></span>
-          <span class="text-[11px] text-slate-300 block">Sanción activa: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
-          <span class="text-[10px] text-slate-400 italic block">Motivo: ${s.reason || 'Sin observación'}</span>
+        <div class="bg-red-950/20 border border-red-500/40 rounded-xl p-2.5 text-xs space-y-0.5 shadow-sm">
+          <span class="font-black text-white text-xs block truncate">${s.player_name} <span class="text-[10px] font-normal text-slate-400 truncate">(${s.team_name || ''})</span></span>
+          <span class="text-[10px] text-slate-300 block">Sanción activa: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
+          <span class="text-[9px] text-slate-400 italic block truncate">Motivo: ${s.reason || 'Sin observación'}</span>
         </div>
-      `).join('') || '<p class="text-slate-500 text-xs text-center py-4">No hay suspensiones vigentes en el tribunal.</p>';
+      `).join('') || '<p class="text-slate-500 text-[11px] text-center py-3">No hay suspensiones vigentes en el tribunal.</p>';
     }
   </script>
 </body>
 </html>
+```
