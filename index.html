@@ -7,9 +7,9 @@
   <!-- Configuración PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#16a34a">
-  <link rel="apple-touch-icon" href="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png">
+  <link rel="apple-touch-icon" href="/KanchaPro/Icon.png">
   
-  <link rel="icon" type="image/png" href="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png">
+  <link rel="icon" type="image/png" href="/KanchaPro/Icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -45,7 +45,7 @@
       <!-- Logo y Título del Portal -->
       <div class="flex items-center gap-2 min-w-0">
         <div id="headerTournamentLogo" class="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-xl border border-green-500/40 shadow flex items-center justify-center bg-green-950 overflow-hidden shrink-0">
-          <img src="https://i.ibb.co/MxpSNMhR/file-000000008014820e933adc89989e6b3f.png" alt="Logo" class="w-full h-full object-cover">
+          <img src="/KanchaPro/Icon.png" alt="Logo" class="w-full h-full object-cover">
         </div>
         <div class="min-w-0">
           <h1 id="headerTournamentTitle" class="text-xs sm:text-sm font-black tracking-wider text-green-400 leading-tight truncate">KANCHA<span class="text-white">PRO</span></h1>
@@ -53,9 +53,9 @@
         </div>
       </div>
 
-      <!-- Botón Compartir en WhatsApp -->
+      <!-- Botón Compartir en WhatsApp con Guía de Instalación -->
       <button onclick="shareTournamentWhatsApp()" class="text-[11px] px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-xl font-bold border border-emerald-500/30 transition flex items-center gap-1 shrink-0 shadow-sm" title="Compartir en WhatsApp">
-        <span>💬</span> <span class="hidden xs:inline text-[10px]">Compartir</span>
+        <span>💬</span> <span class="text-[10px]">Compartir App</span>
       </button>
     </div>
 
@@ -509,7 +509,14 @@
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       const catName = cat ? cat.name : 'Torneo KanchaPro';
       const url = window.location.href;
-      const text = `⚽ ¡Sigue las estadísticas, fixture y tabla de posiciones del torneo *${catName}* en KanchaPro!\n\n🔗 ${url}`;
+      const text = `⚽ *¡Seguí el torneo ${catName} en KanchaPro!* 🏆
+
+📱 *Instalalo como aplicación en tu celular o PC en 3 simples pasos:*
+1️⃣ Tocá los **tres puntitos (⋮)** arriba a la derecha en Chrome.
+2️⃣ Seleccioná **"Instalar aplicación"** o **"Agregar a la pantalla principal"**.
+3️⃣ ¡Listo! Ya lo tenés como una app para acceder rápido.
+
+🔗 Entrá acá: ${url}`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
