@@ -23,7 +23,7 @@
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -754,11 +754,10 @@
           const sanitizedId = roundName.replace(/[^a-zA-Z0-9]/g, '_');
           return `
             <div id="round_card_${sanitizedId}" class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2.5">
-              <div class="flex items-center gap-2 border-b border-green-900/40 pb-2">
-                ${cat.logo ? `<img src="${cat.logo}" class="w-6 h-6 object-cover rounded-full border border-green-500/30">` : '<span>🏆</span>'}
-                <h4 class="text-xs font-black text-green-400 uppercase tracking-wider flex-1">${roundName} - ${cat.name}</h4>
+              <div class="flex justify-between items-center border-b border-green-900/40 pb-1.5">
+                <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">${roundName} - ${cat.name}</h4>
                 <button id="share_btn_${sanitizedId}" onclick="shareRoundAsImage('${sanitizedId}', '${roundName}')" class="text-[11px] px-2.5 py-1 bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 rounded-lg font-bold border border-emerald-500/40 transition flex items-center gap-1 shadow-sm">
-                  <span>📸</span> Compartir Fecha
+                  <span>📸</span> Compartir Fecha (Imagen)
                 </button>
               </div>
               <div class="space-y-2">
@@ -768,6 +767,7 @@
                   const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
                   return `
                     <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
+                      <!-- ESTRUCTURA FLEXIBLE CORREGIDA CON ALINEACIÓN VERTICAL Y PADDING -->
                       <div class="flex items-center justify-between gap-1 text-xs py-1">
                         <!-- Local -->
                         <div class="flex-1 flex items-center justify-end gap-2 overflow-hidden text-right">
@@ -799,9 +799,6 @@
                     </div>
                   `;
                 }).join('')}
-              </div>
-              <div class="text-right pt-2 border-t border-green-900/30">
-                <span class="text-[10px] text-slate-500 font-semibold tracking-wider">KanchaPro</span>
               </div>
             </div>
           `;
@@ -939,7 +936,6 @@
       const cardElement = document.getElementById(elementId);
       if (!cardElement) return;
 
-      // Buscar todos los botones de compartir internos dentro de la tarjeta para ocultarlos temporalmente en la foto
       const buttonsToHide = cardElement.querySelectorAll('button');
       buttonsToHide.forEach(b => b.style.display = 'none');
 
