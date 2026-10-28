@@ -89,7 +89,7 @@
       </div>
     </div>
 
-    <!-- Pestañas (Ajustadas a 7 pestañas principales sin estadísticas) -->
+    <!-- Pestañas -->
     <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1.5 glass-card rounded-xl p-2 border border-green-900/30">
       <button onclick="switchAdminTab('teams', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center tab-active font-semibold transition">🛡️ Equipos</button>
       <button onclick="switchAdminTab('players', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">👥 Planteles</button>
@@ -725,17 +725,26 @@
                   const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
                   return `
                     <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
-                      <div class="flex items-center justify-between gap-2 text-xs">
-                        <div class="flex items-center gap-1.5 flex-1 justify-end truncate">
-                          <span class="font-semibold text-white truncate">${hTeam.name}</span>
-                          ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-5 h-5 object-cover rounded-full">` : ''}
-                        </div>
-                        <span class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
-                        <div class="flex items-center gap-1.5 flex-1 truncate">
-                          ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-5 h-5 object-cover rounded-full">` : ''}
-                          <span class="font-semibold text-white truncate">${aTeam.name}</span>
-                        </div>
-                      </div>
+                      <!-- TABLA FIJA PARA EVITAR CORTES EN CAPTURAS -->
+                      <table class="w-full text-xs">
+                        <tr>
+                          <td class="w-[42%] text-right font-semibold text-white pr-2">
+                            <div class="flex items-center justify-end gap-1.5 overflow-hidden">
+                              <span class="truncate">${hTeam.name}</span>
+                              ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-5 h-5 object-cover rounded-full shrink-0">` : ''}
+                            </div>
+                          </td>
+                          <td class="w-[16%] text-center">
+                            <span class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
+                          </td>
+                          <td class="w-[42%] text-left font-semibold text-white pl-2">
+                            <div class="flex items-center justify-start gap-1.5 overflow-hidden">
+                              ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-5 h-5 object-cover rounded-full shrink-0">` : ''}
+                              <span class="truncate">${aTeam.name}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
                       ${infoText ? `<div class="text-[11px] text-slate-400 text-center font-medium">🗓️ ${infoText}</div>` : ''}
                       <div class="flex justify-between items-center pt-1 border-t border-green-900/30">
                         <div class="flex gap-1.5">
