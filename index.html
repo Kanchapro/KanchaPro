@@ -66,7 +66,7 @@
       </div>
       <div class="flex-1 min-w-0 flex items-center gap-1">
         <select id="publicCategorySelect" onchange="changePublicCategory(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-2 py-1.5 text-white text-[11px] focus:outline-none focus:border-green-500 font-semibold truncate transition shadow-inner">
-          <option value="">Cargando torneos...</option>
+          <option value="" disabled selected>-- Seleccionar torneo --</option>
         </select>
         <button id="favBtn" onclick="toggleFavoriteTournament()" title="Marcar como favorito" class="bg-[#0b140e] hover:bg-green-950/40 border border-green-900/50 px-2 py-1.5 rounded-xl text-slate-400 text-xs transition shadow-inner shrink-0">
           ⭐
@@ -78,90 +78,107 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-2 sm:p-4 space-y-3">
     
-    <!-- PESTAÑAS NAVEGABLES EN GRILLA DE 2 COLUMNAS PARA CELULARES -->
-    <div class="glass-card rounded-2xl p-2 border border-green-900/30 shadow-xl">
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1.5">
-        <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center tab-active font-bold flex items-center justify-center gap-1 transition w-full">📊 Posiciones</button>
-        <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">📅 Fixture</button>
-        <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🏆 Playoffs</button>
-        <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🛡️ Equipos</button>
-        <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">⚽ Goleadores</button>
-        <button onclick="switchPublicTab('discipline', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🟥 Sanciones</button>
+    <!-- SECCIÓN DE TORNEOS FAVORITOS / BIENVENIDA (Visible cuando no hay torneo seleccionado) -->
+    <div id="welcomeFavoritesSection" class="glass-card rounded-2xl p-4 sm:p-6 text-center space-y-4 shadow-xl">
+      <div class="w-12 h-12 bg-green-950/60 border border-green-500/40 rounded-2xl mx-auto flex items-center justify-center text-xl shadow-inner">
+        ⭐
+      </div>
+      <div class="space-y-1">
+        <h2 class="text-sm sm:text-base font-black text-green-400">Bienvenido a KanchaPro</h2>
+        <p class="text-xs text-slate-400">Selecciona un torneo arriba en el menú desplegable o elige uno de tus favoritos guardados.</p>
+      </div>
+      <div id="favoritesListContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 text-left">
+        <!-- Se llena dinámicamente -->
       </div>
     </div>
 
-    <!-- Tab 1: Posiciones -->
-    <div id="pub-standings" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Posiciones
-        </h3>
-        <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
-          📸 Capturar Tabla para WhatsApp
-        </button>
-      </div>
-      <div id="captureAreaStandings" class="space-y-3 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
-        <div id="publicStandingsContainer" class="space-y-3"></div>
-      </div>
-    </div>
-
-    <!-- Tab 2: Fixture -->
-    <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
-      <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
-      </h3>
-      <div id="publicMatchesContainer" class="space-y-3 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
-    </div>
-
-    <!-- Tab 3: Playoffs -->
-    <div id="pub-playoffs" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
-      <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Fase Final y Llaves
-      </h3>
-      <div id="publicPlayoffsContainer" class="space-y-3"></div>
-    </div>
-
-    <!-- Tab 4: Equipos y Planteles -->
-    <div id="pub-teams" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
-      <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-        <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Equipos Participantes y Planteles
-      </h3>
-      <div id="publicTeamsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-    </div>
-
-    <!-- Tab 5: Goleadores -->
-    <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Goleadores
-        </h3>
-        <button onclick="captureScreenshot('captureAreaScorers', 'Tabla_De_Goleadores_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
-          📸 Capturar Goleadores para WhatsApp
-        </button>
-      </div>
-      <div id="captureAreaScorers" class="space-y-2.5 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
-        <div id="publicScorersContainer" class="space-y-2 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
-      </div>
-    </div>
-
-    <!-- Tab 6: Sanciones -->
-    <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span> Tribunal de Disciplina y Tarjetas
-        </h3>
-        <button onclick="captureScreenshot('captureAreaDiscipline', 'Tribunal_De_Disciplina_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
-          📸 Capturar Sanciones para WhatsApp
-        </button>
-      </div>
-      <div id="captureAreaDiscipline" class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
-        <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/40 space-y-2.5">
-          <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Acumulado de Tarjetas Amarillas</h4>
-          <div id="pubYellowCardsList" class="space-y-1.5 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
+    <!-- CONTENEDOR DE PESTAÑAS Y DATOS (Oculto hasta seleccionar un torneo) -->
+    <div id="tournamentContentArea" class="space-y-3 hidden">
+      <!-- PESTAÑAS NAVEGABLES EN GRILLA DE 2 COLUMNAS PARA CELULARES -->
+      <div class="glass-card rounded-2xl p-2 border border-green-900/30 shadow-xl">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1.5">
+          <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center tab-active font-bold flex items-center justify-center gap-1 transition w-full">📊 Posiciones</button>
+          <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">📅 Fixture</button>
+          <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🏆 Playoffs</button>
+          <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🛡️ Equipos</button>
+          <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">⚽ Goleadores</button>
+          <button onclick="switchPublicTab('discipline', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🟥 Sanciones</button>
         </div>
-        <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/40 space-y-2.5">
-          <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Jugadores Suspendidos / Sanciones</h4>
-          <div id="pubSuspensionsList" class="space-y-1.5 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
+      </div>
+
+      <!-- Tab 1: Posiciones -->
+      <div id="pub-standings" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Posiciones
+          </h3>
+          <button onclick="captureScreenshot('captureAreaStandings', 'Tabla_De_Posiciones_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
+            📸 Capturar Tabla para WhatsApp
+          </button>
+        </div>
+        <div id="captureAreaStandings" class="space-y-3 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
+          <div id="publicStandingsContainer" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Fixture -->
+      <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
+        </h3>
+        <div id="publicMatchesContainer" class="space-y-3 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
+      </div>
+
+      <!-- Tab 3: Playoffs -->
+      <div id="pub-playoffs" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Fase Final y Llaves
+        </h3>
+        <div id="publicPlayoffsContainer" class="space-y-3"></div>
+      </div>
+
+      <!-- Tab 4: Equipos y Planteles -->
+      <div id="pub-teams" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+        <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Equipos Participantes y Planteles
+        </h3>
+        <div id="publicTeamsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+
+      <!-- Tab 5: Goleadores -->
+      <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Goleadores
+          </h3>
+          <button onclick="captureScreenshot('captureAreaScorers', 'Tabla_De_Goleadores_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
+            📸 Capturar Goleadores para WhatsApp
+          </button>
+        </div>
+        <div id="captureAreaScorers" class="space-y-2.5 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
+          <div id="publicScorersContainer" class="space-y-2 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
+        </div>
+      </div>
+
+      <!-- Tab 6: Sanciones -->
+      <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span> Tribunal de Disciplina y Tarjetas
+          </h3>
+          <button onclick="captureScreenshot('captureAreaDiscipline', 'Tribunal_De_Disciplina_KanchaPro.png')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
+            📸 Capturar Sanciones para WhatsApp
+          </button>
+        </div>
+        <div id="captureAreaDiscipline" class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-[#060a08]/95 p-2.5 sm:p-4 rounded-2xl border border-green-900/50 shadow-inner overflow-hidden">
+          <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/40 space-y-2.5">
+            <h4 class="font-bold text-yellow-400 text-xs flex items-center gap-1.5">🟨 Acumulado de Tarjetas Amarillas</h4>
+            <div id="pubYellowCardsList" class="space-y-1.5 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
+          </div>
+          <div class="bg-[#0b140e] p-3 rounded-xl border border-green-900/40 space-y-2.5">
+            <h4 class="font-bold text-red-400 text-xs flex items-center gap-1.5">🟥 Jugadores Suspendidos / Sanciones</h4>
+            <div id="pubSuspensionsList" class="space-y-1.5 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -259,23 +276,52 @@
         select.innerHTML = '<option value="">Sin torneos</option>';
         return;
       }
-      select.innerHTML = catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
       
+      select.innerHTML = '<option value="" disabled selected>-- Seleccionar torneo --</option>' + 
+        catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
+      
+      renderFavoritesSection();
+
+      if (currentPublicCatId && catsToUse.some(c => c.id === currentPublicCatId)) {
+        select.value = currentPublicCatId;
+        document.getElementById('welcomeFavoritesSection').classList.add('hidden');
+        document.getElementById('tournamentContentArea').classList.remove('hidden');
+        updateFavoriteButtonUI();
+        renderPublicViews();
+      } else {
+        currentPublicCatId = null;
+        select.value = "";
+        document.getElementById('welcomeFavoritesSection').classList.remove('hidden');
+        document.getElementById('tournamentContentArea').classList.add('hidden');
+      }
+    }
+
+    function renderFavoritesSection() {
+      const container = document.getElementById('favoritesListContainer');
       const savedFav = localStorage.getItem(STORAGE_FAV_KEY);
 
-      if (!currentPublicCatId) {
-        if (savedFav && catsToUse.some(c => c.id === savedFav)) {
-          currentPublicCatId = savedFav;
-        } else {
-          currentPublicCatId = catsToUse[0].id;
-        }
-      } else if (!catsToUse.some(c => c.id === currentPublicCatId)) {
-        currentPublicCatId = catsToUse[0].id;
+      if (!savedFav) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic col-span-2 text-center py-2">No tienes torneos favoritos guardados todavía. Usa el botón ⭐ al lado del selector para marcar uno.</p>';
+        return;
       }
 
-      select.value = currentPublicCatId;
-      updateFavoriteButtonUI();
-      renderPublicViews();
+      const favCat = pubData.categories.find(c => c.id === savedFav);
+      if (!favCat) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic col-span-2 text-center py-2">Tu torneo favorito guardado ya no está disponible.</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <button onclick="changePublicCategory('${favCat.id}')" class="bg-[#0b140e] hover:bg-green-950/40 border border-green-500/30 hover:border-green-500 p-3 rounded-xl flex items-center gap-2.5 transition text-left group shadow-md">
+          <div class="w-8 h-8 rounded-lg bg-green-950 border border-green-500/30 flex items-center justify-center text-xs text-green-400 font-bold shrink-0">
+            🏆
+          </div>
+          <div class="min-w-0 flex-1">
+            <span class="text-[10px] text-yellow-400 font-bold uppercase tracking-wider block">⭐ Torneo Favorito</span>
+            <span class="text-xs font-black text-white group-hover:text-green-400 truncate block">${favCat.name}</span>
+          </div>
+        </button>
+      `;
     }
 
     function filterTournaments(query) {
@@ -289,13 +335,20 @@
     }
 
     function changePublicCategory(catId) {
+      if (!catId) return;
       currentPublicCatId = catId;
+      document.getElementById('publicCategorySelect').value = catId;
+      document.getElementById('welcomeFavoritesSection').classList.add('hidden');
+      document.getElementById('tournamentContentArea').classList.remove('hidden');
       updateFavoriteButtonUI();
       renderPublicViews();
     }
 
     function toggleFavoriteTournament() {
-      if (!currentPublicCatId) return;
+      if (!currentPublicCatId) {
+        alert("Por favor, selecciona un torneo primero para marcarlo como favorito.");
+        return;
+      }
       const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
 
       if (currentFav === currentPublicCatId) {
@@ -306,6 +359,7 @@
         alert("¡Torneo guardado como favorito!");
       }
       updateFavoriteButtonUI();
+      renderFavoritesSection();
     }
 
     function updateFavoriteButtonUI() {
