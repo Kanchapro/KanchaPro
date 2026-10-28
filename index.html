@@ -623,13 +623,20 @@
         link.click();
       } catch (err) {
         console.error(err);
+        alert("Hubo un error al generar la captura.");
       }
     }
 
     async function captureScreenshot(elementId, filename) {
       const captureArea = document.getElementById(elementId);
       try {
-        const canvas = await html2canvas(captureArea, { backgroundColor: '#060a08', scale: 2, useCORS: true });
+        // Ignoramos el botón de captura para que no salga en la imagen generada
+        const canvas = await html2canvas(captureArea, { 
+          backgroundColor: '#060a08', 
+          scale: 2, 
+          useCORS: true,
+          ignoreElements: (el) => el.classList && el.classList.contains('no-capture-btn')
+        });
         const imageURL = canvas.toDataURL('image/png');
         
         const link = document.createElement('a');
@@ -638,6 +645,7 @@
         link.click();
       } catch (err) {
         console.error(err);
+        alert("Hubo un error al generar la captura.");
       }
     }
 
@@ -686,7 +694,7 @@
         const roundNameClean = roundName.replace(/[^a-zA-Z0-9]/g, '_');
         return `
         <div id="${safeRoundId}" class="bg-[#060a08] border border-green-900/40 rounded-2xl p-3 sm:p-4 space-y-2.5 shadow-md relative">
-          <!-- Cabecera incorporada para la captura con el escudo y nombre del torneo arriba -->
+          <!-- Cabecera incorporada para la captura con el nombre del torneo bien ubicado arriba -->
           <div class="flex items-center justify-between border-b border-green-900/40 pb-2.5">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
               <div class="w-8 h-8 rounded-xl bg-green-950 border border-green-500/40 flex items-center justify-center overflow-hidden shrink-0">
@@ -697,6 +705,10 @@
                 <span class="text-[10px] text-slate-300 font-bold uppercase truncate block leading-tight">${cat ? cat.name : ''}</span>
               </div>
             </div>
+            <!-- Botón restaurado en el menú (se oculta automáticamente en la captura mediante no-capture-btn) -->
+            <button onclick="captureScreenshot('${safeRoundId}', 'Fixture_${roundNameClean}_${catNameClean}.png')" class="no-capture-btn text-[10px] px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm shrink-0 ml-2">
+              <span>📸</span> <span class="hidden sm:inline">Capturar Fecha</span><span class="inline sm:hidden">Capturar</span>
+            </button>
           </div>
           <div class="space-y-1.5">
             ${roundsMap[roundName].map(m => {
@@ -724,7 +736,7 @@
                   </div>
                   ${infoText ? `<div class="text-[9px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
                   <div class="flex justify-end pt-1">
-                    <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="text-[9px] px-2 py-0.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-md font-bold border border-emerald-500/30 transition flex items-center gap-1">
+                    <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2 py-0.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-md font-bold border border-emerald-500/30 transition flex items-center gap-1">
                       <span>📸</span> Capturar Partido
                     </button>
                   </div>
@@ -844,7 +856,7 @@
                 <span class="text-[10px] text-slate-400 font-semibold shrink-0">(${teamPlayers.length} jug.)</span>
               </button>
               <div class="flex items-center gap-2 shrink-0">
-                <button onclick="captureScreenshot('${safeTeamBoxId}', 'Plantel_${teamNameClean}_${catNameClean}.png')" class="text-[9px] px-2 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm">
+                <button onclick="captureScreenshot('${safeTeamBoxId}', 'Plantel_${teamNameClean}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1 shadow-sm">
                   <span>📸</span> Capturar
                 </button>
                 <button onclick="toggleTeamAccordion('${team.id}')" class="text-green-400 font-bold transition-transform duration-200 text-xs px-1">
