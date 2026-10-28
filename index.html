@@ -37,6 +37,18 @@
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
+
+    // Función para registrar la visita del Index en Supabase
+    async function registrarVisita(tipoPagina) {
+      if (!supabaseClient) return;
+      try {
+        await supabaseClient.from('visitor_stats').insert([
+          { page_type: tipoPagina }
+        ]);
+      } catch (err) {
+        console.error("Error al registrar visita:", err);
+      }
+    }
   </script>
 
   <!-- HEADER ADAPTADO A CELULARES -->
@@ -237,6 +249,9 @@
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     window.addEventListener('DOMContentLoaded', async () => {
+      // Registrar visita del index automáticamente
+      await registrarVisita('index');
+
       await loadPublicData();
       
       // Registro del Service Worker para PWA
