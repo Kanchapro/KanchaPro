@@ -7,9 +7,9 @@
   <!-- Configuración PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#16a34a">
-  <link rel="apple-touch-icon" href="/KanchaPro/1001008234.png">
+  <link rel="apple-touch-icon" href="/KanchaPro/icon.png">
   
-  <link rel="icon" type="image/png" href="/KanchaPro/1001008234.png">
+  <link rel="icon" type="image/png" href="/KanchaPro/icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -57,7 +57,7 @@
       <!-- Logo y Título del Portal -->
       <div class="flex items-center gap-2 min-w-0">
         <div id="headerTournamentLogo" class="w-8 h-8 sm:w-9 sm:h-9 object-cover rounded-xl border border-green-500/40 shadow flex items-center justify-center bg-green-950 overflow-hidden shrink-0">
-          <img src="/KanchaPro/1001008234.png?v=2" alt="Logo" class="w-full h-full object-cover">
+          <img src="/KanchaPro/icon.png?v=3" alt="Logo" class="w-full h-full object-cover">
         </div>
         <div class="min-w-0">
           <h1 id="headerTournamentTitle" class="text-xs sm:text-sm font-black tracking-wider text-green-400 leading-tight truncate">KANCHA<span class="text-white">PRO</span></h1>
@@ -93,7 +93,7 @@
     <!-- SECCIÓN DE TORNEOS FAVORITOS / BIENVENIDA (Visible cuando no hay torneo seleccionado) -->
     <div id="welcomeFavoritesSection" class="glass-card rounded-2xl p-4 sm:p-6 text-center space-y-4 shadow-xl">
       <div class="w-24 h-24 bg-green-950/60 border-2 border-green-500/50 rounded-full mx-auto flex items-center justify-center overflow-hidden shadow-2xl">
-        <img src="/KanchaPro/1001008234.png?v=2" alt="KanchaPro Logo" class="w-full h-full object-cover">
+        <img src="/KanchaPro/icon.png?v=3" alt="KanchaPro Logo" class="w-full h-full object-cover">
       </div>
       <div class="space-y-1">
         <h2 class="text-sm sm:text-base font-black text-green-400">Bienvenido a KanchaPro</h2>
@@ -311,7 +311,7 @@
         
         // Restaurar logo de KanchaPro por defecto en la cabecera cuando no hay torneo seleccionado
         const headerLogo = document.getElementById('headerTournamentLogo');
-        headerLogo.innerHTML = `<img src="/KanchaPro/1001008234.png?v=2" alt="Logo" class="w-full h-full object-cover">`;
+        headerLogo.innerHTML = `<img src="/KanchaPro/icon.png?v=3" alt="Logo" class="w-full h-full object-cover">`;
         document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
       }
     }
@@ -418,7 +418,7 @@
       if (cat.logo) {
         headerLogo.innerHTML = `<img src="${cat.logo}" class="w-full h-full object-cover">`;
       } else {
-        headerLogo.innerHTML = `<img src="/KanchaPro/1001008234.png?v=2" class="w-full h-full object-cover">`;
+        headerLogo.innerHTML = `<img src="/KanchaPro/icon.png?v=3" class="w-full h-full object-cover">`;
       }
 
       document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-300 block font-normal truncate">${cat.name}</span>`;
