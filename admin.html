@@ -714,7 +714,8 @@
             <div id="round_card_${sanitizedId}" class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-2.5">
               <div class="flex justify-between items-center border-b border-green-900/40 pb-1.5">
                 <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">${roundName} - ${cat.name}</h4>
-                <button onclick="shareRoundAsImage('${sanitizedId}', '${roundName}')" class="text-[11px] px-2.5 py-1 bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 rounded-lg font-bold border border-emerald-500/40 transition flex items-center gap-1 shadow-sm">
+                <!-- SE AGREGÓ ID 'share_btn_' PARA OCULTARLO AUTOMÁTICAMENTE EN LA FOTO -->
+                <button id="share_btn_${sanitizedId}" onclick="shareRoundAsImage('${sanitizedId}', '${roundName}')" class="text-[11px] px-2.5 py-1 bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 rounded-lg font-bold border border-emerald-500/40 transition flex items-center gap-1 shadow-sm">
                   <span>📸</span> Compartir Fecha (Imagen)
                 </button>
               </div>
@@ -725,21 +726,21 @@
                   const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
                   return `
                     <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
-                      <!-- ESTRUCTURA CORREGIDA: ESCUDO Y NOMBRE ORDENADOS EN COLUMNAS -->
-                      <table class="w-full text-xs">
+                      <!-- DISEÑO CORREGIDO DE 3 COLUMNAS: ESCUDOS EN LOS EXTREMOS Y NOMBRES COMPLETOS -->
+                      <table class="w-full text-xs table-fixed">
                         <tr>
-                          <td class="w-[42%] text-right font-semibold text-white pr-2">
-                            <div class="flex items-center justify-end gap-2">
+                          <td class="w-[43%] text-right font-semibold text-white pr-2">
+                            <div class="flex items-center justify-end gap-2 overflow-hidden">
                               <span class="truncate">${hTeam.name}</span>
-                              ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0">🛡️</div>'}
+                              ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0 font-bold">🛡️</div>'}
                             </div>
                           </td>
-                          <td class="w-[16%] text-center">
-                            <span class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
+                          <td class="w-[14%] text-center">
+                            <span class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
                           </td>
-                          <td class="w-[42%] text-left font-semibold text-white pl-2">
-                            <div class="flex items-center justify-start gap-2">
-                              ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0">🛡️</div>'}
+                          <td class="w-[43%] text-left font-semibold text-white pl-2">
+                            <div class="flex items-center justify-start gap-2 overflow-hidden">
+                              ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0 font-bold">🛡️</div>'}
                               <span class="truncate">${aTeam.name}</span>
                             </div>
                           </td>
@@ -842,7 +843,11 @@
 
     async function shareRoundAsImage(sanitizedId, roundName) {
       const cardElement = document.getElementById(`round_card_${sanitizedId}`);
+      const shareBtn = document.getElementById(`share_btn_${sanitizedId}`);
       if (!cardElement) return;
+
+      // Ocultar temporalmente el botón de compartir para que no salga en la imagen
+      if (shareBtn) shareBtn.style.display = 'none';
 
       try {
         const canvas = await html2canvas(cardElement, {
@@ -850,6 +855,9 @@
           scale: 2,
           useCORS: true
         });
+
+        // Restaurar el botón inmediatamente después de tomar la captura
+        if (shareBtn) shareBtn.style.display = 'flex';
 
         canvas.toBlob(async (blob) => {
           if (!blob) return;
@@ -875,6 +883,7 @@
           alert("¡Imagen de la fecha generada y descargada con éxito!");
         }, 'image/png');
       } catch (err) {
+        if (shareBtn) shareBtn.style.display = 'flex';
         console.error(err);
         alert("Hubo un error al generar la imagen de la fecha.");
       }
