@@ -725,21 +725,21 @@
                   const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
                   return `
                     <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
-                      <!-- TABLA FIJA PARA EVITAR CORTES EN CAPTURAS -->
+                      <!-- ESTRUCTURA CORREGIDA: ESCUDO Y NOMBRE ORDENADOS EN COLUMNAS -->
                       <table class="w-full text-xs">
                         <tr>
                           <td class="w-[42%] text-right font-semibold text-white pr-2">
-                            <div class="flex items-center justify-end gap-1.5 overflow-hidden">
+                            <div class="flex items-center justify-end gap-2">
                               <span class="truncate">${hTeam.name}</span>
-                              ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-5 h-5 object-cover rounded-full shrink-0">` : ''}
+                              ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0">🛡️</div>'}
                             </div>
                           </td>
                           <td class="w-[16%] text-center">
-                            <span class="bg-black px-2 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
+                            <span class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
                           </td>
                           <td class="w-[42%] text-left font-semibold text-white pl-2">
-                            <div class="flex items-center justify-start gap-1.5 overflow-hidden">
-                              ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-5 h-5 object-cover rounded-full shrink-0">` : ''}
+                            <div class="flex items-center justify-start gap-2">
+                              ${aTeam.logo ? `<img src="${aTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0">🛡️</div>'}
                               <span class="truncate">${aTeam.name}</span>
                             </div>
                           </td>
@@ -1960,7 +1960,7 @@
 
     async function saveSuspensionFromModal() {
       const teamId = document.getElementById('modalSuspTeam').value;
-      const playerId = document.getElementById('modalSuspPlayer').value;
+      const playerId = document.getElementById('modalSuspPlayer.value') || document.getElementById('modalSuspPlayer').value;
       const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
       const reason = document.getElementById('modalSuspReason').value;
 
