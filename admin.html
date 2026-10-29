@@ -18,17 +18,21 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
 
-    /* Estilos corregidos para impresión / exportación completa a PDF */
+    /* Estilos optimizados para impresión simple y compacta en PDF */
     @media print {
-      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
+      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 12px; }
       body * { visibility: hidden; }
       #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList * { visibility: visible; }
-      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 0 !important; }
-      #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; }
-      .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\] { display: none !important; }
-      .glass-card, div { background: transparent !important; border: 1px solid #ddd !important; box-shadow: none !important; color: black !important; }
+      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 10px !important; }
+      #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; display: block !important; }
+      .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\], .hide-on-share { display: none !important; }
+      
+      /* Tarjetas de fechas y partidos en formato simple y plano para PDF */
+      #adm-fixture > div > div { background: white !important; border: none !important; border-bottom: 1px solid #ccc !important; box-shadow: none !important; padding: 6px 0 !important; margin-bottom: 8px !important; }
+      #adminMatchesList > div { background: white !important; border: 1px solid #ddd !important; border-radius: 6px !important; margin-bottom: 6px !important; padding: 8px !important; page-break-inside: avoid; }
+      
       span, h4, div { color: black !important; }
-      .text-green-400, .text-green-300 { color: #166534 !important; }
+      .text-green-400, .text-green-300, .text-emerald-400 { color: #000 !important; font-weight: bold; }
     }
   </style>
 </head>
