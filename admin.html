@@ -325,8 +325,14 @@
         <label class="block text-[10px] text-green-400 font-bold mb-1">Cantidad de Grupos / Zonas:</label>
         <select id="modalGroupCount" class="w-full bg-black border border-green-900 rounded p-1.5 text-white text-xs">
           <option value="2">2 Grupos (Zona A y B)</option>
+          <option value="3">3 Grupos (Zona A, B y C)</option>
           <option value="4">4 Grupos (Zona A, B, C, D)</option>
+          <option value="5">5 Grupos (Zona A hasta E)</option>
+          <option value="6">6 Grupos (Zona A hasta F)</option>
+          <option value="7">7 Grupos (Zona A hasta G)</option>
           <option value="8">8 Grupos (Zona A hasta H)</option>
+          <option value="9">9 Grupos (Zona A hasta I)</option>
+          <option value="10">10 Grupos (Zona A hasta J)</option>
         </select>
       </div>
 
@@ -858,7 +864,7 @@
 
     function renderGroupsOverview(teams, cat) {
       const groupCount = cat.group_config?.count || 2;
-      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
       const container = document.getElementById('adminGroupsContainer');
 
       let groupsHtml = '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">';
@@ -884,7 +890,7 @@
       if (teams.length === 0) return alert("Agrega equipos primero.");
 
       const groupCount = cat.group_config?.count || 2;
-      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].slice(0, groupCount);
 
       const listContainer = document.getElementById('modalTeamGroupsList');
       listContainer.innerHTML = teams.map(t => `
@@ -904,7 +910,7 @@
       const cat = dbData.categories.find(c => c.id === activeCategoryId);
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       const groupCount = cat.group_config?.count || 2;
-      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+      const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].slice(0, groupCount);
 
       let shuffled = [...teams].sort(() => Math.random() - 0.5);
       for (let i = 0; i < shuffled.length; i++) {
@@ -1123,7 +1129,7 @@
 
       if (cat.tournament_type === 'cup') {
         const groupCount = cat.group_config?.count || 2;
-        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].slice(0, groupCount);
         let groupsHtml = '';
 
         groupLetters.forEach(l => {
@@ -1482,7 +1488,7 @@
 
       if (cat.tournament_type === 'cup') {
         const groupCount = cat.group_config?.count || 2;
-        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].slice(0, groupCount);
 
         let unassignedTeams = teams.filter(t => !t.group_name);
         if (unassignedTeams.length > 0) {
