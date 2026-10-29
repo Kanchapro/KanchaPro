@@ -365,14 +365,30 @@
         <label class="block text-[11px] text-slate-300 mb-1">Fecha / Jornada (Ej. Fecha 1):</label>
         <input type="text" id="modalMatchRound" value="Fecha 1" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
       </div>
+
+      <!-- OPCIÓN INTERZONAL -->
+      <div id="interzonalToggleContainer" class="hidden bg-black/40 p-2.5 rounded-lg border border-green-900/30 space-y-2">
+        <label class="text-[11px] font-bold text-green-300 flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" id="modalIsInterzonal" onchange="toggleInterzonalOptions(this.checked)" class="w-4 h-4 accent-green-600 rounded">
+          <span>🔗 Partido Interzonal (Cruzado entre distintas zonas)</span>
+        </label>
+      </div>
+
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Equipo Local:</label>
+        <label class="block text-[11px] text-slate-300 mb-1" id="labelHomeSelect">Equipo Local:</label>
         <select id="modalMatchHome" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
+      
+      <div id="awayGroupSelectContainer" class="hidden">
+        <label class="block text-[11px] text-slate-300 mb-1">Zona / Grupo Visitante:</label>
+        <select id="modalAwayGroup" onchange="updateAwayTeamOptions()" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
+      </div>
+
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Equipo Visitante:</label>
+        <label class="block text-[11px] text-slate-300 mb-1" id="labelAwaySelect">Equipo Visitante:</label>
         <select id="modalMatchAway" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select>
       </div>
+
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label class="block text-[11px] text-slate-300 mb-1">Día (Ej. Sábado 12):</label>
@@ -698,7 +714,6 @@
         logoContainer.innerHTML = `<span class="text-xs">🏆</span>`;
       }
 
-      // Actualizar subtítulos dinámicos en las tarjetas compartibles con el nombre del torneo activo
       ['shareCardSubtitleStandings', 'shareCardSubtitleScorers', 'shareCardSubtitlePlayoffs', 'shareCardSubtitleDiscipline'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = `${cat.name} — KanchaPro`;
@@ -895,7 +910,6 @@
       const cardElement = document.getElementById(`round_card_${sanitizedId}`);
       if (!cardElement) return;
 
-      // Ocultar botones de la tarjeta al capturar
       const elementsToHide = cardElement.querySelectorAll('button, .hide-on-share');
       elementsToHide.forEach(el => el.style.display = 'none');
 
@@ -906,7 +920,6 @@
           useCORS: true
         });
 
-        // Restaurar botones
         elementsToHide.forEach(el => el.style.display = '');
 
         canvas.toBlob(async (blob) => {
@@ -1460,6 +1473,10 @@
           }
         }
 
+        // Generar partidos por grupo
+        let groupFixtures = {};
+        let maxRounds = 0;
+
         for (let l of groupLetters) {
           let gName = 'Grupo ' + l;
           let gTeams = teams.filter(t => t.group_name === gName);
@@ -1488,6 +1505,16 @@
             list.splice(1, 0, temp);
           }
 
+          groupFixtures[gName] = fixtureRounds;
+          if (fixtureRounds.length > maxRounds) maxRounds = fixtureRounds.length;
+        }
+
+        // Insertar partidos de cada grupo
+        for (let l of groupLetters) {
+          let gName = 'Grupo ' + l;
+          let fixtureRounds = groupFixtures[gName];
+          if (!fixtureRounds) continue;
+
           for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
             let roundNumber = rIndex + 1;
             let matchesInRound = fixtureRounds[rIndex];
@@ -1508,10 +1535,42 @@
               }]);
             }
           }
+        }
 
-          if (isHomeAway) {
+        // CREACIÓN AUTOMÁTICA DE FECHA INTERZONAL SI HAY GRUPOS PARES (Ej: Grupo A vs Grupo B)
+        if (groupCount >= 2 && groupLetters.length >= 2) {
+          let groupATeams = teams.filter(t => t.group_name === 'Grupo A');
+          let groupBTeams = teams.filter(t => t.group_name === 'Grupo B');
+          if (groupATeams.length > 0 && groupBTeams.length > 0) {
+            let interzonalRound = maxRounds + 1;
+            let minPairs = Math.min(groupATeams.length, groupBTeams.length);
+            for (let i = 0; i < minPairs; i++) {
+              counter++;
+              await supabaseClient.from('torneos_data').insert([{
+                id: `match_${timestamp}_inter_${counter}_${Math.floor(Math.random()*1000)}`,
+                type: 'match',
+                category_id: activeCategoryId,
+                home_team: groupATeams[i].id,
+                away_team: groupBTeams[i].id,
+                home_score: 0,
+                away_score: 0,
+                played: false,
+                is_playoff: false,
+                round_name: `Fecha ${interzonalRound} (Interzonal A vs B)`,
+                match_day: '', match_time: '', match_venue: ''
+              }]);
+            }
+          }
+        }
+
+        if (isHomeAway) {
+          for (let l of groupLetters) {
+            let gName = 'Grupo ' + l;
+            let fixtureRounds = groupFixtures[gName];
+            if (!fixtureRounds) continue;
+
             for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-              let roundNumber = fixtureRounds.length + rIndex + 1;
+              let roundNumber = maxRounds + 1 + rIndex + 1;
               let matchesInRound = fixtureRounds[rIndex];
               for (let m of matchesInRound) {
                 counter++;
@@ -1532,6 +1591,7 @@
             }
           }
         }
+
       } else {
         let list = [...teams];
         if (list.length % 2 !== 0) list.push({ id: 'BYE', name: 'LIBRE' });
@@ -1602,27 +1662,35 @@
       }
 
       await loadAdminData();
-      alert("¡Fixture generado con éxito!");
+      alert("¡Fixture generado con éxito (con opción interzonal aplicada)!");
     }
 
     function openMatchModal(isEdit = false, matchId = null) {
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
-      const optionsHtml = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
       
-      const homeSelect = document.getElementById('modalMatchHome');
-      const awaySelect = document.getElementById('modalMatchAway');
-      
-      homeSelect.innerHTML = optionsHtml;
-      awaySelect.innerHTML = optionsHtml;
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const interzonalContainer = document.getElementById('interzonalToggleContainer');
+      const awayGroupContainer = document.getElementById('awayGroupSelectContainer');
+
+      if (cat.tournament_type === 'cup') {
+        interzonalContainer.classList.remove('hidden');
+      } else {
+        interzonalContainer.classList.add('hidden');
+        awayGroupContainer.classList.add('hidden');
+      }
+
+      document.getElementById('modalIsInterzonal').checked = false;
+      populateMatchTeamSelectors(teams, false);
 
       if (isEdit && matchId) {
         document.getElementById('matchModalTitle').textContent = 'Editar Partido / Horario';
         const m = dbData.matches.find(x => x.id === matchId);
         document.getElementById('modalMatchEditId').value = m.id;
         document.getElementById('modalMatchRound').value = m.round_name || 'Fecha 1';
-        homeSelect.value = m.home_team;
-        awaySelect.value = m.away_team;
+        
+        document.getElementById('modalMatchHome').value = m.home_team;
+        document.getElementById('modalMatchAway').value = m.away_team;
 
         document.getElementById('modalMatchDay').value = m.match_day || '';
         document.getElementById('modalMatchTime').value = m.match_time || '';
@@ -1638,9 +1706,47 @@
       openModal('matchModal');
     }
 
+    function populateMatchTeamSelectors(teams, isInterzonal) {
+      const homeSelect = document.getElementById('modalMatchHome');
+      const awaySelect = document.getElementById('modalMatchAway');
+      const awayGroupContainer = document.getElementById('awayGroupSelectContainer');
+
+      if (!isInterzonal) {
+        awayGroupContainer.classList.add('hidden');
+        const optionsHtml = teams.map(t => `<option value="${t.id}">${t.name} (${t.group_name || 'Sin grupo'})</option>`).join('');
+        homeSelect.innerHTML = optionsHtml;
+        awaySelect.innerHTML = optionsHtml;
+      } else {
+        awayGroupContainer.classList.remove('hidden');
+        const groups = [...new Set(teams.map(t => t.group_name).filter(Boolean))];
+        
+        homeSelect.innerHTML = teams.map(t => `<option value="${t.id}">${t.name} (${t.group_name})</option>`).join('');
+        
+        const awayGroupSelect = document.getElementById('modalAwayGroup');
+        awayGroupSelect.innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('');
+        
+        updateAwayTeamOptions();
+      }
+    }
+
+    function toggleInterzonalOptions(isInterzonal) {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      populateMatchTeamSelectors(teams, isInterzonal);
+    }
+
+    function updateAwayTeamOptions() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      const selectedAwayGroup = document.getElementById('modalAwayGroup').value;
+      const awaySelect = document.getElementById('modalMatchAway');
+
+      const filteredAwayTeams = teams.filter(t => t.group_name === selectedAwayGroup);
+      awaySelect.innerHTML = filteredAwayTeams.map(t => `<option value="${t.id}">${t.name} (${t.group_name})</option>`).join('') || '<option value="">Sin equipos en este grupo</option>';
+    }
+
     async function saveMatchFromModal() {
       const editId = document.getElementById('modalMatchEditId').value;
-      const round_name = document.getElementById('modalMatchRound').value.trim() || 'Fecha 1';
+      let round_name = document.getElementById('modalMatchRound').value.trim() || 'Fecha 1';
+      const isInterzonal = document.getElementById('modalIsInterzonal').checked;
       const home_team = document.getElementById('modalMatchHome').value;
       const away_team = document.getElementById('modalMatchAway').value;
       const match_day = document.getElementById('modalMatchDay').value;
@@ -1648,6 +1754,9 @@
       const match_venue = document.getElementById('modalMatchVenue').value;
 
       if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
+      if (isInterzonal && !round_name.toLowerCase().includes('interzonal')) {
+        round_name += ' (Interzonal)';
+      }
 
       if (editId) {
         await supabaseClient.from('torneos_data').update({
@@ -2069,7 +2178,7 @@
 
     async function saveSuspensionFromModal() {
       const teamId = document.getElementById('modalSuspTeam').value;
-      const playerId = document.getElementById('modalSuspPlayer.value') || document.getElementById('modalSuspPlayer').value;
+      const playerId = document.getElementById('modalSuspPlayer').value;
       const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
       const reason = document.getElementById('modalSuspReason').value;
 
