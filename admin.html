@@ -18,20 +18,21 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
 
-    /* Estilos optimizados para impresión simple y compacta en PDF */
+    /* Estilos súper comprimidos y optimizados para impresión en PDF */
     @media print {
-      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 12px; }
+      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 10px !important; }
       body * { visibility: hidden; }
       #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList * { visibility: visible; }
-      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 10px !important; }
+      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 2px !important; }
       #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; display: block !important; }
       .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\], .hide-on-share { display: none !important; }
       
-      /* Tarjetas de fechas y partidos en formato simple y plano para PDF */
-      #adm-fixture > div > div { background: white !important; border: none !important; border-bottom: 1px solid #ccc !important; box-shadow: none !important; padding: 6px 0 !important; margin-bottom: 8px !important; }
-      #adminMatchesList > div { background: white !important; border: 1px solid #ddd !important; border-radius: 6px !important; margin-bottom: 6px !important; padding: 8px !important; page-break-inside: avoid; }
+      /* Tarjetas de fechas y partidos súper compactas para agrupar por grupo/fecha */
+      #adminMatchesList > div { background: white !important; border: 1px solid #999 !important; border-radius: 4px !important; margin-bottom: 4px !important; padding: 4px 6px !important; page-break-inside: avoid; break-inside: avoid; }
+      #adminMatchesList > div > div.space-y-2 > div { border-bottom: 1px solid #eee !important; padding: 3px 0 !important; margin-bottom: 2px !important; }
       
-      span, h4, div { color: black !important; }
+      span, h4, div { color: black !important; font-size: 10px !important; }
+      h4 { font-size: 11px !important; font-weight: bold !important; border-bottom: 1px solid #333 !important; padding-bottom: 2px !important; margin-bottom: 3px !important; }
       .text-green-400, .text-green-300, .text-emerald-400 { color: #000 !important; font-weight: bold; }
     }
   </style>
