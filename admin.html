@@ -17,6 +17,16 @@
     .scrollbar-thin::-webkit-scrollbar { width: 4px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
+
+    /* Estilos específicos para impresión / exportación a PDF */
+    @media print {
+      body { background: white !important; color: black !important; }
+      body * { visibility: hidden; }
+      #adminMatchesList, #adminMatchesList * { visibility: visible; }
+      #adminMatchesList { position: absolute; left: 0; top: 0; width: 100%; color: black !important; background: white !important; }
+      .no-print, button { display: none !important; }
+      .glass-card, div { background: transparent !important; border: none !important; box-shadow: none !important; }
+    }
   </style>
 </head>
 <body class="h-full flex flex-col overflow-auto">
@@ -130,7 +140,12 @@
     <!-- Tab 3: Fixture -->
     <div id="adm-fixture" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex flex-col gap-3 bg-[#0b0f0d] p-3.5 rounded-xl border border-green-900/40">
-        <h3 class="text-sm font-bold text-green-300">Fixture de Partidos (Carga por Fecha / Jornada)</h3>
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-bold text-green-300">Fixture de Partidos (Carga por Fecha / Jornada)</h3>
+          <button onclick="exportFixturePDF()" class="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-md">
+            <span>📥</span> Exportar Fixture en PDF
+          </button>
+        </div>
         <div class="flex items-center justify-between gap-2 bg-black/40 p-2.5 rounded-lg border border-green-900/30">
           <label class="text-[11px] font-bold text-slate-300 flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" id="modalFixtureHomeAway" class="w-4 h-4 accent-green-600 rounded">
@@ -834,6 +849,10 @@
       renderModeratorsView();
     }
 
+    function exportFixturePDF() {
+      window.print();
+    }
+
     function renderGroupsOverview(teams, cat) {
       const groupCount = cat.group_config?.count || 2;
       const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -1473,7 +1492,6 @@
           }
         }
 
-        // Generar partidos por grupo
         let groupFixtures = {};
         let maxRounds = 0;
 
@@ -1509,7 +1527,6 @@
           if (fixtureRounds.length > maxRounds) maxRounds = fixtureRounds.length;
         }
 
-        // Insertar partidos de cada grupo
         for (let l of groupLetters) {
           let gName = 'Grupo ' + l;
           let fixtureRounds = groupFixtures[gName];
@@ -1537,7 +1554,6 @@
           }
         }
 
-        // CREACIÓN AUTOMÁTICA DE FECHA INTERZONAL SI HAY GRUPOS PARES (Ej: Grupo A vs Grupo B)
         if (groupCount >= 2 && groupLetters.length >= 2) {
           let groupATeams = teams.filter(t => t.group_name === 'Grupo A');
           let groupBTeams = teams.filter(t => t.group_name === 'Grupo B');
