@@ -18,14 +18,17 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
 
-    /* Estilos específicos para impresión / exportación a PDF */
+    /* Estilos corregidos para impresión / exportación completa a PDF */
     @media print {
-      body { background: white !important; color: black !important; }
+      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; }
       body * { visibility: hidden; }
-      #adminMatchesList, #adminMatchesList * { visibility: visible; }
-      #adminMatchesList { position: absolute; left: 0; top: 0; width: 100%; color: black !important; background: white !important; }
-      .no-print, button { display: none !important; }
-      .glass-card, div { background: transparent !important; border: none !important; box-shadow: none !important; }
+      #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList * { visibility: visible; }
+      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 0 !important; }
+      #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; }
+      .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\] { display: none !important; }
+      .glass-card, div { background: transparent !important; border: 1px solid #ddd !important; box-shadow: none !important; color: black !important; }
+      span, h4, div { color: black !important; }
+      .text-green-400, .text-green-300 { color: #166534 !important; }
     }
   </style>
 </head>
@@ -33,7 +36,7 @@
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iICI0OjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
