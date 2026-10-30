@@ -69,6 +69,30 @@
       </div>
     </div>
 
+    <!-- NUEVO: ANALÍTICA DE TRÁFICO DETALLADA (DISPOSITIVOS Y SECCIONES) -->
+    <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
+        <h3 class="text-sm font-bold text-green-300">📈 Analítica Detallada de Navegación</h3>
+        <span class="text-[10px] text-slate-400 italic">Desglose de comportamiento de usuarios</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Dispositivos -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-400 uppercase">📱 Dispositivos Utilizados</h4>
+          <div id="deviceStatsContainer" class="text-xs text-slate-300 space-y-1">
+            <p class="italic text-slate-500">Calculando dispositivos...</p>
+          </div>
+        </div>
+        <!-- Secciones más visitadas -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-400 uppercase">📂 Secciones Más Consultadas</h4>
+          <div id="sectionsStatsContainer" class="text-xs text-slate-300 space-y-1">
+            <p class="italic text-slate-500">Calculando secciones...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- RESUMEN GENERAL DE DATOS -->
     <div class="space-y-3">
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">⚽ Resumen General del Sistema</h3>
@@ -111,7 +135,7 @@
       </div>
     </div>
 
-    <!-- ESTADÍSTICAS POR REGIÓN / ZONA (NUEVO) -->
+    <!-- ESTADÍSTICAS POR REGIÓN / ZONA -->
     <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-green-900/40 pb-3">
         <h3 class="text-sm font-bold text-green-300">🗺️ Resumen por Región / Localidad</h3>
@@ -221,16 +245,53 @@
         document.getElementById('statTotalBlues').textContent = totalBlues;
         document.getElementById('statTotalReds').textContent = totalReds;
 
-        // 4. Cargar visitas y agrupar por región (leyendo el campo region o extrayéndolo de los datos del torneo)
+        // 4. Cargar visitas y procesar analítica de tráfico avanzada
         const { data: statsData } = await supabaseClient
           .from('visitor_stats')
           .select('*');
 
+        let deviceCounts = { mobile: 0, desktop: 0, other: 0 };
+        let sectionCounts = {};
         let tournamentCounts = {};
         let regionStats = {};
 
+        if (statsData) {
+          statsData.forEach(row => {
+            // Analítica de Dispositivos (leyendo row.device_type)
+            let dev = row.device_type || 'mobile';
+            if (deviceCounts[dev] !== undefined) deviceCounts[dev]++;
+            else deviceCounts.other++;
+
+            // Analítica de Secciones (leyendo row.page_type)
+            let sec = row.page_type || 'index';
+            sectionCounts[sec] = (sectionCounts[sec] || 0) + 1;
+          });
+        }
+
+        // Renderizar estadísticas de Dispositivos
+        document.getElementById('deviceStatsContainer').innerHTML = `
+          <div class="flex justify-between bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 items-center">
+            <span>📱 Celulares / Móviles</span> <strong class="text-green-400">${deviceCounts.mobile}</strong>
+          </div>
+          <div class="flex justify-between bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 items-center">
+            <span>💻 PCs / Escritorio</span> <strong class="text-green-400">${deviceCounts.desktop}</strong>
+          </div>
+        `;
+
+        // Renderizar estadísticas de Secciones
+        const sectionsContainer = document.getElementById('sectionsStatsContainer');
+        const sortedSections = Object.entries(sectionCounts).sort((a, b) => b[1] - a[1]);
+        if (sortedSections.length === 0) {
+          sectionsContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Sin registros de secciones.</p>';
+        } else {
+          sectionsContainer.innerHTML = sortedSections.map(([sec, count]) => `
+            <div class="flex justify-between bg-[#0b0f0d] p-2 rounded-xl border border-green-900/30 items-center">
+              <span class="capitalize">📂 ${sec}</span> <strong class="text-green-400">${count} visitas</strong>
+            </div>
+          `).join('');
+        }
+
         categories.forEach(cat => {
-          // Si el torneo tiene una región guardada (ej: cat.region), se usa; si no, se puede agrupar por zona o localidad genérica (ej: "Sáenz Peña y Zona" por defecto)
           let region = cat.region || cat.zone || 'Presidencia Roque Sáenz Peña y Zona';
           
           if (!regionStats[region]) {
