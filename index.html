@@ -38,10 +38,16 @@
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    async function registrarVisita(tipoPagina) {
+    // Función integrada con detección automática de dispositivo y categoría actual
+    async function registrarVisita(tipoPagina, categoryId = null) {
       if (!supabaseClient) return;
       try {
-        await supabaseClient.from('visitor_stats').insert([{ page_type: tipoPagina }]);
+        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+        await supabaseClient.from('visitor_stats').insert([{ 
+          page_type: tipoPagina,
+          device_type: isMobile ? 'mobile' : 'desktop',
+          category_id: categoryId
+        }]);
       } catch (err) {
         console.error("Error al registrar visita:", err);
       }
@@ -467,6 +473,10 @@
       document.getElementById('welcomeFavoritesSection').classList.add('hidden');
       document.getElementById('tournamentContentArea').classList.remove('hidden');
       updateFavoriteButtonUI();
+      
+      // Registrar visita asociando la categoría seleccionada
+      registrarVisita('index', catId);
+      
       renderPublicViews();
     }
 
