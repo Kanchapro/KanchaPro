@@ -118,9 +118,10 @@
     <!-- CONTENEDOR DE PESTAÑAS Y DATOS -->
     <div id="tournamentContentArea" class="space-y-3 hidden">
       <div class="glass-card rounded-2xl p-2 border border-green-900/30 shadow-xl">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1.5">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-1.5">
           <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center tab-active font-bold flex items-center justify-center gap-1 transition w-full">📊 Posiciones</button>
           <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">📅 Fixture</button>
+          <button onclick="switchPublicTab('horarios', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">⏰ Horarios</button>
           <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🏆 Playoffs</button>
           <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">🛡️ Equipos</button>
           <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1 transition hover:text-white w-full">⚽ Goleadores</button>
@@ -163,6 +164,17 @@
           <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
         </h3>
         <div id="publicMatchesContainer" class="space-y-3 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
+      </div>
+
+      <!-- Tab NUEVA: Horarios por Club -->
+      <div id="pub-horarios" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
+        <div>
+          <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Horarios y Partidos por Club
+          </h3>
+          <p class="text-[10px] text-slate-400 mt-0.5">Selecciona el escudo de un club para ver sus partidos pendientes y finalizados</p>
+        </div>
+        <div id="publicHorariosClubsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2"></div>
       </div>
 
       <!-- Tab 3: Playoffs -->
@@ -283,6 +295,34 @@
       </a>
     </div>
   </footer>
+
+  <!-- MODAL HORARIOS POR CLUB (PÚBLICO) -->
+  <div id="publicClubHorariosModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
+    <div class="glass-card p-4 sm:p-5 rounded-2xl max-w-xs sm:max-w-sm w-full space-y-3.5 border border-green-500/30 my-auto text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <div id="pubModalClubLogo" class="w-7 h-7 rounded-full bg-green-950 flex items-center justify-center overflow-hidden border border-green-500/30 shrink-0">🛡️</div>
+          <h3 id="pubModalClubTitle" class="text-xs sm:text-sm font-black text-green-400 truncate">Horarios del Club</h3>
+        </div>
+        <button onclick="closeModal('publicClubHorariosModal')" class="text-slate-400 hover:text-white font-bold text-sm px-1">✕</button>
+      </div>
+      
+      <div class="space-y-3.5 max-h-[360px] overflow-y-auto scrollbar-thin pr-1">
+        <div>
+          <h4 class="text-[11px] font-black text-yellow-400 mb-1.5 uppercase tracking-wider">⏳ Partidos Pendientes</h4>
+          <div id="pubModalClubPendingList" class="space-y-1.5"></div>
+        </div>
+        <div>
+          <h4 class="text-[11px] font-black text-green-400 mb-1.5 uppercase tracking-wider">✅ Partidos Finalizados</h4>
+          <div id="pubModalClubFinishedList" class="space-y-1.5"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-1 border-t border-green-900/40">
+        <button onclick="closeModal('publicClubHorariosModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-1.5 rounded-xl font-bold transition shadow text-xs">Cerrar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL DETALLE DE PARTIDO -->
   <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
@@ -466,6 +506,10 @@
 
       document.querySelectorAll('.public-tab-content').forEach(c => c.classList.add('hidden'));
       document.getElementById(`pub-${tabKey}`).classList.remove('hidden');
+
+      if (tabKey === 'horarios') {
+        renderPublicHorariosClubsGrid();
+      }
     }
 
     function renderPublicViews() {
@@ -496,10 +540,79 @@
 
       renderPublicStandings(teams, matches, cat);
       renderPublicMatches(teams, matches);
+      renderPublicHorariosClubsGrid();
       renderPublicPlayoffs(cat, playoffMatches, teams);
       renderPublicTeamsAndRosters(teams, players, cat.sport_type === 'futsal');
       renderPublicScorers(players, teams);
       renderPublicDiscipline(players, teams, teamIds);
+    }
+
+    function renderPublicHorariosClubsGrid() {
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const container = document.getElementById('publicHorariosClubsGrid');
+      if (!container) return;
+
+      if (teams.length === 0) {
+        container.innerHTML = '<p class="text-slate-500 text-xs col-span-full text-center py-6">No hay equipos registrados en este torneo.</p>';
+        return;
+      }
+
+      container.innerHTML = teams.map(team => `
+        <div onclick="openPublicClubHorariosModal('${team.id}')" class="glass-card p-3 rounded-2xl border border-green-900/40 flex flex-col items-center text-center cursor-pointer hover:border-green-500 transition space-y-2 bg-[#060a08] shadow-md">
+          <div class="w-12 h-12 rounded-full bg-green-950 flex items-center justify-center border border-green-500/30 overflow-hidden shadow">
+            ${team.logo ? `<img src="${team.logo}" class="w-full h-full object-cover">` : '<span class="text-lg">🛡️</span>'}
+          </div>
+          <span class="font-bold text-white text-xs truncate w-full">${team.name}</span>
+          <span class="text-[10px] text-emerald-400 font-bold">Ver Horarios ➔</span>
+        </div>
+      `).join('');
+    }
+
+    function openPublicClubHorariosModal(teamId) {
+      const team = pubData.teams.find(t => t.id === teamId);
+      if (!team) return;
+
+      document.getElementById('pubModalClubTitle').textContent = `Horarios — ${team.name}`;
+      const logoEl = document.getElementById('pubModalClubLogo');
+      if (team.logo) {
+        logoEl.innerHTML = `<img src="${team.logo}" class="w-full h-full object-cover">`;
+      } else {
+        logoEl.innerHTML = `🛡️`;
+      }
+
+      const allMatches = pubData.matches.filter(m => m.category_id === currentPublicCatId && (m.home_team === teamId || m.away_team === teamId));
+      const teams = pubData.teams;
+
+      let pendingHtml = '';
+      let finishedHtml = '';
+
+      allMatches.forEach(m => {
+        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+        const infoText = [m.round_name, m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
+
+        const matchBox = `
+          <div class="bg-[#0b140e] p-2.5 rounded-xl border border-green-900/30 space-y-1 text-xs shadow-sm">
+            <div class="flex justify-between items-center font-bold text-white">
+              <span class="${m.home_team === teamId ? 'text-green-400 font-black' : ''} truncate max-w-[110px]">${hTeam.name}</span>
+              <span class="px-2 py-0.5 bg-black rounded-lg text-green-300 border border-green-900 shrink-0">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
+              <span class="${m.away_team === teamId ? 'text-green-400 font-black' : ''} truncate max-w-[110px] text-right">${aTeam.name}</span>
+            </div>
+            <div class="text-[9px] text-slate-400 truncate">📅 ${infoText}</div>
+          </div>
+        `;
+
+        if (m.played) {
+          finishedHtml += matchBox;
+        } else {
+          pendingHtml += matchBox;
+        }
+      });
+
+      document.getElementById('pubModalClubPendingList').innerHTML = pendingHtml || '<p class="text-slate-500 text-[11px] italic text-center py-2">No hay partidos pendientes.</p>';
+      document.getElementById('pubModalClubFinishedList').innerHTML = finishedHtml || '<p class="text-slate-500 text-[11px] italic text-center py-2">No hay partidos finalizados.</p>';
+
+      openModal('publicClubHorariosModal');
     }
 
     function renderPublicStandings(teams, matches, cat) {
