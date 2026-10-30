@@ -18,21 +18,24 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
 
-    /* Estilos súper comprimidos y optimizados para impresión en PDF */
+    /* Estilos optimizados para impresión en PDF tipo Cronograma Oficial */
     @media print {
       body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 10px !important; }
       body * { visibility: hidden; }
       #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList * { visibility: visible; }
-      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 2px !important; }
+      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 5px !important; }
       #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; display: block !important; }
       .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\], .hide-on-share { display: none !important; }
       
-      /* Tarjetas de fechas y partidos súper compactas para agrupar por grupo/fecha */
-      #adminMatchesList > div { background: white !important; border: 1px solid #999 !important; border-radius: 4px !important; margin-bottom: 4px !important; padding: 4px 6px !important; page-break-inside: avoid; break-inside: avoid; }
-      #adminMatchesList > div > div.space-y-2 > div { border-bottom: 1px solid #eee !important; padding: 3px 0 !important; margin-bottom: 2px !important; }
+      /* Transformar tarjetas de fecha en tablas limpias estilo cronograma */
+      #adminMatchesList > div { background: white !important; border: 1px solid #ccc !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 6px !important; page-break-inside: avoid; break-inside: avoid; }
+      #adminMatchesList > div h4 { color: #000 !important; font-size: 11px !important; border-bottom: 2px solid #000 !important; padding-bottom: 3px !important; margin-bottom: 4px !important; text-transform: uppercase; }
       
-      span, h4, div { color: black !important; font-size: 10px !important; }
-      h4 { font-size: 11px !important; font-weight: bold !important; border-bottom: 1px solid #333 !important; padding-bottom: 2px !important; margin-bottom: 3px !important; }
+      /* Formato de fila estilo tabla PDF */
+      #adminMatchesList div.print-match-row { display: flex !important; justify-content: space-between !important; align-items: center !important; border-bottom: 1px solid #eee !important; padding: 4px 2px !important; font-size: 10px !important; }
+      #adminMatchesList div.print-match-row span { color: black !important; }
+      
+      span, div { color: black !important; }
       .text-green-400, .text-green-300, .text-emerald-400 { color: #000 !important; font-weight: bold; }
     }
   </style>
@@ -151,7 +154,7 @@
         <div class="flex justify-between items-center">
           <h3 class="text-sm font-bold text-green-300">Fixture de Partidos (Carga por Fecha / Jornada)</h3>
           <button onclick="exportFixturePDF()" class="bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-md">
-            <span>📥</span> Exportar Fixture en PDF
+            <span>📥</span> Exportar Fixture en PDF (Cronograma)
           </button>
         </div>
         <div class="flex items-center justify-between gap-2 bg-black/40 p-2.5 rounded-lg border border-green-900/30">
@@ -807,7 +810,7 @@
               <div class="flex justify-between items-center border-b border-green-900/40 pb-1.5">
                 <div>
                   <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">${roundName}</h4>
-                  <span class="text-[10px] text-slate-300 font-bold uppercase">${cat.name} — KanchaPro</span>
+                  <span class="text-[10px] text-slate-300 font-bold uppercase">${cat.name} — Cronograma Oficial</span>
                 </div>
                 <button id="share_btn_${sanitizedId}" onclick="shareRoundAsImage('${sanitizedId}', '${roundName}')" class="text-[11px] px-2.5 py-1 bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 rounded-lg font-bold border border-emerald-500/40 transition flex items-center gap-1 shadow-sm">
                   <span>📸</span> Compartir Fecha (Imagen)
@@ -819,15 +822,15 @@
                   const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
                   const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
                   return `
-                    <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2">
-                      <div class="flex items-center justify-between gap-1 text-xs py-1">
+                    <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 space-y-2 print-match-row">
+                      <div class="flex items-center justify-between gap-1 text-xs py-1 flex-1">
                         <div class="flex-1 flex items-center justify-end gap-2 overflow-hidden text-right">
                           <span class="font-semibold text-white truncate leading-normal">${hTeam.name}</span>
                           ${hTeam.logo ? `<img src="${hTeam.logo}" class="w-6 h-6 object-cover rounded-full shrink-0">` : '<div class="w-6 h-6 bg-green-950 text-green-400 rounded-full flex items-center justify-center shrink-0 font-bold text-[10px]">🛡️</div>'}
                         </div>
                         
                         <div class="shrink-0 px-2 text-center">
-                          <span class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
+                          <span class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900 inline-block">${m.played ? `${m.home_score} - ${m.away_score}` : 'vs'}</span>
                         </div>
 
                         <div class="flex-1 flex items-center justify-start gap-2 overflow-hidden text-left">
@@ -850,7 +853,7 @@
                 }).join('')}
               </div>
               <div class="text-right pt-2 border-t border-green-900/30">
-                <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">KANCHAPRO</span>
+                <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">KANCHAPRO — CRONOGRAMA OFICIAL</span>
               </div>
             </div>
           `;
