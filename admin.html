@@ -27,11 +27,9 @@
       #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; display: block !important; }
       .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\], .hide-on-share { display: none !important; }
       
-      /* Transformar tarjetas de fecha en tablas limpias estilo cronograma */
       #adminMatchesList > div { background: white !important; border: 1px solid #ccc !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 6px !important; page-break-inside: avoid; break-inside: avoid; }
       #adminMatchesList > div h4 { color: #000 !important; font-size: 11px !important; border-bottom: 2px solid #000 !important; padding-bottom: 3px !important; margin-bottom: 4px !important; text-transform: uppercase; }
       
-      /* Formato de fila estilo tabla PDF */
       #adminMatchesList div.print-match-row { display: flex !important; justify-content: space-between !important; align-items: center !important; border-bottom: 1px solid #eee !important; padding: 4px 2px !important; font-size: 10px !important; }
       #adminMatchesList div.print-match-row span { color: black !important; }
       
@@ -172,7 +170,7 @@
       <div id="adminMatchesList" class="space-y-3 max-h-[450px] overflow-y-auto scrollbar-thin"></div>
     </div>
 
-    <!-- Tab NUEVA: Horarios por Club -->
+    <!-- Tab Horarios -->
     <div id="adm-horarios" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div>
         <h3 class="text-sm font-bold text-green-300">Horarios y Partidos por Club</h3>
@@ -325,7 +323,6 @@
   </main>
 
   <!-- ==================== MODALES ==================== -->
-  <!-- Modal de Horarios por Club -->
   <div id="clubHorariosModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
     <div class="glass-card p-5 rounded-2xl max-w-md w-full space-y-4 border border-green-500/30 my-auto text-xs">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
@@ -335,7 +332,6 @@
         </div>
         <button onclick="closeModal('clubHorariosModal')" class="text-slate-400 hover:text-white font-bold text-sm">✕</button>
       </div>
-      
       <div class="space-y-4 max-h-[380px] overflow-y-auto scrollbar-thin pr-1">
         <div>
           <h4 class="text-xs font-bold text-yellow-400 mb-2">⏳ Partidos Pendientes</h4>
@@ -346,7 +342,6 @@
           <div id="modalClubFinishedList" class="space-y-2"></div>
         </div>
       </div>
-
       <div class="flex justify-end pt-2 border-t border-green-900/40">
         <button onclick="closeModal('clubHorariosModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 py-2 rounded-lg font-semibold">Cerrar</button>
       </div>
@@ -456,7 +451,6 @@
         <input type="text" id="modalMatchRound" value="Fecha 1" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
       </div>
 
-      <!-- OPCIÓN INTERZONAL -->
       <div id="interzonalToggleContainer" class="hidden bg-black/40 p-2.5 rounded-lg border border-green-900/30 space-y-2">
         <label class="text-[11px] font-bold text-green-300 flex items-center gap-1.5 cursor-pointer">
           <input type="checkbox" id="modalIsInterzonal" onchange="toggleInterzonalOptions(this.checked)" class="w-4 h-4 accent-green-600 rounded">
@@ -1401,8 +1395,8 @@
       const statusText = document.getElementById('playoffStatusText');
 
       if (!cat.has_playoffs) {
-        statusText.textContent = "Estado: Desactivado para este torneo";
-        goldContainer.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">Los playoffs no están habilitados en la configuración de este torneo.</p>`;
+        statusText.textContent = "Estado: Desactivado para este torneo (Actívalo en 'Editar Torneo')";
+        goldContainer.innerHTML = `<div class="p-4 text-center space-y-2"><p class="text-slate-400 text-xs">Los playoffs están desactivados en este torneo.</p><button onclick="openCategoryModal(true)" class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">⚙️ Activar Playoffs ahora</button></div>`;
         silverContainer.innerHTML = '';
         return;
       }
@@ -1413,8 +1407,8 @@
       const goldMatches = playoffMatches.filter(m => !m.cup_type || m.cup_type === 'gold');
       const silverMatches = playoffMatches.filter(m => m.cup_type === 'silver');
 
-      goldContainer.innerHTML = goldMatches.map(m => renderSinglePlayoffCard(m, teams)).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de Copa de Oro generadas.</p>`;
-      silverContainer.innerHTML = silverMatches.map(m => renderSinglePlayoffCard(m, teams)).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de Copa de Plata generadas.</p>`;
+      goldContainer.innerHTML = goldMatches.map(m => renderSinglePlayoffCard(m, teams)).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de Copa de Oro generadas. Haz clic en 'Generar Copa de Oro' arriba.</p>`;
+      silverContainer.innerHTML = silverMatches.map(m => renderSinglePlayoffCard(m, teams)).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de Copa de Plata generadas. Haz clic en 'Generar Copa de Plata' arriba.</p>`;
     }
 
     function renderSinglePlayoffCard(m, teams) {
@@ -2056,7 +2050,6 @@
         return { ...team, points: (won * winPoints) + drawn, gd: gf - gc };
       }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
-      // Borrar llaves anteriores del tipo de copa seleccionado
       const oldPlayoffs = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff && (m.cup_type === cupType || (!m.cup_type && cupType === 'gold')));
       for (let op of oldPlayoffs) {
         await supabaseClient.from('torneos_data').delete().eq('id', op.id);
