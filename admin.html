@@ -221,31 +221,51 @@
       </div>
     </div>
 
-    <!-- Tab 5: Playoffs / Llaves -->
+    <!-- Tab 5: Playoffs / Llaves (Copa de Oro y Copa de Plata) -->
     <div id="adm-playoffs" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
-      <div class="flex justify-between items-center">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
-          <h3 class="text-sm font-bold text-green-300">Fase de Playoffs / Llaves</h3>
+          <h3 class="text-sm font-bold text-green-300">Fase de Playoffs / Copas</h3>
           <p id="playoffStatusText" class="text-[10px] text-slate-400">Estado: Sin playoffs configurados</p>
         </div>
-        <div class="flex gap-2">
-          <button onclick="openPlayoffMatchModal()" class="bg-blue-600/30 text-blue-300 px-3 py-1.5 rounded-lg text-xs font-bold">+ Manual</button>
-          <button onclick="generatePlayoffBrackets()" class="btn-green text-white text-xs font-bold px-3 py-1.5 rounded-lg">⚡ Generar Automáticas</button>
+        <div class="flex flex-wrap gap-2">
+          <button onclick="openPlayoffMatchModal()" class="bg-blue-600/30 text-blue-300 px-3 py-1.5 rounded-lg text-xs font-bold">+ Llave Manual</button>
+          <button onclick="generatePlayoffBrackets('gold')" class="bg-yellow-600/40 hover:bg-yellow-600/60 text-yellow-300 border border-yellow-500/40 text-xs font-bold px-3 py-1.5 rounded-lg transition">⚡ Generar Copa de Oro</button>
+          <button onclick="generatePlayoffBrackets('silver')" class="bg-slate-300/20 hover:bg-slate-300/30 text-slate-200 border border-slate-400/40 text-xs font-bold px-3 py-1.5 rounded-lg transition">⚡ Generar Copa de Plata</button>
         </div>
       </div>
-      <div id="playoffs_card" class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 space-y-3 relative">
-        <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+
+      <!-- Copa de Oro -->
+      <div id="playoffs_gold_card" class="bg-[#060a08] border border-yellow-500/30 rounded-xl p-3 space-y-3 relative shadow-lg">
+        <div class="flex justify-between items-center border-b border-yellow-500/30 pb-2">
           <div>
-            <h4 class="text-xs font-black text-green-400 uppercase tracking-wider">Llaves de Playoffs</h4>
-            <span id="shareCardSubtitlePlayoffs" class="text-[10px] text-slate-300 font-bold uppercase">KanchaPro — Portal Oficial</span>
+            <h4 class="text-xs font-black text-yellow-400 uppercase tracking-wider flex items-center gap-1.5">🏆 Copa de Oro</h4>
+            <span id="shareCardSubtitlePlayoffsGold" class="text-[10px] text-slate-300 font-bold uppercase">KanchaPro — Portal Oficial</span>
           </div>
-          <button id="share_btn_playoffs" onclick="shareSectionAsImage('playoffs_card', 'Playoffs')" class="text-[11px] px-2.5 py-1 bg-emerald-600/25 hover:bg-emerald-600/40 text-emerald-300 rounded-lg font-bold border border-emerald-500/40 transition flex items-center gap-1 shadow-sm">
-            <span>📸</span> Compartir Playoffs
+          <button onclick="shareSectionAsImage('playoffs_gold_card', 'Copa_de_Oro')" class="text-[11px] px-2.5 py-1 bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-300 rounded-lg font-bold border border-yellow-500/40 transition flex items-center gap-1 shadow-sm">
+            <span>📸</span> Compartir Oro
           </button>
         </div>
-        <div id="adminPlayoffsContainer" class="space-y-3"></div>
+        <div id="adminPlayoffsGoldContainer" class="space-y-3"></div>
         <div class="text-right pt-2 border-t border-green-900/30">
-          <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">KANCHAPRO</span>
+          <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">KANCHAPRO — COPA DE ORO</span>
+        </div>
+      </div>
+
+      <!-- Copa de Plata -->
+      <div id="playoffs_silver_card" class="bg-[#060a08] border border-slate-400/30 rounded-xl p-3 space-y-3 relative shadow-lg">
+        <div class="flex justify-between items-center border-b border-slate-400/30 pb-2">
+          <div>
+            <h4 class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">🥈 Copa de Plata</h4>
+            <span id="shareCardSubtitlePlayoffsSilver" class="text-[10px] text-slate-300 font-bold uppercase">KanchaPro — Portal Oficial</span>
+          </div>
+          <button onclick="shareSectionAsImage('playoffs_silver_card', 'Copa_de_Plata')" class="text-[11px] px-2.5 py-1 bg-slate-600/20 hover:bg-slate-600/30 text-slate-200 rounded-lg font-bold border border-slate-400/40 transition flex items-center gap-1 shadow-sm">
+            <span>📸</span> Compartir Plata
+          </button>
+        </div>
+        <div id="adminPlayoffsSilverContainer" class="space-y-3"></div>
+        <div class="text-right pt-2 border-t border-green-900/30">
+          <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase">KANCHAPRO — COPA DE PLATA</span>
         </div>
       </div>
     </div>
@@ -389,17 +409,17 @@
 
       <div class="border-t border-green-900/40 pt-2 space-y-2">
         <div class="flex items-center justify-between">
-          <label class="font-bold text-green-400 text-[11px]">¿Tiene Fase de Playoffs?</label>
+          <label class="font-bold text-green-400 text-[11px]">¿Tiene Fase de Playoffs / Copas?</label>
           <input type="checkbox" id="modalHasPlayoffs" onchange="togglePlayoffOptions(this.checked)" class="w-4 h-4 accent-green-600">
         </div>
         
         <div id="playoffOptionsContainer" class="space-y-2 hidden bg-[#0b0f0d] p-2.5 rounded-lg border border-green-900/40">
           <div>
-            <label class="block text-[10px] text-slate-300 mb-1">¿Cuántos clasifican a Playoffs?</label>
+            <label class="block text-[10px] text-slate-300 mb-1">¿Cuántos clasifican a Copa de Oro?</label>
             <select id="modalPlayoffCount" class="w-full bg-black border border-green-900 rounded p-1.5 text-white text-xs">
-              <option value="2">2 equipos (Gran Final)</option>
-              <option value="4">4 equipos (Semifinales y Final)</option>
-              <option value="8">8 equipos (Cuartos, Semis y Final)</option>
+              <option value="2">2 equipos (Gran Final Oro)</option>
+              <option value="4">4 equipos (Semis y Final Oro)</option>
+              <option value="8">8 equipos (Cuartos, Semis y Final Oro)</option>
             </select>
           </div>
         </div>
@@ -621,6 +641,13 @@
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 class="text-sm font-bold text-green-400">Crear Llave de Playoff Manual</h3>
       <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Seleccionar Copa:</label>
+        <select id="modalPlayoffCupType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+          <option value="gold">🏆 Copa de Oro</option>
+          <option value="silver">🥈 Copa de Plata</option>
+        </select>
+      </div>
+      <div>
         <label class="block text-[11px] text-slate-300 mb-1">Fase / Ronda (Ej. Semifinal):</label>
         <input type="text" id="modalPlayoffRound" value="Semifinal" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
       </div>
@@ -788,7 +815,7 @@
         logoContainer.innerHTML = `<span class="text-xs">🏆</span>`;
       }
 
-      ['shareCardSubtitleStandings', 'shareCardSubtitleScorers', 'shareCardSubtitlePlayoffs', 'shareCardSubtitleDiscipline'].forEach(id => {
+      ['shareCardSubtitleStandings', 'shareCardSubtitleScorers', 'shareCardSubtitlePlayoffsGold', 'shareCardSubtitlePlayoffsSilver', 'shareCardSubtitleDiscipline'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = `${cat.name} — KanchaPro`;
       });
@@ -1369,40 +1396,48 @@
     }
 
     function renderPlayoffsView(cat, teams) {
-      const container = document.getElementById('adminPlayoffsContainer');
+      const goldContainer = document.getElementById('adminPlayoffsGoldContainer');
+      const silverContainer = document.getElementById('adminPlayoffsSilverContainer');
       const statusText = document.getElementById('playoffStatusText');
 
       if (!cat.has_playoffs) {
         statusText.textContent = "Estado: Desactivado para este torneo";
-        container.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">Los playoffs no están habilitados en la configuración de este torneo.</p>`;
+        goldContainer.innerHTML = `<p class="text-slate-500 text-xs text-center py-6">Los playoffs no están habilitados en la configuración de este torneo.</p>`;
+        silverContainer.innerHTML = '';
         return;
       }
 
       const playoffMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff);
-      statusText.textContent = `Estado: Activado (${cat.playoff_config?.count || 4} clasificados)`;
+      statusText.textContent = `Estado: Activado (Copa de Oro y Copa de Plata)`;
 
-      container.innerHTML = playoffMatches.map(m => {
-        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Por definir' };
-        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
-        const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
-        return `
-          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex flex-col gap-1.5 text-xs">
-            <div class="flex items-center justify-between">
-              <span class="text-green-400 font-bold">${m.round_name || 'Llave'}</span>
-              <div class="flex gap-1">
-                <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 text-blue-300 p-1.5 rounded">⚙️ Planilla</button>
-                <button onclick="deleteRecord('${m.id}')" class="text-red-400 p-1.5">🗑️</button>
-              </div>
+      const goldMatches = playoffMatches.filter(m => !m.cup_type || m.cup_type === 'gold');
+      const silverMatches = playoffMatches.filter(m => m.cup_type === 'silver');
+
+      goldContainer.innerHTML = goldMatches.map(m => renderSinglePlayoffCard(m, teams)).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de Copa de Oro generadas.</p>`;
+      silverContainer.innerHTML = silverMatches.map(m => renderSinglePlayoffCard(m, teams)).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de Copa de Plata generadas.</p>`;
+    }
+
+    function renderSinglePlayoffCard(m, teams) {
+      const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Por definir' };
+      const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
+      const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
+      return `
+        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex flex-col gap-1.5 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-green-400 font-bold">${m.round_name || 'Llave'}</span>
+            <div class="flex gap-1">
+              <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 text-blue-300 p-1.5 rounded">⚙️ Planilla</button>
+              <button onclick="deleteRecord('${m.id}')" class="text-red-400 p-1.5">🗑️</button>
             </div>
-            <div class="flex items-center justify-between gap-2">
-              <div class="flex-1 text-right font-semibold text-white truncate">${hTeam.name}</div>
-              <div class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</div>
-              <div class="flex-1 text-left font-semibold text-white truncate">${aTeam.name}</div>
-            </div>
-            ${infoText ? `<div class="text-[10px] text-slate-400 text-center">🗓️ ${infoText}</div>` : ''}
           </div>
-        `;
-      }).join('') || `<p class="text-slate-500 text-xs text-center py-4">No hay llaves de playoffs generadas.</p>`;
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex-1 text-right font-semibold text-white truncate">${hTeam.name}</div>
+            <div class="bg-black px-2.5 py-1 rounded text-green-400 font-bold border border-green-900">${m.home_score ?? 0} - ${m.away_score ?? 0}</div>
+            <div class="flex-1 text-left font-semibold text-white truncate">${aTeam.name}</div>
+          </div>
+          ${infoText ? `<div class="text-[10px] text-slate-400 text-center">🗓️ ${infoText}</div>` : ''}
+        </div>
+      `;
     }
 
     function renderDisciplineViews(teams) {
@@ -1942,6 +1977,7 @@
     }
 
     async function saveManualPlayoffMatch() {
+      const cup_type = document.getElementById('modalPlayoffCupType').value;
       const round_name = document.getElementById('modalPlayoffRound').value.trim() || 'Final';
       const home_team = document.getElementById('modalPlayoffHome').value;
       const away_team = document.getElementById('modalPlayoffAway').value;
@@ -1950,13 +1986,15 @@
       if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
 
       const timestamp = Date.now();
+      const cupPrefix = cup_type === 'gold' ? 'Oro' : 'Plata';
       const matchesToInsert = [
         {
           id: 'play_' + timestamp + '_1',
           type: 'match',
           category_id: activeCategoryId,
           is_playoff: true,
-          round_name: isHomeAway ? `${round_name} (Ida)` : round_name,
+          cup_type,
+          round_name: isHomeAway ? `${cupPrefix} - ${round_name} (Ida)` : `${cupPrefix} - ${round_name}`,
           home_team,
           away_team,
           home_score: 0,
@@ -1971,7 +2009,8 @@
           type: 'match',
           category_id: activeCategoryId,
           is_playoff: true,
-          round_name: `${round_name} (Vuelta)`,
+          cup_type,
+          round_name: `${cupPrefix} - ${round_name} (Vuelta)`,
           home_team: away_team,
           away_team: home_team,
           home_score: 0,
@@ -1986,16 +2025,19 @@
 
       closeModal('playoffMatchModal');
       await loadAdminData();
-      alert("¡Llave(s) de playoff creada(s) con éxito!");
+      alert(`¡Llave(s) de ${cupPrefix} creada(s) con éxito!`);
     }
 
-    async function generatePlayoffBrackets() {
+    async function generatePlayoffBrackets(cupType) {
       const cat = dbData.categories.find(c => c.id === activeCategoryId);
       if (!cat.has_playoffs) return alert("Activa los playoffs editando el torneo.");
 
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      const count = cat.playoff_config?.count || 4;
-      if (teams.length < count) return alert(`Se necesitan al menos ${count} equipos.`);
+      const goldCount = cat.playoff_config?.count || 4;
+      
+      if (teams.length < goldCount * 2 && teams.length < goldCount) {
+        return alert(`Se necesitan suficientes equipos para repartir entre Copa de Oro y Copa de Plata.`);
+      }
 
       const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff && m.played);
       const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
@@ -2014,7 +2056,8 @@
         return { ...team, points: (won * winPoints) + drawn, gd: gf - gc };
       }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
-      const oldPlayoffs = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff);
+      // Borrar llaves anteriores del tipo de copa seleccionado
+      const oldPlayoffs = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff && (m.cup_type === cupType || (!m.cup_type && cupType === 'gold')));
       for (let op of oldPlayoffs) {
         await supabaseClient.from('torneos_data').delete().eq('id', op.id);
       }
@@ -2022,23 +2065,44 @@
       let newBrackets = [];
       const timestamp = Date.now();
 
-      if (count === 4) {
-        newBrackets.push(
-          { id: 'play_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Semifinal 1', home_team: stats[0]?.id, away_team: stats[3]?.id, home_score: 0, away_score: 0, played: false },
-          { id: 'play_' + timestamp + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Semifinal 2', home_team: stats[1]?.id, away_team: stats[2]?.id, home_score: 0, away_score: 0, played: false },
-          { id: 'play_' + timestamp + '_3', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Gran Final', home_team: null, away_team: null, home_score: 0, away_score: 0, played: false }
-        );
-      } else if (count === 2) {
-        newBrackets.push(
-          { id: 'play_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, round_name: 'Gran Final', home_team: stats[0]?.id, away_team: stats[1]?.id, home_score: 0, away_score: 0, played: false }
-        );
+      if (cupType === 'gold') {
+        const topTeams = stats.slice(0, goldCount);
+        if (topTeams.length === 4) {
+          newBrackets.push(
+            { id: 'play_g_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Semifinal 1', home_team: topTeams[0]?.id, away_team: topTeams[3]?.id, home_score: 0, away_score: 0, played: false },
+            { id: 'play_g_' + timestamp + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Semifinal 2', home_team: topTeams[1]?.id, away_team: topTeams[2]?.id, home_score: 0, away_score: 0, played: false },
+            { id: 'play_g_' + timestamp + '_3', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Gran Final', home_team: null, away_team: null, home_score: 0, away_score: 0, played: false }
+          );
+        } else if (topTeams.length === 2) {
+          newBrackets.push(
+            { id: 'play_g_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Gran Final', home_team: topTeams[0]?.id, away_team: topTeams[1]?.id, home_score: 0, away_score: 0, played: false }
+          );
+        } else {
+          return alert("Configura una cantidad válida de clasificados en las opciones del torneo (2 o 4).");
+        }
+      } else if (cupType === 'silver') {
+        const remainingTeams = stats.slice(goldCount);
+        if (remainingTeams.length < 2) {
+          return alert("No hay suficientes equipos restantes para armar la Copa de Plata.");
+        }
+        if (remainingTeams.length >= 4) {
+          newBrackets.push(
+            { id: 'play_s_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Semifinal 1', home_team: remainingTeams[0]?.id, away_team: remainingTeams[3]?.id, home_score: 0, away_score: 0, played: false },
+            { id: 'play_s_' + timestamp + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Semifinal 2', home_team: remainingTeams[1]?.id, away_team: remainingTeams[2]?.id, home_score: 0, away_score: 0, played: false },
+            { id: 'play_s_' + timestamp + '_3', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Gran Final', home_team: null, away_team: null, home_score: 0, away_score: 0, played: false }
+          );
+        } else {
+          newBrackets.push(
+            { id: 'play_s_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Gran Final', home_team: remainingTeams[0]?.id, away_team: remainingTeams[1]?.id, home_score: 0, away_score: 0, played: false }
+          );
+        }
       }
 
       for (let nb of newBrackets) {
         await supabaseClient.from('torneos_data').insert([nb]);
       }
 
-      alert("¡Llaves de playoffs generadas con éxito!");
+      alert(`¡Llaves de Copa de ${cupType === 'gold' ? 'Oro' : 'Plata'} generadas con éxito!`);
       await loadAdminData();
     }
 
