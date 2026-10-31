@@ -372,6 +372,7 @@
         <label class="block text-[11px] text-slate-300 mb-1">Disciplina / Modalidad:</label>
         <select id="modalSportType" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
           <option value="football_11">Fútbol 11 (3 pts ganado / 5 amarillas = 1 fecha)</option>
+          <option value="football_7">Fútbol 7 (3 pts ganado / 1 empate / 0 derrota)</option>
           <option value="futsal">Fútbol 5 / Futsal (2 pts ganado / 3 amarillas = 1 fecha, 6 amarillas = 2 fechas)</option>
         </select>
       </div>
@@ -740,7 +741,6 @@
         ]);
 
         const allMods = mod.data || [];
-        // Filtrar torneos creados por el usuario O donde sea moderador autorizado
         const userCatIds = new Set([
           ...(cat.data || []).filter(c => c.owner_email === currentUserEmail).map(c => c.id),
           ...allMods.filter(m => m.owner_email === currentUserEmail).map(m => m.category_id)
