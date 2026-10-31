@@ -79,6 +79,7 @@
   <header class="bg-[#060a08]/95 border-b border-green-900/40 px-3 py-2.5 flex items-center justify-between sticky top-0 z-40">
     <h1 class="text-sm font-black text-green-400">KANCHA<span class="text-white">PRO</span> <span class="text-[10px] text-slate-400 font-normal">| Admin Total</span></h1>
     <div class="flex items-center gap-1.5">
+      <span id="userEmailBadge" class="text-[10px] text-slate-400 hidden sm:inline-block"></span>
       <a href="index.html" class="text-[11px] px-2.5 py-1.5 bg-slate-800 text-green-400 rounded-lg font-semibold border border-green-500/20">👁️ Ver Portal</a>
       <button onclick="logoutAdmin()" class="text-[11px] px-2.5 py-1.5 bg-red-900/40 text-red-300 rounded-lg font-semibold border border-red-500/30">Salir</button>
     </div>
@@ -682,6 +683,7 @@
   <script>
     let dbData = { categories: [], teams: [], players: [], matches: [], suspensions: [], moderators: [] };
     let activeCategoryId = null;
+    let currentUserEmail = null;
 
     function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
     function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
@@ -699,29 +701,13 @@
     });
 
     async function checkUserPermissions(session) {
-      const userEmail = session.user.email;
-      try {
-        const [cat, mods] = await Promise.all([
-          supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
-          supabaseClient.from('torneos_data').select('*').eq('type', 'moderator')
-        ]);
-
-        const categories = cat.data || [];
-        const moderators = mods.data || [];
-
-        const isOwner = categories.some(c => c.owner_email === userEmail);
-        const isMod = moderators.some(m => m.owner_email === userEmail);
-
-        if (isOwner || isMod || categories.length === 0) {
-          unlockAdminPanel();
-        } else {
-          alert("⚠️ No tienes permisos de administrador o moderador en este panel.");
-          await supabaseClient.auth.signOut();
-          window.location.reload();
-        }
-      } catch (err) {
-        console.error("Error validando permisos:", err);
+      if (session && session.user && session.user.email) {
+        currentUserEmail = session.user.email;
+        const badge = document.getElementById('userEmailBadge');
+        if (badge) badge.textContent = `👤 ${currentUserEmail}`;
         unlockAdminPanel();
+      } else {
+        logoutAdmin();
       }
     }
 
@@ -742,7 +728,7 @@
     }
 
     async function loadAdminData() {
-      if (!supabaseClient) return;
+      if (!supabaseClient || !currentUserEmail) return;
       try {
         const [cat, team, player, match, susp, mod] = await Promise.all([
           supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
@@ -753,12 +739,19 @@
           supabaseClient.from('torneos_data').select('*').eq('type', 'moderator')
         ]);
 
-        dbData.categories = cat.data || [];
-        dbData.teams = team.data || [];
-        dbData.players = player.data || [];
-        dbData.matches = match.data || [];
-        dbData.suspensions = susp.data || [];
-        dbData.moderators = mod.data || [];
+        const allMods = mod.data || [];
+        // Filtrar torneos creados por el usuario O donde sea moderador autorizado
+        const userCatIds = new Set([
+          ...(cat.data || []).filter(c => c.owner_email === currentUserEmail).map(c => c.id),
+          ...allMods.filter(m => m.owner_email === currentUserEmail).map(m => m.category_id)
+        ]);
+
+        dbData.categories = (cat.data || []).filter(c => userCatIds.has(c.id));
+        dbData.teams = (team.data || []).filter(t => userCatIds.has(t.category_id));
+        dbData.players = (player.data || []).filter(p => userCatIds.has(p.category_id));
+        dbData.matches = (match.data || []).filter(m => userCatIds.has(m.category_id));
+        dbData.suspensions = (susp.data || []).filter(s => userCatIds.has(s.category_id));
+        dbData.moderators = allMods.filter(m => userCatIds.has(m.category_id));
 
         populateCategorySelect();
       } catch (err) { console.error(err); }
@@ -771,6 +764,8 @@
 
       if (dbData.categories.length > 0 && (!activeCategoryId || !dbData.categories.some(c => c.id === activeCategoryId))) {
         activeCategoryId = dbData.categories[0].id;
+      } else if (dbData.categories.length === 0) {
+        activeCategoryId = null;
       }
       if (activeCategoryId) select.value = activeCategoryId;
       renderActiveCategoryViews();
@@ -798,7 +793,23 @@
     }
 
     function renderActiveCategoryViews() {
-      if (!activeCategoryId) return;
+      if (!activeCategoryId) {
+        document.getElementById('adminTeamsList').innerHTML = '<p class="text-slate-500 text-xs">Crea o selecciona un torneo tuyo arriba para empezar.</p>';
+        document.getElementById('adminRostersContainer').innerHTML = '';
+        document.getElementById('adminMatchesList').innerHTML = '';
+        document.getElementById('adminHorariosClubsGrid').innerHTML = '';
+        document.getElementById('adminStandingsContainer').innerHTML = '';
+        document.getElementById('adminTopScorersContainer').innerHTML = '';
+        document.getElementById('adminPlayoffsGoldContainer').innerHTML = '';
+        document.getElementById('adminPlayoffsSilverContainer').innerHTML = '';
+        document.getElementById('adminYellowCardsList').innerHTML = '';
+        document.getElementById('adminRedCardsList').innerHTML = '';
+        document.getElementById('adminBlueCardsList').innerHTML = '';
+        document.getElementById('adminSuspensionsList').innerHTML = '';
+        document.getElementById('adminModeratorsList').innerHTML = '';
+        return;
+      }
+
       const cat = dbData.categories.find(c => c.id === activeCategoryId);
       if (!cat) return;
 
@@ -2180,9 +2191,6 @@
         logoUrl = publicURLData.publicUrl;
       }
 
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const userEmail = session ? session.user.email : null;
-
       if (id) {
         const { error } = await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, theme_color, sport_type, tournament_type, max_teams, group_config, has_playoffs, playoff_config }).eq('id', id);
         if (error) { alert("Error al actualizar: " + error.message); return; }
@@ -2200,7 +2208,7 @@
           has_playoffs, 
           playoff_config, 
           fixture_type: tournament_type,
-          owner_email: userEmail 
+          owner_email: currentUserEmail 
         };
         const { error } = await supabaseClient.from('torneos_data').insert([newCat]);
         if (error) { alert("Error al crear en Supabase: " + error.message); return; }
