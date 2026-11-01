@@ -10,13 +10,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Montserrat', sans-serif; background-color: #0b0f0d; color: #f0fdf4; }
-    .glass-card { background: rgba(13, 27, 18, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.2); }
-    .btn-green { background-color: #16a34a; transition: background 0.2s; }
-    .btn-green:hover { background-color: #15803d; }
+    .glass-card { background: rgba(13, 27, 18, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--theme-color, rgba(34, 197, 94, 0.2)); }
+    .btn-green { background-color: var(--theme-color, #16a34a); transition: background 0.2s; }
+    .btn-green:hover { filter: brightness(0.9); }
     .tab-active { border-bottom: 3px solid var(--theme-color, #22c55e); color: var(--theme-color, #4ade80); background: rgba(34, 197, 94, 0.1); }
     .scrollbar-thin::-webkit-scrollbar { width: 4px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
-    .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--theme-color, #166534); border-radius: 2px; }
 
     /* Estilos optimizados para impresión en PDF tipo Cronograma Oficial */
     @media print {
