@@ -2,14 +2,18 @@
 <html lang="es" class="h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Estadísticas y Resumen — KanchaPro</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;750;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Montserrat', sans-serif; background-color: #060907; color: #f0fdf4; }
-    .glass-card { background: rgba(11, 20, 14, 0.92); backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.18); }
+    :root {
+      --theme-color: #16a34a;
+    }
+    body { font-family: 'Montserrat', sans-serif; background-color: #060907; color: #f0fdf4; background-image: radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.12) 0%, transparent 60%); -webkit-tap-highlight-color: transparent; }
+    .glass-card { background: rgba(11, 20, 14, 0.92); backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.18); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
     .btn-green { background-color: #16a34a; transition: background 0.2s; }
     .btn-green:hover { background-color: #15803d; }
     .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -20,7 +24,7 @@
 <body class="min-h-screen flex flex-col p-3 sm:p-6 max-w-5xl mx-auto space-y-6">
 
   <!-- PANTALLA DE LOGIN -->
-  <div id="loginScreen" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4">
+  <div id="loginScreen" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4 backdrop-blur-md">
     <div class="glass-card p-6 rounded-2xl max-w-sm w-full text-center space-y-4 border border-green-500/30 shadow-2xl">
       <div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-xl flex items-center justify-center mx-auto text-xl border border-green-500/30">🔐</div>
       <h2 class="text-base font-black text-white">Acceso Restringido</h2>
@@ -45,10 +49,10 @@
   <!-- CONTENIDO DE ESTADÍSTICAS -->
   <div id="statsMainContent" class="space-y-6 hidden">
     <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-green-900/40 pb-4">
-      <h1 class="text-base sm:text-lg font-black text-green-400">📊 Panel General y Estadísticas — KanchaPro</h1>
+      <h1 class="text-sm sm:text-lg font-black text-green-400">📊 Panel General y Estadísticas — KanchaPro</h1>
       <div class="flex items-center gap-2">
-        <a href="admin.html" class="text-xs bg-emerald-600/20 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 font-bold hover:bg-emerald-600/30 transition">← Volver al Admin</a>
-        <button onclick="logout()" class="text-xs bg-red-900/40 text-red-300 px-3 py-1.5 rounded-xl border border-red-500/30 font-bold hover:bg-red-900/60 transition">Salir</button>
+        <a href="admin.html" class="text-xs bg-emerald-600/20 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 font-bold hover:bg-emerald-600/30 transition shadow-sm">← Volver al Admin</a>
+        <button onclick="logout()" class="text-xs bg-red-900/40 text-red-300 px-3 py-1.5 rounded-xl border border-red-500/30 font-bold hover:bg-red-900/60 transition shadow-sm">Salir</button>
       </div>
     </header>
 
@@ -69,7 +73,7 @@
       </div>
     </div>
 
-    <!-- NUEVO: ANALÍTICA DE TRÁFICO DETALLADA (DISPOSITIVOS Y SECCIONES) -->
+    <!-- ANALÍTICA DE TRÁFICO DETALLADA (DISPOSITIVOS Y SECCIONES) -->
     <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
         <h3 class="text-sm font-bold text-green-300">📈 Analítica Detallada de Navegación</h3>
@@ -146,7 +150,7 @@
       </div>
     </div>
 
-    <!-- Sección de Torneos Más Visitados / Detallados -->
+    <!-- Torneos Más Visitados / Detallados -->
     <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
         <h3 class="text-sm font-bold text-green-300">🏆 Detalle de Torneos Más Visitados</h3>
@@ -161,7 +165,10 @@
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let supabaseClient = null;
+    if (typeof supabase !== 'undefined') {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       if (sessionStorage.getItem('kancha_stats_auth') === 'true') {
@@ -193,14 +200,13 @@
     }
 
     async function loadStats() {
+      if (!supabaseClient) return;
       try {
-        // 1. Consultar visitas del index
         const { count: indexCount } = await supabaseClient
           .from('visitor_stats')
           .select('*', { count: 'exact', head: true })
           .eq('page_type', 'index');
 
-        // 2. Consultar visitas del admin
         const { count: adminCount } = await supabaseClient
           .from('visitor_stats')
           .select('*', { count: 'exact', head: true })
@@ -209,7 +215,6 @@
         document.getElementById('indexVisitsCount').textContent = indexCount || 0;
         document.getElementById('adminVisitsCount').textContent = adminCount || 0;
 
-        // 3. Consultar datos generales de torneos_data
         const { data: allData } = await supabaseClient
           .from('torneos_data')
           .select('*');
@@ -230,13 +235,13 @@
 
         matches.forEach(m => {
           if (m.played) {
-            totalGoals += (m.home_score || 0) + (m.away_score || 0);
+            totalGoals += Number(m.home_score || 0) + Number(m.away_score || 0);
           }
           const details = m.match_details?.playerStats || {};
           Object.values(details).forEach(st => {
-            totalYellows += (st.yellows || 0);
-            totalBlues += (st.blues || 0);
-            totalReds += (st.reds || 0);
+            totalYellows += Number(st.yellows || 0);
+            totalBlues += Number(st.blues || 0);
+            totalReds += Number(st.reds || 0);
           });
         });
 
@@ -245,7 +250,6 @@
         document.getElementById('statTotalBlues').textContent = totalBlues;
         document.getElementById('statTotalReds').textContent = totalReds;
 
-        // 4. Cargar visitas y procesar analítica de tráfico avanzada
         const { data: statsData } = await supabaseClient
           .from('visitor_stats')
           .select('*');
@@ -257,18 +261,15 @@
 
         if (statsData) {
           statsData.forEach(row => {
-            // Analítica de Dispositivos (leyendo row.device_type)
             let dev = row.device_type || 'mobile';
             if (deviceCounts[dev] !== undefined) deviceCounts[dev]++;
             else deviceCounts.other++;
 
-            // Analítica de Secciones (leyendo row.page_type)
             let sec = row.page_type || 'index';
             sectionCounts[sec] = (sectionCounts[sec] || 0) + 1;
           });
         }
 
-        // Renderizar estadísticas de Dispositivos
         document.getElementById('deviceStatsContainer').innerHTML = `
           <div class="flex justify-between bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 items-center">
             <span>📱 Celulares / Móviles</span> <strong class="text-green-400">${deviceCounts.mobile}</strong>
@@ -278,7 +279,6 @@
           </div>
         `;
 
-        // Renderizar estadísticas de Secciones
         const sectionsContainer = document.getElementById('sectionsStatsContainer');
         const sortedSections = Object.entries(sectionCounts).sort((a, b) => b[1] - a[1]);
         if (sortedSections.length === 0) {
@@ -302,7 +302,6 @@
           tournamentCounts[cat.id] = { name: cat.name, region: region, count: 0 };
         });
 
-        // Contar equipos por región
         teams.forEach(t => {
           const cat = categories.find(c => c.id === t.category_id);
           if (cat) {
@@ -313,7 +312,6 @@
           }
         });
 
-        // Contar visitas por torneo y región
         if (statsData) {
           statsData.forEach(row => {
             if (row.category_id && tournamentCounts[row.category_id]) {
@@ -326,7 +324,6 @@
           });
         }
 
-        // Renderizar tabla por región
         const regionsContainer = document.getElementById('regionsStatsContainer');
         const regionKeys = Object.keys(regionStats);
 
@@ -359,7 +356,6 @@
           `;
         }
 
-        // Renderizar torneos más visitados
         const container = document.getElementById('tournamentsStatsContainer');
         const sortedTournaments = Object.values(tournamentCounts).sort((a, b) => b.count - a.count);
 
