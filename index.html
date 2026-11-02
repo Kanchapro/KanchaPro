@@ -417,6 +417,14 @@
         pubData.matches = match.data || [];
         pubData.suspensions = susp.data || [];
 
+        // 1. LEER EL PARÁMETRO ?torneo= DE LA URL AUTOMÁTICAMENTE
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestedTorneoId = urlParams.get('torneo');
+
+        if (requestedTorneoId && pubData.categories.some(c => c.id === requestedTorneoId)) {
+          currentPublicCatId = requestedTorneoId;
+        }
+
         populatePublicCategorySelect();
       } catch (err) { console.error("Error al cargar datos públicos:", err); }
     }
@@ -442,14 +450,25 @@
         updateFavoriteButtonUI();
         renderPublicViews();
       } else {
-        currentPublicCatId = null;
-        select.value = "";
-        document.getElementById('welcomeFavoritesSection').classList.remove('hidden');
-        document.getElementById('tournamentContentArea').classList.add('hidden');
-        
-        const headerLogo = document.getElementById('headerTournamentLogo');
-        headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
-        document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
+        // Si no viene en la URL filtrada o no hay ID válido, revisamos si hay uno guardado en favoritos
+        const savedFav = localStorage.getItem(STORAGE_FAV_KEY);
+        if (!filteredCategories && savedFav && pubData.categories.some(c => c.id === savedFav)) {
+          currentPublicCatId = savedFav;
+          select.value = currentPublicCatId;
+          document.getElementById('welcomeFavoritesSection').classList.add('hidden');
+          document.getElementById('tournamentContentArea').classList.remove('hidden');
+          updateFavoriteButtonUI();
+          renderPublicViews();
+        } else {
+          currentPublicCatId = null;
+          select.value = "";
+          document.getElementById('welcomeFavoritesSection').classList.remove('hidden');
+          document.getElementById('tournamentContentArea').classList.add('hidden');
+          
+          const headerLogo = document.getElementById('headerTournamentLogo');
+          headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
+          document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
+        }
       }
     }
 
