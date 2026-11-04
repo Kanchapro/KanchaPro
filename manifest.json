@@ -3,7 +3,8 @@
   "short_name": "KanchaPro",
   "start_url": "./index.html",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
+  "orientation": "portrait-primary",
   "background_color": "#060907",
   "theme_color": "#16a34a",
   "icons": [
