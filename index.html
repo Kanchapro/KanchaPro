@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>KanchaPro — Portal Oficial de Torneos</title>
+  <title>KanchaPro — Portal Oficial de Torneos de Fútbol y Gestión Deportiva</title>
   
   <!-- GOOGLE ADSENSE -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4838054828405350"
@@ -71,7 +71,7 @@
         </div>
         <div class="min-w-0">
           <h1 id="headerTournamentTitle" class="text-xs sm:text-sm font-black tracking-wider text-green-400 leading-tight truncate">KANCHA<span class="text-white">PRO</span></h1>
-          <p class="text-[8px] sm:text-[9px] text-slate-400 tracking-wider uppercase font-semibold truncate">Portal Oficial</p>
+          <p class="text-[8px] sm:text-[9px] text-slate-400 tracking-wider uppercase font-semibold truncate">Portal Oficial de Torneos</p>
         </div>
       </div>
 
@@ -88,7 +88,7 @@
 
     <div class="flex items-center gap-1.5 w-full">
       <div class="relative w-28 sm:w-36 shrink-0">
-        <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar..." oninput="filterTournaments(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-green-500 transition shadow-inner">
+        <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar torneo..." oninput="filterTournaments(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-green-500 transition shadow-inner">
       </div>
       <div class="flex-1 min-w-0 flex items-center gap-1">
         <select id="publicCategorySelect" onchange="changePublicCategory(this.value)" class="w-full bg-[#0b140e] border border-green-900/50 rounded-xl px-2.5 py-1.5 text-white text-[11px] focus:outline-none focus:border-green-500 font-semibold truncate transition shadow-inner">
@@ -104,14 +104,14 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-2 sm:p-4 space-y-3">
     
-    <!-- SECCIÓN DE TORNEOS FAVORITOS / BIENVENIDA -->
+    <!-- SECCIÓN DE TORNEOS FAVORITOS / BIENVENIDA CON CONTENIDO EDITORIAL DE VALOR (ADSENSE) -->
     <div id="welcomeFavoritesSection" class="glass-card rounded-3xl p-6 sm:p-8 text-center space-y-5 shadow-2xl border border-green-500/30">
       <div class="w-32 h-32 sm:w-36 sm:h-36 bg-gradient-to-b from-green-900/80 to-emerald-950 border-2 border-green-400/70 rounded-full mx-auto flex items-center justify-center overflow-hidden shadow-[0_0_30px_rgba(34,197,94,0.35)] transform hover:scale-105 transition duration-300">
         <img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="KanchaPro Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">
       </div>
       <div class="space-y-2">
-        <h2 class="text-lg sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-300 to-green-500 tracking-wide drop-shadow-md">Bienvenido a KanchaPro</h2>
-        <p class="text-xs sm:text-sm text-slate-300 max-w-md mx-auto leading-relaxed">Selecciona un torneo arriba en el menú desplegable o elige uno de tus favoritos guardados para comenzar.</p>
+        <h2 class="text-lg sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-emerald-300 to-green-500 tracking-wide drop-shadow-md">Bienvenido al Portal Oficial de KanchaPro</h2>
+        <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">La plataforma líder en gestión deportiva para la administración integral de torneos de fútbol, campeonatos barriales, futsal y ligas juveniles. Consulta tablas de posición, fixtures actualizados, goleadores y sanciones en tiempo real.</p>
       </div>
 
       <!-- BANNER DE INVITACIÓN PARA ORGANIZADORES DE TORNEOS -->
@@ -120,11 +120,11 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 relative z-10">
           <div class="space-y-1">
             <div class="flex items-center gap-1.5">
-              <span class="bg-green-500 text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider">¡Nuevo!</span>
-              <span class="text-[10px] text-green-300 font-bold uppercase tracking-wide">Para Organizadores</span>
+              <span class="bg-green-500 text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-full tracking-wider">Profesional</span>
+              <span class="text-[10px] text-green-300 font-bold uppercase tracking-wide">Para Organizadores de Ligas</span>
             </div>
             <h3 class="text-xs sm:text-sm font-black text-white">¿Organizás torneos de fútbol o futsal?</h3>
-            <p class="text-[11px] text-slate-300 leading-relaxed max-w-lg">Llevá el control de posiciones, fixture, goleadores y tribunal de disciplina de forma profesional. <strong class="text-green-400">¡Es 100% gratuita!</strong></p>
+            <p class="text-[11px] text-slate-300 leading-relaxed max-w-lg">Llevá el control automatizado de posiciones, fixture, carnets de jugadores, goleadores y tribunal de disciplina de forma profesional. <strong class="text-green-400">¡Es 100% gratuita y sin complicaciones!</strong></p>
           </div>
           <a href="admin.html" class="btn-theme bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-black font-black text-xs px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 shrink-0 transition transform group-hover:scale-105 w-full sm:w-auto justify-center">
             <span>⚡ Gestionar tu Torneo</span>
@@ -153,7 +153,7 @@
       <div id="pub-standings" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Posiciones
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Posiciones Actualizada
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaStandings', 'Tabla_Posiciones')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
             📸 Compartir / Enviar a WhatsApp
@@ -181,7 +181,7 @@
       <!-- Tab 2: Fixture -->
       <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
         <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
+          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Calendario de Partidos, Fechas y Resultados
         </h3>
         <div id="publicMatchesContainer" class="space-y-3 max-h-[580px] overflow-y-auto scrollbar-thin pr-1"></div>
       </div>
@@ -192,7 +192,7 @@
           <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
             <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Horarios y Partidos por Club
           </h3>
-          <p class="text-[10px] text-slate-400 mt-0.5">Selecciona el escudo de un club para ver sus partidos pendientes y finalizados</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">Selecciona el escudo de un club para consultar sus encuentros pendientes y finalizados</p>
         </div>
         <div id="publicHorariosClubsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 pt-2"></div>
       </div>
@@ -201,7 +201,7 @@
       <div id="pub-playoffs" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Fase Final y Llaves
+            <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Fase Final y Llaves de Eliminación
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaPlayoffs', 'Playoffs')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
             📸 Compartir / Enviar a WhatsApp
@@ -229,7 +229,7 @@
       <!-- Tab 4: Equipos y Planteles -->
       <div id="pub-teams" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
         <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Equipos Participantes y Planteles
+          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span> Equipos Participantes y Planteles Inscriptos
         </h3>
         <div id="publicTeamsContainer" class="space-y-2"></div>
       </div>
@@ -238,7 +238,7 @@
       <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Goleadores
+            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shrink-0"></span> Tabla de Goleadores del Campeonato
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaScorers', 'Tabla_Goleadores')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
             📸 Compartir / Enviar a WhatsApp
@@ -267,7 +267,7 @@
       <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-3 sm:p-5 space-y-3 hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <h3 class="text-xs sm:text-sm font-black text-green-400 tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span> Tribunal de Disciplina y Tarjetas
+            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse shrink-0"></span> Tribunal de Disciplina y Acumulación de Tarjetas
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaDiscipline', 'Tribunal_Disciplina')" class="btn-theme text-white text-[11px] font-black px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto justify-center">
             📸 Compartir / Enviar a WhatsApp
@@ -304,17 +304,90 @@
 
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-[#050806] border-t border-green-900/30 py-3 px-4 text-center text-slate-500 text-[11px] mt-auto flex flex-col sm:flex-row items-center justify-between gap-2 max-w-5xl w-full mx-auto">
-    <div>
-      <span class="text-green-400 font-bold">KanchaPro</span> &copy; 2026 — Todos los derechos reservados.
+  <!-- FOOTER CON ENLACES LEGALES OBLIGATORIOS PARA ADSENSE -->
+  <footer class="bg-[#050806] border-t border-green-900/30 py-4 px-4 text-slate-400 text-[11px] mt-auto max-w-5xl w-full mx-auto space-y-3">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-green-900/30 pb-3">
+      <div>
+        <span class="text-green-400 font-bold">KanchaPro</span> &copy; 2026 — Todos los derechos reservados.
+      </div>
+      <!-- ENLACES DE POLÍTICAS Y LEGALES EXIGIDOS POR GOOGLE ADSENSE -->
+      <div class="flex flex-wrap items-center justify-center gap-3 text-[10px] sm:text-[11px]">
+        <button onclick="openModal('privacyModal')" class="hover:text-green-400 transition underline">Política de Privacidad</button>
+        <button onclick="openModal('termsModal')" class="hover:text-green-400 transition underline">Términos y Condiciones</button>
+        <button onclick="openModal('aboutModal')" class="hover:text-green-400 transition underline">Sobre Nosotros</button>
+      </div>
     </div>
-    <div>
-      <a href="admin.html" class="text-slate-600 hover:text-green-400 transition text-[10px] flex items-center gap-1">
-        <span>🔒</span> Acceso Administrador
-      </a>
+    <div class="flex items-center justify-between">
+      <p class="text-[10px] text-slate-500">Plataforma web de administración y gestión automatizada de torneos de fútbol y ligas deportivas.</p>
+      <div>
+        <a href="admin.html" class="text-slate-600 hover:text-green-400 transition text-[10px] flex items-center gap-1">
+          <span>🔒</span> Acceso Administrador
+        </a>
+      </div>
     </div>
   </footer>
+
+  <!-- MODAL: POLÍTICA DE PRIVACIDAD (OBLIGATORIO ADSENSE) -->
+  <div id="privacyModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
+    <div class="glass-card p-4 sm:p-6 rounded-2xl max-w-lg w-full space-y-3 border border-green-500/30 my-auto text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <h3 class="text-sm font-black text-green-400">Política de Privacidad</h3>
+        <button onclick="closeModal('privacyModal')" class="text-slate-400 hover:text-white font-bold text-sm px-1">✕</button>
+      </div>
+      <div class="space-y-2.5 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px]">
+        <p>En <strong>KanchaPro</strong> valoramos y respetamos la privacidad de todos los usuarios y visitantes de nuestro portal de gestión deportiva. Esta política detalla cómo recopilamos y tratamos la información.</p>
+        <p><strong>Uso de Cookies y Publicidad de Google:</strong> KanchaPro utiliza servicios de terceros, como <em>Google AdSense</em>, para mostrar anuncios cuando visitas nuestro sitio web. Google utiliza cookies (como la cookie de DART) para publicar anuncios basados en las visitas previas de los usuarios a este sitio web u otros sitios de internet. Los usuarios pueden inhabilitar el uso de la cookie de DART accediendo a la política de privacidad de la red de contenido y anuncios de Google.</p>
+        <p><strong>Datos Recopilados:</strong> El sistema puede registrar estadísticas generales de navegación (tipo de dispositivo, páginas visitadas) con fines estْدisticos y de mejora del rendimiento del software. No recopilamos información personal sensible de los visitantes que consultan los torneos públicos.</p>
+        <p>Si tienes dudas sobre nuestra política de privacidad, puedes ponerte en contacto a través de los canales oficiales de administración del torneo.</p>
+      </div>
+      <div class="pt-2 border-t border-green-900/40">
+        <button onclick="closeModal('privacyModal')" class="w-full bg-green-600 hover:bg-green-700 text-black font-bold py-2 rounded-xl transition shadow text-xs">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TÉRMINOS Y CONDICIONES -->
+  <div id="termsModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
+    <div class="glass-card p-4 sm:p-6 rounded-2xl max-w-lg w-full space-y-3 border border-green-500/30 my-auto text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <h3 class="text-sm font-black text-green-400">Términos y Condiciones de Uso</h3>
+        <button onclick="closeModal('termsModal')" class="text-slate-400 hover:text-white font-bold text-sm px-1">✕</button>
+      </div>
+      <div class="space-y-2.5 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px]">
+        <p>Bienvenido a <strong>KanchaPro</strong>. Al acceder, navegar y utilizar este portal web de gestión de torneos deportivos, aceptas cumplir los siguientes términos y condiciones:</p>
+        <p><strong>1. Propósito de la Plataforma:</strong> KanchaPro es una herramienta informática orientada a la organización, visualización y administración de fixtures, tablas de posiciones, estadísticas y sanciones para ligas y torneos de fútbol amateur, barrial y juvenil.</p>
+        <p><strong>2. Responsabilidad de los Datos:</strong> La carga de resultados, nombres de equipos, planteles y sanciones es responsabilidad exclusiva de los administradores acreditados de cada torneo. KanchaPro actúa únicamente como soporte tecnológico.</p>
+        <p><strong>3. Propiedad Intelectual:</strong> Todos los derechos de diseño, software e interfaces de KanchaPro se encuentran protegidos. Queda prohibida la reproducción no autorizada del código fuente de la aplicación.</p>
+      </div>
+      <div class="pt-2 border-t border-green-900/40">
+        <button onclick="closeModal('termsModal')" class="w-full bg-green-600 hover:bg-green-700 text-black font-bold py-2 rounded-xl transition shadow text-xs">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SOBRE NOSOTROS / QUIÉNES SOMOS (CONTENIDO EDITORIAL) -->
+  <div id="aboutModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
+    <div class="glass-card p-4 sm:p-6 rounded-2xl max-w-lg w-full space-y-3 border border-green-500/30 my-auto text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
+        <h3 class="text-sm font-black text-green-400">Sobre Nosotros — KanchaPro</h3>
+        <button onclick="closeModal('aboutModal')" class="text-slate-400 hover:text-white font-bold text-sm px-1">✕</button>
+      </div>
+      <div class="space-y-2.5 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px]">
+        <p><strong>¿Qué es KanchaPro?</strong></p>
+        <p>KanchaPro es una solución web moderna desarrollada específicamente para simplificar la organización y el seguimiento de torneos de fútbol. Está diseñada pensando en organizadores de ligas de barrio, clubes deportivos, torneos relámpago y competencias juveniles.</p>
+        <p><strong>¿Para quién está pensado?</strong></p>
+        <ul class="list-disc pl-4 space-y-1">
+          <li><strong>Organizadores:</strong> Para gestionar calendarios, arbitrajes, planillas de partidos y cómputos de forma automatizada.</li>
+          <li><strong>Delegados y Jugadores:</strong> Para consultar de forma instantánea los horarios de sus próximos encuentros, tablas de posiciones detalladas y evolución de goleadores.</li>
+          <li><strong>Aficionados:</strong> Para vivir el torneo con la misma emoción que una liga profesional desde cualquier teléfono celular o computadora.</li>
+        </ul>
+        <p>Nuestra misión es potenciar el deporte aficionado mediante tecnología ágil, accesible y gratuita.</p>
+      </div>
+      <div class="pt-2 border-t border-green-900/40">
+        <button onclick="closeModal('aboutModal')" class="w-full bg-green-600 hover:bg-green-700 text-black font-bold py-2 rounded-xl transition shadow text-xs">Cerrar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL HORARIOS POR CLUB (PÚBLICO) -->
   <div id="publicClubHorariosModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
@@ -890,7 +963,7 @@
     function renderPublicMatches(teams, matches) {
       const container = document.getElementById('publicMatchesContainer');
       if (matches.length === 0) {
-        container.innerHTML = '<p class="text-slate-500 text-xs text-center py-6">No hay partidos programados.</p>';
+        container.innerHTML = '<p class="text-slate-500 text-xs text-center py-6">No hay partidos programados actualmente.</p>';
         return;
       }
 
