@@ -72,9 +72,22 @@
       50% { opacity: 1; filter: drop-shadow(0 0 10px rgba(16,185,129,0.6)); }
     }
     .animate-glow { animation: pulseGlow 3s infinite; }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, rgba(6, 18, 10, 0.8) 25%, rgba(16, 185, 129, 0.15) 50%, rgba(6, 18, 10, 0.8) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-black">
+
+  <!-- CONTENEDOR DE TOASTS FLOTANTES -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
@@ -83,6 +96,28 @@
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    // SISTEMA DE TOASTS PROFESIONALES
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const borderColor = type === 'success' ? 'border-emerald-500/50' : type === 'error' ? 'border-red-500/50' : 'border-yellow-500/50';
+      const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️';
+      
+      toast.className = `pointer-events-auto glass-card px-4 py-3 rounded-2xl border ${borderColor} text-xs font-bold text-white shadow-2xl flex items-center gap-2.5 transform translate-y-4 opacity-0 transition-all duration-300`;
+      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 20);
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
     }
 
     async function registrarVisita(tipoPagina, categoryId = null) {
@@ -223,11 +258,19 @@
         </div>
       </div>
 
-      <!-- Tab 2: Fixture -->
+      <!-- Tab 2: Fixture con Filtros Rápidos -->
       <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
-        <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
-          <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
-        </h3>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
+            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
+          </h3>
+          <!-- FILTROS RÁPIDOS DE FIXTURE -->
+          <div class="flex items-center gap-1.5 bg-[#030704] p-1 rounded-xl border border-emerald-900/50 w-full sm:w-auto">
+            <button onclick="setFixtureFilter('all', event)" class="fixture-filter-btn px-3 py-1 rounded-lg text-[10px] font-black bg-emerald-500 text-black transition flex-1 sm:flex-initial">Todos</button>
+            <button onclick="setFixtureFilter('pending', event)" class="fixture-filter-btn px-3 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition flex-1 sm:flex-initial">Pendientes</button>
+            <button onclick="setFixtureFilter('finished', event)" class="fixture-filter-btn px-3 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition flex-1 sm:flex-initial">Finalizados</button>
+          </div>
+        </div>
         <div id="publicMatchesContainer" class="space-y-4 max-h-[620px] overflow-y-auto scrollbar-thin pr-1"></div>
       </div>
 
@@ -497,6 +540,7 @@
   <script>
     let pubData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
     let currentPublicCatId = null;
+    let currentFixtureFilter = 'all';
     const STORAGE_FAV_KEY = 'kanchapro_favorite_tournament';
 
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -508,6 +552,9 @@
         document.documentElement.style.setProperty('--theme-color', savedColor);
       }
 
+      // Mostrar skeletons iniciales
+      showSkeletons();
+
       await registrarVisita('index');
       await loadPublicData();
       
@@ -517,6 +564,11 @@
           .catch(err => console.log('Error SW:', err));
       }
     });
+
+    function showSkeletons() {
+      const select = document.getElementById('publicCategorySelect');
+      select.innerHTML = '<option value="" disabled selected>Cargando torneos oficiales...</option>';
+    }
 
     async function loadPublicData() {
       if (!supabaseClient) return;
@@ -543,7 +595,10 @@
         }
 
         populatePublicCategorySelect();
-      } catch (err) { console.error("Error al cargar datos públicos:", err); }
+      } catch (err) { 
+        console.error("Error al cargar datos públicos:", err); 
+        showToast("Error al sincronizar con el servidor", "error");
+      }
     }
 
     function populatePublicCategorySelect(filteredCategories = null) {
@@ -631,17 +686,21 @@
       
       registrarVisita('index', catId);
       renderPublicViews();
+      showToast("Torneo cargado con éxito", "success");
     }
 
     function toggleFavoriteTournament() {
-      if (!currentPublicCatId) { alert("Selecciona un torneo primero."); return; }
+      if (!currentPublicCatId) { 
+        showToast("Selecciona un torneo primero", "warning"); 
+        return; 
+      }
       const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
       if (currentFav === currentPublicCatId) {
         localStorage.removeItem(STORAGE_FAV_KEY);
-        alert("Torneo removido de favoritos.");
+        showToast("Torneo removido de favoritos", "info");
       } else {
         localStorage.setItem(STORAGE_FAV_KEY, currentPublicCatId);
-        alert("¡Torneo guardado en tus favoritos con éxito!");
+        showToast("¡Torneo guardado en favoritos!", "success");
       }
       updateFavoriteButtonUI();
       renderFavoritesSection();
@@ -912,7 +971,7 @@
         
         canvas.toBlob(async (blob) => {
           if (!blob) {
-            alert("No se pudo generar la imagen.");
+            showToast("No se pudo generar la imagen", "error");
             return;
           }
           const file = new File([blob], filename, { type: 'image/png' });
@@ -939,12 +998,12 @@
           link.href = imageURL;
           link.download = filename;
           link.click();
-          alert("¡Imagen generada con éxito! Ya puedes adjuntarla en WhatsApp.");
+          showToast("¡Imagen generada con éxito!", "success");
         }, 'image/png');
 
       } catch (err) {
         console.error(err);
-        alert("Hubo un error al generar la captura.");
+        showToast("Hubo un error al generar la captura", "error");
       }
     }
 
@@ -960,7 +1019,7 @@
 
         canvas.toBlob(async (blob) => {
           if (!blob) {
-            alert("No se pudo generar la imagen.");
+            showToast("No se pudo generar la imagen", "error");
             return;
           }
           const file = new File([blob], filename, { type: 'image/png' });
@@ -987,12 +1046,12 @@
           link.href = imageURL;
           link.download = filename;
           link.click();
-          alert("¡Imagen guardada con éxito! Ya puedes compartirla.");
+          showToast("¡Imagen guardada con éxito!", "success");
         }, 'image/png');
 
       } catch (err) {
         console.error(err);
-        alert("Hubo un error al generar la captura.");
+        showToast("Hubo un error al generar la captura", "error");
       }
     }
 
@@ -1002,15 +1061,37 @@
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
+    function setFixtureFilter(filterType, evt) {
+      currentFixtureFilter = filterType;
+      document.querySelectorAll('.fixture-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-500', 'text-black', 'font-black');
+        btn.classList.add('text-slate-400', 'font-bold');
+      });
+      evt.currentTarget.classList.add('bg-emerald-500', 'text-black', 'font-black');
+      evt.currentTarget.classList.remove('text-slate-400', 'font-bold');
+
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
+      renderPublicMatches(teams, matches);
+    }
+
     function renderPublicMatches(teams, matches) {
       const container = document.getElementById('publicMatchesContainer');
-      if (matches.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-xs text-center py-10">No hay partidos programados actualmente.</p>';
+      
+      let filteredMatches = matches;
+      if (currentFixtureFilter === 'pending') {
+        filteredMatches = matches.filter(m => !m.played);
+      } else if (currentFixtureFilter === 'finished') {
+        filteredMatches = matches.filter(m => m.played);
+      }
+
+      if (filteredMatches.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-xs text-center py-10">No hay partidos que coincidan con el filtro seleccionado.</p>';
         return;
       }
 
       let roundsMap = {};
-      matches.forEach(m => {
+      filteredMatches.forEach(m => {
         let rName = m.round_name || 'Partidos';
         if (!roundsMap[rName]) roundsMap[rName] = [];
         roundsMap[rName].push(m);
