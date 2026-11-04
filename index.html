@@ -91,7 +91,7 @@
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiInZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     const FALLBACK_LOGO = "https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
@@ -246,7 +246,8 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 id="captureTitleStandings" class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Tabla de Posiciones</h4>
-                <span id="captureSubtitleStandings" class="text-[10px] text-slate-300 font-bold uppercase truncate block leading-tight">KanchaPro — Portal Oficial</span>
+                <!-- 🚀 CORREGIDO: whitespace-normal y break-words para evitar cortes -->
+                <span id="captureSubtitleStandings" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -303,7 +304,8 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Fase de Playoffs / Llaves</h4>
-                <span id="captureSubtitlePlayoffs" class="text-[10px] text-slate-300 font-bold uppercase truncate block leading-tight">KanchaPro — Portal Oficial</span>
+                <!-- 🚀 CORREGIDO: whitespace-normal y break-words para evitar cortes -->
+                <span id="captureSubtitlePlayoffs" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -341,7 +343,8 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Tabla de Goleadores</h4>
-                <span id="captureSubtitleScorers" class="text-[10px] text-slate-300 font-bold uppercase truncate block leading-tight">KanchaPro — Portal Oficial</span>
+                <!-- 🚀 CORREGIDO: whitespace-normal y break-words para evitar cortes -->
+                <span id="captureSubtitleScorers" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -371,7 +374,8 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Tribunal de Disciplina y Sanciones</h4>
-                <span id="captureSubtitleDiscipline" class="text-[10px] text-slate-300 font-bold uppercase truncate block leading-tight">KanchaPro — Portal Oficial</span>
+                <!-- 🚀 CORREGIDO: whitespace-normal y break-words para evitar cortes -->
+                <span id="captureSubtitleDiscipline" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -967,9 +971,9 @@
         const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
         const filename = `${filePrefix}_${catNameClean}.png`;
 
-        // 🚀 Optimización de alta calidad (ancho fijo y escala 3x)
+        // 🚀 Ancho ampliado a 680px para dar espacio óptimo a títulos largos
         const originalWidth = captureArea.style.width;
-        captureArea.style.width = '650px';
+        captureArea.style.width = '680px';
 
         const canvas = await html2canvas(captureArea, { 
           backgroundColor: '#030704', 
@@ -1021,9 +1025,9 @@
     async function captureScreenshot(elementId, filename) {
       const captureArea = document.getElementById(elementId);
       try {
-        // 🚀 Optimización de alta calidad para partidos y planteles
+        // 🚀 Ancho ampliado a 680px para tarjetas individuales
         const originalWidth = captureArea.style.width;
-        captureArea.style.width = '650px';
+        captureArea.style.width = '680px';
 
         const canvas = await html2canvas(captureArea, { 
           backgroundColor: '#030704', 
