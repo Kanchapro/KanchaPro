@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KanchaPro — Portal Oficial de Torneos y Gestión Deportiva de Élite</title>
   
+  <!-- METADATOS OPEN GRAPH (DINÁMICOS PARA WHATSAPP Y REDES) -->
+  <meta property="og:title" id="metaOgTitle" content="KanchaPro — Portal Oficial de Torneos">
+  <meta property="og:description" id="metaOgDesc" content="Administra y sigue campeonatos y ligas deportivas en tiempo real.">
+  <meta property="og:image" id="metaOgImage" content="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png">
+  <meta property="og:url" id="metaOgUrl" content="https://kanchapro.app">
+  <meta property="og:type" content="website">
+
   <!-- GOOGLE ADSENSE -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4838054828405350" crossorigin="anonymous"></script>
 
@@ -751,6 +758,15 @@
       
       document.getElementById('headerTournamentLogo').innerHTML = logoHtml;
       document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${cat.name}</span>`;
+
+      // 🚀 ACTUALIZACIÓN DINÁMICA DE META ETIQUETAS OPEN GRAPH PARA WHATSAPP
+      const currentUrl = window.location.href;
+      document.getElementById('metaOgTitle').setAttribute('content', `${cat.name} — KanchaPro`);
+      document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${cat.name}.`);
+      if (cat.logo) {
+        document.getElementById('metaOgImage').setAttribute('content', cat.logo);
+      }
+      document.getElementById('metaOgUrl').setAttribute('content', currentUrl);
 
       ['captureLogoStandings', 'captureLogoPlayoffs', 'captureLogoScorers', 'captureLogoDiscipline'].forEach(id => {
         const el = document.getElementById(id);
