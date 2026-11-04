@@ -559,7 +559,7 @@
       await loadPublicData();
       
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/KanchaPro/sw.js')
+        navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('Service Worker registrado:', reg.scope))
           .catch(err => console.log('Error SW:', err));
       }
@@ -1304,7 +1304,7 @@
               }).join('') : '<p class="text-slate-400 text-xs italic text-center py-3">Sin jugadores inscriptos en este equipo.</p>'}
               <div class="text-right pt-2 border-t border-emerald-900/40 mt-2 flex justify-between items-center">
                 <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Plantel Oficial</span>
-                <span class="text-[9px] text-emerald-500 font-black uppercase tracking-widest">KANCHAPRO.COM</span>
+                <span class="text-[9px] text-emerald-500 font-black tracking-widest">KANCHAPRO.COM</span>
               </div>
             </div>
           </div>
