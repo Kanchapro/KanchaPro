@@ -788,4 +788,837 @@
     }
 
     function toggleFavoriteTournament() {
-      if (!currentPublicCat
+      if (!currentPublicCatId) { 
+        showToast("Selecciona un torneo primero", "warning"); 
+        return; 
+      }
+      const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
+      if (currentFav === currentPublicCatId) {
+        localStorage.removeItem(STORAGE_FAV_KEY);
+        showToast("Torneo removido de favoritos", "info");
+      } else {
+        localStorage.setItem(STORAGE_FAV_KEY, currentPublicCatId);
+        showToast("¡Torneo guardado en favoritos!", "success");
+      }
+      updateFavoriteButtonUI();
+      renderFavoritesSection();
+    }
+
+    function updateFavoriteButtonUI() {
+      const favBtn = document.getElementById('favBtn');
+      const currentFav = localStorage.getItem(STORAGE_FAV_KEY);
+      if (currentFav === currentPublicCatId) {
+        favBtn.classList.remove('text-slate-400', 'border-emerald-900/60');
+        favBtn.classList.add('text-yellow-400', 'border-yellow-500/60', 'bg-yellow-500/10', 'shadow-[0_0_15px_rgba(234,179,8,0.3)]');
+      } else {
+        favBtn.classList.add('text-slate-400', 'border-emerald-900/60');
+        favBtn.classList.remove('text-yellow-400', 'border-yellow-500/60', 'bg-yellow-500/10', 'shadow-[0_0_15px_rgba(234,179,8,0.3)]');
+      }
+    }
+
+    function switchPublicTab(tabKey, evt) {
+      document.querySelectorAll('.public-tab').forEach(t => {
+        t.classList.remove('tab-active', 'font-black');
+        t.classList.add('text-slate-400', 'font-bold');
+      });
+      evt.currentTarget.classList.add('tab-active', 'font-black');
+      evt.currentTarget.classList.remove('text-slate-400', 'font-bold');
+
+      document.querySelectorAll('.public-tab-content').forEach(c => c.classList.add('hidden'));
+      document.getElementById(`pub-${tabKey}`).classList.remove('hidden');
+
+      if (tabKey === 'horarios') {
+        renderPublicHorariosClubsGrid();
+      }
+    }
+
+    function renderPublicViews() {
+      if (!currentPublicCatId) return;
+      const cat = pubData.categories.find(c => c.id === currentPublicCatId);
+      if (!cat) return;
+
+      const themeColor = cat.theme_color || '#10b981';
+      document.documentElement.style.setProperty('--theme-color', themeColor);
+      localStorage.setItem('kancha_theme_color', themeColor);
+
+      const logoHtml = cat.logo ? `<img src="${cat.logo}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">` : `<img src="${FALLBACK_LOGO}" class="w-full h-full object-cover">`;
+      
+      document.getElementById('headerTournamentLogo').innerHTML = logoHtml;
+      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${cat.name}</span>`;
+
+      // ACTUALIZACIÓN DINÁMICA DE META ETIQUETAS OPEN GRAPH PARA WHATSAPP
+      const currentUrl = window.location.href;
+      document.getElementById('metaOgTitle').setAttribute('content', `${cat.name} — KanchaPro`);
+      document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${cat.name}.`);
+      if (cat.logo) {
+        document.getElementById('metaOgImage').setAttribute('content', cat.logo);
+      }
+      document.getElementById('metaOgUrl').setAttribute('content', currentUrl);
+
+      ['captureLogoStandings', 'captureLogoPlayoffs', 'captureLogoScorers', 'captureLogoDiscipline'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = logoHtml;
+      });
+
+      ['captureSubtitleStandings', 'captureSubtitlePlayoffs', 'captureSubtitleScorers', 'captureSubtitleDiscipline'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = `${cat.name} — Portal Oficial`;
+      });
+
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
+      const playoffMatches = pubData.matches.filter(m => m.category_id === currentPublicCatId && m.is_playoff);
+      const teamIds = teams.map(t => t.id);
+      const players = pubData.players.filter(p => teamIds.includes(p.team_id));
+
+      renderPublicStandings(teams, matches, cat);
+      renderPublicMatches(teams, matches);
+      renderPublicHorariosClubsGrid();
+      renderPublicPlayoffs(cat, playoffMatches, teams);
+      renderPublicTeamsAndRosters(teams, players, cat.sport_type === 'futsal');
+      renderPublicScorers(players, teams);
+      renderPublicDiscipline(players, teams, teamIds);
+    }
+
+    function renderPublicHorariosClubsGrid() {
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const container = document.getElementById('publicHorariosClubsGrid');
+      if (!container) return;
+
+      if (teams.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-xs col-span-full text-center py-8">No hay equipos registrados en este torneo.</p>';
+        return;
+      }
+
+      container.innerHTML = teams.map(team => `
+        <div onclick="openPublicClubHorariosModal('${team.id}')" class="glass-card glass-card-hover p-4 rounded-2xl border border-emerald-900/50 flex flex-col items-center text-center cursor-pointer space-y-2.5 bg-[#06120a] shadow-lg">
+          <div class="w-14 h-14 rounded-full bg-emerald-950 flex items-center justify-center border border-emerald-500/40 overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            <img src="${team.logo || FALLBACK_LOGO}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">
+          </div>
+          <span class="font-black text-white text-xs truncate w-full">${team.name}</span>
+          <span class="text-[10px] text-emerald-400 font-black uppercase tracking-wider">Ver Horarios ➔</span>
+        </div>
+      `).join('');
+    }
+
+    function openPublicClubHorariosModal(teamId) {
+      const team = pubData.teams.find(t => t.id === teamId);
+      if (!team) return;
+
+      document.getElementById('pubModalClubTitle').textContent = `Horarios — ${team.name}`;
+      const logoEl = document.getElementById('pubModalClubLogo');
+      logoEl.innerHTML = `<img src="${team.logo || FALLBACK_LOGO}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
+
+      const allMatches = pubData.matches.filter(m => m.category_id === currentPublicCatId && (m.home_team === teamId || m.away_team === teamId));
+      const teams = pubData.teams;
+
+      let pendingHtml = '';
+      let finishedHtml = '';
+
+      allMatches.forEach(m => {
+        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+        const infoText = [m.round_name, m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
+
+        const matchBox = `
+          <div class="bg-[#030704] p-3 rounded-xl border border-emerald-900/50 space-y-1.5 text-xs shadow-md">
+            <div class="flex justify-between items-center font-bold text-white">
+              <span class="${m.home_team === teamId ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px]">${hTeam.name}</span>
+              <span class="px-2.5 py-1 bg-black rounded-lg text-emerald-300 border border-emerald-900 shrink-0 font-black">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
+              <span class="${m.away_team === teamId ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px] text-right">${aTeam.name}</span>
+            </div>
+            <div class="text-[9px] text-slate-400 font-medium truncate">📅 ${infoText}</div>
+          </div>
+        `;
+
+        if (m.played) {
+          finishedHtml += matchBox;
+        } else {
+          pendingHtml += matchBox;
+        }
+      });
+
+      document.getElementById('pubModalClubPendingList').innerHTML = pendingHtml || '<p class="text-slate-400 text-[11px] italic text-center py-2">No hay partidos pendientes.</p>';
+      document.getElementById('pubModalClubFinishedList').innerHTML = finishedHtml || '<p class="text-slate-400 text-[11px] italic text-center py-2">No hay partidos finalizados.</p>';
+
+      openModal('publicClubHorariosModal');
+    }
+
+    function renderPublicStandings(teams, matches, cat) {
+      const container = document.getElementById('publicStandingsContainer');
+      const winPoints = cat.sport_type === 'futsal' ? 2 : 3;
+
+      if (cat.tournament_type === 'cup') {
+        const groupCount = cat.group_config?.count || 2;
+        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+        let groupsHtml = '';
+
+        groupLetters.forEach(l => {
+          let gName = 'Grupo ' + l;
+          let gTeams = teams.filter(t => t.group_name === gName);
+          let stats = gTeams.map(team => {
+            let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+            matches.filter(m => m.played).forEach(m => {
+              if (m.home_team === team.id) {
+                played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+                if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+              } else if (m.away_team === team.id) {
+                played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+                if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+              }
+            });
+            return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+          }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+          groupsHtml += `
+            <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-3 sm:p-4 space-y-2 shadow-xl">
+              <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/40 pb-2">Zona / ${gName}</h4>
+              <div class="overflow-x-auto scrollbar-thin">
+                <table class="w-full text-[10px] sm:text-xs min-w-[320px]">
+                  <thead class="bg-[#030704] text-slate-400 uppercase text-[9px] font-black tracking-wider">
+                    <tr>
+                      <th class="p-2 text-left w-6 align-middle">#</th>
+                      <th class="p-2 text-left align-middle">Equipo</th>
+                      <th class="p-2 text-center w-7 align-middle">PJ</th>
+                      <th class="p-2 text-center w-7 align-middle">G</th>
+                      <th class="p-2 text-center w-7 align-middle">E</th>
+                      <th class="p-2 text-center w-7 align-middle">P</th>
+                      <th class="p-2 text-center w-8 align-middle">DG</th>
+                      <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-emerald-900/20">
+                    ${stats.map((t, idx) => `
+                      <tr class="${idx < 2 ? 'bg-emerald-950/30 font-bold' : ''}">
+                        <td class="p-2 font-black text-emerald-400 align-middle">${idx + 1}</td>
+                        <td class="p-2 font-bold text-white max-w-[140px] align-middle">
+                          <div class="flex items-center gap-2">
+                            <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 align-middle shadow" onerror="this.src=FALLBACK_LOGO">
+                            <span class="leading-snug break-words">${t.name}</span>
+                          </div>
+                        </td>
+                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.played}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.won}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.drawn}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.lost}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.gd}</td>
+                        <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle">${t.points}</td>
+                      </tr>
+                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-3 align-middle italic">Sin equipos inscriptos en esta zona</td></tr>'}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = groupsHtml;
+      } else {
+        const stats = teams.map(team => {
+          let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+          matches.filter(m => m.played).forEach(m => {
+            if (m.home_team === team.id) {
+              played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+              if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+            } else if (m.away_team === team.id) {
+              played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+              if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+            }
+          });
+          return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+        }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+        container.innerHTML = `
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-[10px] sm:text-xs min-w-[320px]">
+              <thead class="bg-[#030704] text-slate-400 uppercase text-[9px] font-black tracking-wider">
+                <tr>
+                  <th class="p-2.5 text-left w-6 align-middle">#</th>
+                  <th class="p-2.5 text-left align-middle">Equipo</th>
+                  <th class="p-2.5 text-center w-8 align-middle">PJ</th>
+                  <th class="p-2.5 text-center w-8 align-middle">G</th>
+                  <th class="p-2.5 text-center w-8 align-middle">E</th>
+                  <th class="p-2.5 text-center w-8 align-middle">P</th>
+                  <th class="p-2.5 text-center w-9 align-middle">DG</th>
+                  <th class="p-2.5 text-center font-black text-emerald-400 w-9 align-middle">Pts</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-emerald-900/20">
+                ${stats.map((t, idx) => `
+                  <tr class="${idx < 4 ? 'bg-emerald-950/30 font-bold' : ''}">
+                    <td class="p-2.5 font-black text-emerald-400 align-middle">${idx + 1}</td>
+                    <td class="p-2.5 font-bold text-white max-w-[150px] align-middle">
+                      <div class="flex items-center gap-2.5">
+                        <img src="${t.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full border border-emerald-500/40 shrink-0 align-middle shadow" onerror="this.src=FALLBACK_LOGO">
+                        <span class="leading-snug break-words">${t.name}</span>
+                      </div>
+                    </td>
+                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.played}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.won}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.drawn}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.lost}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.gd}</td>
+                    <td class="p-2.5 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle">${t.points}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+    }
+
+    async function captureTournamentScreenshot(elementId, filePrefix) {
+      const captureArea = document.getElementById(elementId);
+      try {
+        const cat = pubData.categories.find(c => c.id === currentPublicCatId);
+        const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
+        const filename = `${filePrefix}_${catNameClean}.png`;
+
+        const originalWidth = captureArea.style.width;
+        captureArea.style.width = '680px';
+
+        const canvas = await html2canvas(captureArea, { 
+          backgroundColor: '#030704', 
+          scale: 3, 
+          useCORS: true,
+          allowTaint: true
+        });
+
+        captureArea.style.width = originalWidth;
+        
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showToast("No se pudo generar la imagen", "error");
+            return;
+          }
+          const file = new File([blob], filename, { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'KanchaPro',
+                text: `⚽ *${cat ? cat.name : 'Torneo'}* — Compartido desde KanchaPro 🏆`
+              });
+              return;
+            } catch (shareErr) {
+              if (shareErr.name !== 'AbortError') {
+                console.log("Error en share nativo:", shareErr);
+              } else {
+                return;
+              }
+            }
+          }
+
+          const imageURL = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = imageURL;
+          link.download = filename;
+          link.click();
+          showToast("¡Imagen de alta calidad generada!", "success");
+        }, 'image/png');
+
+      } catch (err) {
+        console.error(err);
+        showToast("Hubo un error al generar la captura", "error");
+      }
+    }
+
+    async function captureScreenshot(elementId, filename) {
+      const captureArea = document.getElementById(elementId);
+      try {
+        const originalWidth = captureArea.style.width;
+        captureArea.style.width = '680px';
+
+        const canvas = await html2canvas(captureArea, { 
+          backgroundColor: '#030704', 
+          scale: 3, 
+          useCORS: true,
+          allowTaint: true,
+          ignoreElements: (el) => el.classList && el.classList.contains('no-capture-btn')
+        });
+
+        captureArea.style.width = originalWidth;
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            showToast("No se pudo generar la imagen", "error");
+            return;
+          }
+          const file = new File([blob], filename, { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'KanchaPro',
+                text: `⚽ Compartido desde KanchaPro`
+              });
+              return;
+            } catch (shareErr) {
+              if (shareErr.name !== 'AbortError') {
+                console.log("Error en share nativo:", shareErr);
+              } else {
+                return;
+              }
+            }
+          }
+
+          const imageURL = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = imageURL;
+          link.download = filename;
+          link.click();
+          showToast("¡Imagen guardada con éxito!", "success");
+        }, 'image/png');
+
+      } catch (err) {
+        console.error(err);
+        showToast("Hubo un error al generar la captura", "error");
+      }
+    }
+
+    function shareTournamentWhatsApp() {
+      const url = window.location.href;
+      const text = `⚽ *¡Seguí el torneo en KanchaPro!* 🏆\n\n📱 *Instalalo como app en tu celular o PC en 3 simples pasos:*\n1️⃣ Tocá los *tres puntitos (⋮)* arriba en tu navegador.\n2️⃣ Seleccioná *"Instalar aplicación"* o *"Agregar a la pantalla principal"*.\n3️⃣ ¡Listo! Acceso directo instantáneo.\n\n🔗 *Entrá acá:* ${url}`;
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function setFixtureFilter(filterType, evt) {
+      currentFixtureFilter = filterType;
+      document.querySelectorAll('.fixture-filter-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-500', 'text-black', 'font-black');
+        btn.classList.add('text-slate-400', 'font-bold');
+      });
+      evt.currentTarget.classList.add('bg-emerald-500', 'text-black', 'font-black');
+      evt.currentTarget.classList.remove('text-slate-400', 'font-bold');
+
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
+      renderPublicMatches(teams, matches);
+    }
+
+    function renderPublicMatches(teams, matches) {
+      const container = document.getElementById('publicMatchesContainer');
+      
+      let filteredMatches = matches;
+      if (currentFixtureFilter === 'pending') {
+        filteredMatches = matches.filter(m => !m.played);
+      } else if (currentFixtureFilter === 'finished') {
+        filteredMatches = matches.filter(m => m.played);
+      }
+
+      if (filteredMatches.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-xs text-center py-10">No hay partidos que coincidan con el filtro seleccionado.</p>';
+        return;
+      }
+
+      let roundsMap = {};
+      filteredMatches.forEach(m => {
+        let rName = m.round_name || 'Partidos';
+        if (!roundsMap[rName]) roundsMap[rName] = [];
+        roundsMap[rName].push(m);
+      });
+
+      const sortedRoundNames = Object.keys(roundsMap).sort((a, b) => {
+        const numA = parseInt((a.match(/\d+/) || [0])[0]);
+        const numB = parseInt((b.match(/\d+/) || [0])[0]);
+        if (numA !== numB) return numA - numB;
+        return a.localeCompare(b);
+      });
+
+      const cat = pubData.categories.find(c => c.id === currentPublicCatId);
+      const logoUrl = cat && cat.logo ? cat.logo : FALLBACK_LOGO;
+      const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
+
+      container.innerHTML = sortedRoundNames.map(roundName => {
+        const safeRoundId = 'round-box-' + roundName.replace(/[^a-zA-Z0-9]/g, '_');
+        const roundNameClean = roundName.replace(/[^a-zA-Z0-9]/g, '_');
+        return `
+        <div id="${safeRoundId}" class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-4 sm:p-5 space-y-3.5 shadow-xl relative">
+          <div class="flex items-start justify-between border-b border-emerald-900/50 pb-3.5 gap-3">
+            <div class="flex items-start gap-3 min-w-0 flex-1">
+              <div class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/50 flex items-center justify-center overflow-hidden shrink-0 mt-0.5 shadow">
+                <img src="${logoUrl}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">
+              </div>
+              <div class="min-w-0 flex-1 space-y-0.5">
+                <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight break-words">${roundName}</h4>
+                <p class="text-[10px] sm:text-xs text-slate-300 font-extrabold uppercase tracking-wide leading-tight break-words">${cat ? cat.name : ''}</p>
+              </div>
+            </div>
+            <button onclick="captureScreenshot('${safeRoundId}', 'Fixture_${roundNameClean}_${catNameClean}.png')" class="no-capture-btn text-[10px] px-3 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-xl font-bold border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md shrink-0 ml-2">
+              <span>📸</span> <span class="hidden sm:inline">Compartir Fecha</span><span class="inline sm:hidden">Fecha</span>
+            </button>
+          </div>
+          <div class="space-y-2">
+            ${roundsMap[roundName].map(m => {
+              const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+              const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+              const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
+              const safeMatchId = 'match-box-' + m.id;
+              return `
+                <div id="${safeMatchId}" class="bg-[#030704] p-3.5 rounded-xl border border-emerald-900/40 space-y-2 text-xs glass-card-hover relative group shadow-md">
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 flex-1 justify-end min-w-0">
+                      <span class="font-black text-white text-right text-xs sm:text-sm leading-snug break-words">${hTeam.name}</span>
+                      <img src="${hTeam.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full shrink-0 align-middle border border-emerald-500/40 shadow" onerror="this.src=FALLBACK_LOGO">
+                    </div>
+                    <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-3 py-1.5 rounded-xl text-emerald-400 font-black border border-emerald-900 hover:border-emerald-500 transition shadow-lg shrink-0 text-xs sm:text-sm tracking-wider">
+                      ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
+                    </button>
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                      <img src="${aTeam.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full shrink-0 align-middle border border-emerald-500/40 shadow" onerror="this.src=FALLBACK_LOGO">
+                      <span class="font-black text-white text-left text-xs sm:text-sm leading-snug break-words">${aTeam.name}</span>
+                    </div>
+                  </div>
+                  ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
+                  
+                  <!-- BOTONES DE ACCIÓN PARA EL PARTIDO (INCLUYE FLYER HISTORIA) -->
+                  <div class="flex items-center justify-end gap-2 pt-1">
+                    <button onclick="openMatchFlyerModal('${m.id}')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-black font-black rounded-lg transition flex items-center gap-1 shadow">
+                      <span>📱</span> Flyer Historia
+                    </button>
+                    <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1">
+                      <span>📸</span> Partido
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="text-right pt-2 border-t border-emerald-900/40 flex justify-between items-center">
+            <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Cronograma Oficial</span>
+            <span class="text-[9px] text-emerald-500 font-black tracking-widest">KANCHAPRO.COM</span>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    // LÓGICA DEL GENERADOR DE FLYERS / HISTORIAS (TIPO COPAFÁCIL)
+    function openMatchFlyerModal(matchId) {
+      const match = pubData.matches.find(m => m.id === matchId);
+      if (!match) return;
+
+      const teams = pubData.teams;
+      const cat = pubData.categories.find(c => c.id === currentPublicCatId);
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
+
+      // Fondo aleatorio dinámico
+      const randomBg = flyerBackgrounds[Math.floor(Math.random() * flyerBackgrounds.length)];
+      const captureArea = document.getElementById('flyerCaptureArea');
+      captureArea.style.background = randomBg;
+
+      document.getElementById('flyerCatName').textContent = cat ? cat.name : 'KanchaPro';
+      if (cat && cat.logo) document.getElementById('flyerCatLogo').src = cat.logo;
+
+      document.getElementById('flyerRoundName').textContent = match.round_name || 'Fecha Oficial';
+      document.getElementById('flyerHomeName').textContent = hTeam.name;
+      document.getElementById('flyerHomeLogo').src = hTeam.logo || FALLBACK_LOGO;
+      document.getElementById('flyerAwayName').textContent = aTeam.name;
+      document.getElementById('flyerAwayLogo').src = aTeam.logo || FALLBACK_LOGO;
+
+      const badgeState = document.getElementById('flyerBadgeState');
+      const scoreText = document.getElementById('flyerScoreText');
+      const statsContainer = document.getElementById('flyerStatsContainer');
+
+      if (match.played) {
+        badgeState.textContent = 'RESULTADO FINAL';
+        badgeState.className = "text-[8px] font-extrabold bg-blue-500/20 border border-blue-500/40 text-blue-300 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0";
+        scoreText.textContent = `${match.home_score} - ${match.away_score}`;
+        
+        // Recopilar goles y estadísticas si existen
+        const playerStats = match.match_details?.playerStats || {};
+        let goalsHtml = '';
+        
+        pubData.players.forEach(p => {
+          const st = playerStats[p.id];
+          if (st && st.goals > 0 && (p.team_id === hTeam.id || p.team_id === aTeam.id)) {
+            const teamPrefix = p.team_id === hTeam.id ? hTeam.name : aTeam.name;
+            goalsHtml += `<div class="truncate">⚽ ${p.name} (${st.goals}) <span class="text-[8px] text-slate-400">[${teamPrefix}]</span></div>`;
+          }
+        });
+
+        if (goalsHtml) {
+          document.getElementById('flyerGoalsList').innerHTML = goalsHtml;
+          statsContainer.classList.remove('hidden');
+        } else {
+          statsContainer.classList.add('hidden');
+        }
+      } else {
+        badgeState.textContent = 'PRÓXIMO PARTIDO';
+        badgeState.className = "text-[8px] font-extrabold bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0";
+        scoreText.textContent = 'VS';
+        statsContainer.classList.add('hidden');
+      }
+
+      document.getElementById('flyerDateTime').textContent = `🗓️ ${match.match_day || 'A programar'} — ${match.match_time || ''}`;
+      document.getElementById('flyerVenue').textContent = `🏟️ ${match.match_venue || 'Cancha Oficial'}`;
+
+      openModal('flyerModalContainer');
+    }
+
+    async function downloadFlyerImage() {
+      const area = document.getElementById('flyerCaptureArea');
+      try {
+        const canvas = await html2canvas(area, {
+          scale: 3, // Alta definición para historias de IG / WA
+          useCORS: true,
+          backgroundColor: '#030704'
+        });
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const file = new File([blob], "Flyer_Partido.png", { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'KanchaPro Flyer',
+                text: '⚽ ¡Mirá el partido! Compartido desde KanchaPro 🏆'
+              });
+              return;
+            } catch (e) {
+              if (e.name !== 'AbortError') console.log(e);
+            }
+          }
+
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'Flyer_Partido_KanchaPro.png';
+          link.click();
+          showToast("¡Flyer generado con éxito!", "success");
+        }, 'image/png');
+      } catch (err) {
+        console.error(err);
+        showToast("Error al generar el flyer", "error");
+      }
+    }
+
+    function openPublicMatchDetail(matchId) {
+      const match = pubData.matches.find(m => m.id === matchId);
+      if (!match) return;
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
+
+      document.getElementById('pmRoundName').textContent = match.round_name || 'Partido Oficial';
+      document.getElementById('pmHomeName').textContent = hTeam.name;
+      document.getElementById('pmAwayName').textContent = aTeam.name;
+      document.getElementById('pmScore').textContent = match.played ? `${match.home_score} - ${match.away_score}` : 'VS';
+
+      const details = match.match_details || {};
+      const playerStats = details.playerStats || {};
+
+      let hStatsHtml = '';
+      let aStatsHtml = '';
+
+      const hPlayers = pubData.players.filter(p => p.team_id === hTeam.id);
+      hPlayers.forEach(p => {
+        const st = playerStats[p.id];
+        if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
+          hStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+        }
+      });
+
+      const aPlayers = pubData.players.filter(p => p.team_id === aTeam.id);
+      aPlayers.forEach(p => {
+        const st = playerStats[p.id];
+        if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
+          aStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+        }
+      });
+
+      document.getElementById('pmHomeStats').innerHTML = hStatsHtml || '<span class="text-slate-400 text-xs italic">Sin incidencias registradas</span>';
+      document.getElementById('pmAwayStats').innerHTML = aStatsHtml || '<span class="text-slate-400 text-xs italic">Sin incidencias registradas</span>';
+
+      openModal('publicMatchModal');
+    }
+
+    function renderPublicPlayoffs(cat, playoffMatches, teams) {
+      const container = document.getElementById('publicPlayoffsContainer');
+      if (!cat.has_playoffs) {
+        container.innerHTML = `<p class="text-slate-400 text-xs text-center py-8">Este torneo no cuenta con fase de playoffs habilitada.</p>`;
+        return;
+      }
+
+      container.innerHTML = playoffMatches.map(m => {
+        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Por definir' };
+        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
+        const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
+        return `
+          <div class="bg-[#030704] p-4 rounded-2xl border border-emerald-900/50 flex flex-col gap-2 text-xs shadow-xl">
+            <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+              <span class="text-emerald-400 font-black uppercase text-[11px] tracking-wider">${m.round_name || 'Llave Eliminatoria'}</span>
+            </div>
+            <div class="flex items-center justify-between gap-3 py-1">
+              <div class="flex-1 text-right font-black text-white text-xs sm:text-sm leading-snug break-words">${hTeam.name}</div>
+              <div class="bg-black px-3.5 py-1.5 rounded-xl text-emerald-400 font-black border border-emerald-900 shadow-lg shrink-0 text-xs sm:text-sm">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</div>
+              <div class="flex-1 text-left font-black text-white text-xs sm:text-sm leading-snug break-words">${aTeam.name}</div>
+            </div>
+            ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-medium truncate pt-1">🗓️ ${infoText}</div>` : ''}
+          </div>
+        `;
+      }).join('') || `<p class="text-slate-400 text-xs text-center py-8">Aún no se han generado las llaves de la fase final.</p>`;
+    }
+
+    function toggleTeamAccordion(teamId) {
+      const rosterDiv = document.getElementById('team-roster-' + teamId);
+      const icon = document.getElementById('team-icon-' + teamId);
+      if (rosterDiv.classList.contains('hidden')) {
+        rosterDiv.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+      } else {
+        rosterDiv.classList.add('hidden');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    function renderPublicTeamsAndRosters(teams, players, isFutsal) {
+      const container = document.getElementById('publicTeamsContainer');
+      if (teams.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-xs text-center py-8">No hay equipos registrados.</p>';
+        return;
+      }
+
+      const cat = pubData.categories.find(c => c.id === currentPublicCatId);
+      const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
+
+      container.innerHTML = teams.map(team => {
+        const teamPlayers = players.filter(p => p.team_id === team.id);
+        const safeTeamBoxId = 'team-box-' + team.id;
+        const logoUrl = cat && cat.logo ? cat.logo : FALLBACK_LOGO;
+        const teamNameClean = team.name.replace(/[^a-zA-Z0-9]/g, '_');
+
+        return `
+          <div id="${safeTeamBoxId}" class="bg-[#06120a] border border-emerald-900/50 rounded-2xl overflow-hidden shadow-xl">
+            <div class="flex items-center justify-between p-3.5 bg-[#030704] border-b border-emerald-900/40 gap-3">
+              <button onclick="toggleTeamAccordion('${team.id}')" class="flex items-center gap-3 min-w-0 text-left flex-1 cursor-pointer group">
+                <img src="${team.logo || FALLBACK_LOGO}" class="w-8 h-8 object-cover rounded-full border border-emerald-500/50 shadow shrink-0 align-middle" onerror="this.src=FALLBACK_LOGO">
+                <span class="font-black text-white text-xs sm:text-sm tracking-wide leading-snug break-words group-hover:text-emerald-400 transition">${team.name}</span>
+                <span class="text-[10px] text-slate-400 font-bold shrink-0 bg-black/40 px-2 py-0.5 rounded-lg border border-emerald-900/30">${teamPlayers.length} inscriptos</span>
+              </button>
+              <div class="flex items-center gap-2 shrink-0">
+                <button onclick="captureScreenshot('${safeTeamBoxId}', 'Plantel_${teamNameClean}_${catNameClean}.png')" class="no-capture-btn text-[10px] px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-xl font-bold border border-emerald-500/40 transition flex items-center gap-1 shadow-md">
+                  <span>📸</span> Compartir Plantel
+                </button>
+                <button onclick="toggleTeamAccordion('${team.id}')" class="text-emerald-400 font-bold transition-transform duration-300 text-xs px-2 py-1 bg-emerald-950/40 rounded-lg">
+                  <span id="team-icon-${team.id}">▼</span>
+                </button>
+              </div>
+            </div>
+            
+            <div id="team-roster-${team.id}" class="hidden p-3 space-y-2 bg-[#030704] relative">
+              <div class="hidden">
+                <img src="${logoUrl}" class="w-4 h-4" onerror="this.src=FALLBACK_LOGO">
+              </div>
+              ${teamPlayers.length > 0 ? teamPlayers.map(p => {
+                let g = 0, y = 0, b = 0, r = 0;
+                pubData.matches.forEach(m => {
+                  const st = m.match_details?.playerStats?.[p.id];
+                  if (st) { g += (st.goals || 0); y += (st.yellows || 0); b += (st.blues || 0); r += (st.reds || 0); }
+                });
+                return `
+                  <div class="flex justify-between items-center bg-[#06120a] p-2.5 rounded-xl border border-emerald-900/30 text-xs gap-3 shadow-sm">
+                    <span class="font-bold text-slate-200 leading-snug break-words">👤 ${p.name} <span class="text-[9px] text-emerald-400 uppercase font-extrabold ml-1">(${p.position || 'Jugador'})</span></span>
+                    <div class="flex gap-2 text-[11px] font-black shrink-0 align-middle">
+                      <span class="text-emerald-400">⚽ ${g}</span>
+                      <span class="text-yellow-400">🟨 ${y}</span>
+                      <span class="text-blue-400">🟦 ${b}</span>
+                      <span class="text-red-400">🟥 ${r}</span>
+                    </div>
+                  </div>
+                `;
+              }).join('') : '<p class="text-slate-400 text-xs italic text-center py-3">Sin jugadores inscriptos en este equipo.</p>'}
+              <div class="text-right pt-2 border-t border-emerald-900/40 mt-2 flex justify-between items-center">
+                <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Plantel Oficial</span>
+                <span class="text-[9px] text-emerald-500 font-black tracking-widest">KANCHAPRO.COM</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderPublicScorers(players, teams) {
+      const container = document.getElementById('publicScorersContainer');
+      let scorerMap = {};
+
+      players.forEach(p => {
+        let totalG = 0;
+        pubData.matches.forEach(m => {
+          const st = m.match_details?.playerStats?.[p.id];
+          if (st) totalG += (st.goals || 0);
+        });
+        if (totalG > 0) scorerMap[p.id] = { player: p, goals: totalG };
+      });
+
+      const sorted = Object.values(scorerMap).sort((a, b) => b.goals - a.goals);
+
+      container.innerHTML = `
+        <div class="space-y-2">
+          ${sorted.map((item, idx) => {
+            const t = teams.find(x => x.id === item.player.team_id);
+            return `
+              <div class="flex justify-between items-center bg-[#06120a] p-3 rounded-2xl border border-emerald-900/50 text-xs shadow-xl gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <span class="font-black text-emerald-400 text-sm w-6 text-center shrink-0 align-middle bg-emerald-950/60 rounded-xl py-1 border border-emerald-500/40 shadow">${idx + 1}</span>
+                  <div class="min-w-0">
+                    <span class="font-black text-white text-xs sm:text-sm block leading-snug break-words">${item.player.name}</span>
+                    <span class="text-[10px] text-slate-400 font-bold block leading-snug break-words">${t ? t.name : ''}</span>
+                  </div>
+                </div>
+                <span class="font-black text-emerald-400 text-sm sm:text-base shrink-0 align-middle bg-black px-3 py-1.5 rounded-xl border border-emerald-900 shadow">⚽ ${item.goals}</span>
+              </div>
+            `;
+          }).join('') || '<p class="text-slate-400 text-xs text-center py-10">No hay goles registrados en el torneo todavía.</p>'}
+        </div>
+      `;
+    }
+
+    function renderPublicDiscipline(players, teams, teamIds) {
+      let yellowMap = {};
+      let redMap = {};
+
+      players.forEach(p => {
+        let totalY = 0, totalR = 0;
+        pubData.matches.forEach(m => {
+          const st = m.match_details?.playerStats?.[p.id];
+          if (st) {
+            totalY += (st.yellows || 0);
+            totalR += (st.reds || 0);
+          }
+        });
+        if (totalY > 0) yellowMap[p.id] = { player: p, count: totalY };
+        if (totalR > 0) redMap[p.id] = { player: p, count: totalR };
+      });
+
+      const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
+
+      document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.map(item => {
+        const t = teams.find(x => x.id === item.player.team_id);
+        return `
+          <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
+            <div class="min-w-0">
+              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
+              <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? t.name : ''}</span>
+            </div>
+            <span class="font-black text-yellow-400 text-xs shrink-0 align-middle bg-black px-2.5 py-1 rounded-lg border border-yellow-900/50 shadow">🟨 ${item.count}</span>
+          </div>
+        `;
+      }).join('') || '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas amarillas registradas.</p>';
+
+      const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId);
+      document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
+        <div class="bg-red-950/25 border border-red-500/40 rounded-xl p-3 text-xs space-y-1 shadow-md">
+          <span class="font-black text-white text-xs block leading-snug break-words">${s.player_name} <span class="text-[10px] font-medium text-slate-400 break-words">(${s.team_name || ''})</span></span>
+          <span class="text-[10px] text-slate-200 block align-middle font-semibold">Sanción vigente: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
+          <span class="text-[9px] text-slate-400 italic block leading-snug break-words">Motivo: ${s.reason || 'Sin observación'}</span>
+        </div>
+      `).join('') || '<p class="text-slate-400 text-xs text-center py-4 italic">No hay suspensiones vigentes en el tribunal.</p>';
+    }
+  </script>
+</body>
+</html>
