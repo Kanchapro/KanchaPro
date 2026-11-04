@@ -155,8 +155,12 @@
         </div>
       </div>
 
-      <!-- BOTONES DE ACCESO Y COMPARTIR -->
+      <!-- BOTONES DE ACCESO, INSTAGRAM Y COMPARTIR -->
       <div class="flex items-center gap-2 shrink-0">
+        <!-- BOTÓN INSTAGRAM DINÁMICO -->
+        <a id="headerInstagramBtn" href="#" target="_blank" class="hidden text-[11px] px-3 py-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-90 text-white font-black rounded-xl transition items-center gap-1.5 shadow-[0_4px_15px_rgba(236,72,153,0.3)]" title="Seguir en Instagram">
+          <span>📸</span> <span class="text-[10px] hidden sm:inline">Instagram</span>
+        </a>
         <a href="admin.html" class="text-[11px] px-3 py-1.5 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 rounded-xl font-bold border border-emerald-500/40 transition flex items-center gap-1.5 shadow-lg group" title="Panel Administrador">
           <span class="group-hover:rotate-45 transition-transform duration-300">⚙️</span> 
           <span class="text-[10px] hidden sm:inline font-extrabold tracking-wide">Administración</span>
@@ -737,6 +741,9 @@
           const headerLogo = document.getElementById('headerTournamentLogo');
           headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
           document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
+          
+          // Ocultar botón de Instagram si no hay torneo seleccionado
+          document.getElementById('headerInstagramBtn').classList.add('hidden');
         }
       }
     }
@@ -840,6 +847,17 @@
       const themeColor = cat.theme_color || '#10b981';
       document.documentElement.style.setProperty('--theme-color', themeColor);
       localStorage.setItem('kancha_theme_color', themeColor);
+
+      // CONFIGURACIÓN DINÁMICA DEL BOTÓN DE INSTAGRAM
+      const igBtn = document.getElementById('headerInstagramBtn');
+      if (cat.instagram_url && cat.instagram_url.trim() !== '') {
+        igBtn.href = cat.instagram_url.startsWith('http') ? cat.instagram_url : `https://${cat.instagram_url}`;
+        igBtn.classList.remove('hidden');
+        igBtn.classList.add('flex');
+      } else {
+        igBtn.classList.add('hidden');
+        igBtn.classList.remove('flex');
+      }
 
       const logoHtml = cat.logo ? `<img src="${cat.logo}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">` : `<img src="${FALLBACK_LOGO}" class="w-full h-full object-cover">`;
       
