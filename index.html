@@ -429,6 +429,89 @@
     </div>
   </footer>
 
+  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (TIPO COPAFÁCIL) -->
+  <div id="flyerModalContainer" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
+    <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
+      <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
+        <h3 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider">Flyer para Redes (Historia)</h3>
+        <button onclick="closeModal('flyerModalContainer')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
+      </div>
+
+      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) -->
+      <div id="flyerCaptureArea" class="w-[320px] h-[568px] mx-auto rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-2xl text-white font-sans bg-slate-950 border border-emerald-500/30">
+        
+        <!-- Textura / Gradiente de Fondo Dinámico -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-emerald-950/60 z-0 pointer-events-none"></div>
+
+        <!-- Header del Flyer -->
+        <div class="relative z-10 flex justify-between items-center border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2 min-w-0">
+            <img id="flyerCatLogo" src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" class="w-7 h-7 rounded-full border border-emerald-400 object-cover shadow shrink-0" onerror="this.src=FALLBACK_LOGO" />
+            <span id="flyerCatName" class="text-[9px] font-black uppercase tracking-widest text-emerald-400 truncate">KanchaPro Tournaments</span>
+          </div>
+          <span id="flyerBadgeState" class="text-[8px] font-extrabold bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">PRÓXIMO PARTIDO</span>
+        </div>
+
+        <!-- Contenido Central: Escudos y Resultado -->
+        <div class="relative z-10 my-auto flex flex-col items-center space-y-5 text-center">
+          <span id="flyerRoundName" class="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest bg-black/60 px-3 py-1 rounded-full border border-white/10 shadow">Fecha 1</span>
+          
+          <div class="grid grid-cols-3 items-center w-full gap-2">
+            <!-- Local -->
+            <div class="flex flex-col items-center space-y-2">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-black/70 border-2 border-emerald-500/50 flex items-center justify-center p-2 shadow-2xl backdrop-blur-md">
+                <img id="flyerHomeLogo" src="" class="w-full h-full object-contain" onerror="this.src=FALLBACK_LOGO" />
+              </div>
+              <span id="flyerHomeName" class="text-[11px] font-black uppercase tracking-tight text-white leading-tight line-clamp-2">Equipo Local</span>
+            </div>
+
+            <!-- VS o Marcador -->
+            <div class="flex flex-col items-center justify-center">
+              <div id="flyerScoreBox" class="bg-black/85 border-2 border-emerald-400 px-3 py-2 rounded-2xl shadow-2xl backdrop-blur-md">
+                <span id="flyerScoreText" class="text-lg sm:text-xl font-black text-emerald-300 tracking-wider">VS</span>
+              </div>
+            </div>
+
+            <!-- Visitante -->
+            <div class="flex flex-col items-center space-y-2">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-black/70 border-2 border-emerald-500/50 flex items-center justify-center p-2 shadow-2xl backdrop-blur-md">
+                <img id="flyerAwayLogo" src="" class="w-full h-full object-contain" onerror="this.src=FALLBACK_LOGO" />
+              </div>
+              <span id="flyerAwayName" class="text-[11px] font-black uppercase tracking-tight text-white leading-tight line-clamp-2">Equipo Visitante</span>
+            </div>
+          </div>
+
+          <!-- Incidencias / Goleadores si finalizó -->
+          <div id="flyerStatsContainer" class="w-full bg-black/70 backdrop-blur-md rounded-2xl p-3 border border-white/10 text-[10px] space-y-1 hidden text-left">
+            <div class="text-[9px] text-emerald-400 font-black uppercase tracking-wider mb-1">⚽ Incidencias del Partido</div>
+            <div id="flyerGoalsList" class="text-slate-300 font-medium space-y-0.5"></div>
+          </div>
+        </div>
+
+        <!-- Footer del Flyer -->
+        <div class="relative z-10 space-y-2.5 pt-3 border-t border-white/10">
+          <div id="flyerInfoBox" class="flex flex-col items-center justify-center text-center text-[9px] text-slate-200 font-bold space-y-0.5 bg-black/60 p-2 rounded-xl border border-white/10 shadow-inner">
+            <span id="flyerDateTime">🗓️ Sábado 15:30 Hs</span>
+            <span id="flyerVenue">🏟️ Cancha Oficial</span>
+          </div>
+          
+          <div class="flex justify-between items-center text-[8px] font-extrabold text-slate-400 uppercase tracking-widest px-1">
+            <span>KANCHAPRO.APP</span>
+            <span class="text-emerald-400">#VivíElFútbol</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Botón Descargar / Compartir Flyer -->
+      <div class="pt-2">
+        <button onclick="downloadFlyerImage()" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black py-3 rounded-xl transition shadow-xl text-xs flex items-center justify-center gap-2">
+          <span>📸 Descargar o Compartir Historia</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: POLÍTICA DE PRIVACIDAD -->
   <div id="privacyModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 sm:p-6 rounded-3xl max-w-lg w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
@@ -553,6 +636,14 @@
     let currentPublicCatId = null;
     let currentFixtureFilter = 'all';
     const STORAGE_FAV_KEY = 'kanchapro_favorite_tournament';
+
+    // FONDOS ALEATORIOS PARA LOS FLYERS
+    const flyerBackgrounds = [
+      "radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.45) 0%, rgba(3, 7, 4, 0.95) 80%)",
+      "radial-gradient(circle at 20% 80%, rgba(5, 150, 105, 0.5) 0%, rgba(0, 0, 0, 0.95) 75%)",
+      "radial-gradient(circle at 80% 20%, rgba(4, 120, 87, 0.45) 0%, rgba(2, 5, 3, 0.95) 80%)",
+      "radial-gradient(circle at 50% 70%, rgba(16, 185, 129, 0.35) 0%, rgba(5, 10, 6, 0.98) 85%)"
+    ];
 
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
@@ -759,7 +850,7 @@
       document.getElementById('headerTournamentLogo').innerHTML = logoHtml;
       document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${cat.name}</span>`;
 
-      // 🚀 ACTUALIZACIÓN DINÁMICA DE META ETIQUETAS OPEN GRAPH PARA WHATSAPP
+      // ACTUALIZACIÓN DINÁMICA DE META ETIQUETAS OPEN GRAPH PARA WHATSAPP
       const currentUrl = window.location.href;
       document.getElementById('metaOgTitle').setAttribute('content', `${cat.name} — KanchaPro`);
       document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${cat.name}.`);
@@ -987,13 +1078,12 @@
         const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
         const filename = `${filePrefix}_${catNameClean}.png`;
 
-        // 🚀 Ancho ampliado a 680px para dar espacio óptimo a títulos largos
         const originalWidth = captureArea.style.width;
         captureArea.style.width = '680px';
 
         const canvas = await html2canvas(captureArea, { 
           backgroundColor: '#030704', 
-          scale: 3, // 👈 Alta definición para WhatsApp e Instagram
+          scale: 3, 
           useCORS: true,
           allowTaint: true
         });
@@ -1041,13 +1131,12 @@
     async function captureScreenshot(elementId, filename) {
       const captureArea = document.getElementById(elementId);
       try {
-        // 🚀 Ancho ampliado a 680px para tarjetas individuales
         const originalWidth = captureArea.style.width;
         captureArea.style.width = '680px';
 
         const canvas = await html2canvas(captureArea, { 
           backgroundColor: '#030704', 
-          scale: 3, // 👈 Alta definición cristalina
+          scale: 3, 
           useCORS: true,
           allowTaint: true,
           ignoreElements: (el) => el.classList && el.classList.contains('no-capture-btn')
@@ -1187,9 +1276,14 @@
                     </div>
                   </div>
                   ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
-                  <div class="flex justify-end pt-1">
+                  
+                  <!-- BOTONES DE ACCIÓN PARA EL PARTIDO -->
+                  <div class="flex items-center justify-end gap-2 pt-1">
+                    <button onclick="openMatchFlyerModal('${m.id}')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-black font-black rounded-lg transition flex items-center gap-1 shadow">
+                      <span>📱</span> Flyer Historia
+                    </button>
                     <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1">
-                      <span>📸</span> Compartir Partido
+                      <span>📸</span> Partido
                     </button>
                   </div>
                 </div>
@@ -1203,6 +1297,108 @@
         </div>
       `;
       }).join('');
+    }
+
+    // LÓGICA DEL GENERADOR DE FLYERS / HISTORIAS (TIPO COPAFÁCIL)
+    function openMatchFlyerModal(matchId) {
+      const match = pubData.matches.find(m => m.id === matchId);
+      if (!match) return;
+
+      const teams = pubData.teams;
+      const cat = pubData.categories.find(c => c.id === currentPublicCatId);
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
+
+      // Fondo aleatorio dinámico
+      const randomBg = flyerBackgrounds[Math.floor(Math.random() * flyerBackgrounds.length)];
+      const captureArea = document.getElementById('flyerCaptureArea');
+      captureArea.style.background = randomBg;
+
+      document.getElementById('flyerCatName').textContent = cat ? cat.name : 'KanchaPro';
+      if (cat && cat.logo) document.getElementById('flyerCatLogo').src = cat.logo;
+
+      document.getElementById('flyerRoundName').textContent = match.round_name || 'Fecha Oficial';
+      document.getElementById('flyerHomeName').textContent = hTeam.name;
+      document.getElementById('flyerHomeLogo').src = hTeam.logo || FALLBACK_LOGO;
+      document.getElementById('flyerAwayName').textContent = aTeam.name;
+      document.getElementById('flyerAwayLogo').src = aTeam.logo || FALLBACK_LOGO;
+
+      const badgeState = document.getElementById('flyerBadgeState');
+      const scoreText = document.getElementById('flyerScoreText');
+      const statsContainer = document.getElementById('flyerStatsContainer');
+
+      if (match.played) {
+        badgeState.textContent = 'RESULTADO FINAL';
+        badgeState.className = "text-[8px] font-extrabold bg-blue-500/20 border border-blue-500/40 text-blue-300 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0";
+        scoreText.textContent = `${match.home_score} - ${match.away_score}`;
+        
+        // Recopilar goles y estadísticas si existen
+        const playerStats = match.match_details?.playerStats || {};
+        let goalsHtml = '';
+        
+        pubData.players.forEach(p => {
+          const st = playerStats[p.id];
+          if (st && st.goals > 0 && (p.team_id === hTeam.id || p.team_id === aTeam.id)) {
+            const teamPrefix = p.team_id === hTeam.id ? hTeam.name : aTeam.name;
+            goalsHtml += `<div class="truncate">⚽ ${p.name} (${st.goals}) <span class="text-[8px] text-slate-400">[${teamPrefix}]</span></div>`;
+          }
+        });
+
+        if (goalsHtml) {
+          document.getElementById('flyerGoalsList').innerHTML = goalsHtml;
+          statsContainer.classList.remove('hidden');
+        } else {
+          statsContainer.classList.add('hidden');
+        }
+      } else {
+        badgeState.textContent = 'PRÓXIMO PARTIDO';
+        badgeState.className = "text-[8px] font-extrabold bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0";
+        scoreText.textContent = 'VS';
+        statsContainer.classList.add('hidden');
+      }
+
+      document.getElementById('flyerDateTime').textContent = `🗓️ ${match.match_day || 'A programar'} — ${match.match_time || ''}`;
+      document.getElementById('flyerVenue').textContent = `🏟️ ${match.match_venue || 'Cancha Oficial'}`;
+
+      openModal('flyerModalContainer');
+    }
+
+    async function downloadFlyerImage() {
+      const area = document.getElementById('flyerCaptureArea');
+      try {
+        const canvas = await html2canvas(area, {
+          scale: 3, // Alta definición para historias de IG / WA
+          useCORS: true,
+          backgroundColor: '#030704'
+        });
+
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const file = new File([blob], "Flyer_Partido.png", { type: 'image/png' });
+
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: 'KanchaPro Flyer',
+                text: '⚽ ¡Mirá el partido! Compartido desde KanchaPro 🏆'
+              });
+              return;
+            } catch (e) {
+              if (e.name !== 'AbortError') console.log(e);
+            }
+          }
+
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'Flyer_Partido_KanchaPro.png';
+          link.click();
+          showToast("¡Flyer generado con éxito!", "success");
+        }, 'image/png');
+      } catch (err) {
+        console.error(err);
+        showToast("Error al generar el flyer", "error");
+      }
     }
 
     function openPublicMatchDetail(matchId) {
