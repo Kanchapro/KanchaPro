@@ -967,7 +967,18 @@
         const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
         const filename = `${filePrefix}_${catNameClean}.png`;
 
-        const canvas = await html2canvas(captureArea, { backgroundColor: '#030704', scale: 2, useCORS: true });
+        // 🚀 Optimización de alta calidad (ancho fijo y escala 3x)
+        const originalWidth = captureArea.style.width;
+        captureArea.style.width = '650px';
+
+        const canvas = await html2canvas(captureArea, { 
+          backgroundColor: '#030704', 
+          scale: 3, // 👈 Alta definición para WhatsApp e Instagram
+          useCORS: true,
+          allowTaint: true
+        });
+
+        captureArea.style.width = originalWidth;
         
         canvas.toBlob(async (blob) => {
           if (!blob) {
@@ -981,7 +992,7 @@
               await navigator.share({
                 files: [file],
                 title: 'KanchaPro',
-                text: `⚽ Compartido desde KanchaPro — Torneo: ${cat ? cat.name : ''}`
+                text: `⚽ *${cat ? cat.name : 'Torneo'}* — Compartido desde KanchaPro 🏆`
               });
               return;
             } catch (shareErr) {
@@ -998,7 +1009,7 @@
           link.href = imageURL;
           link.download = filename;
           link.click();
-          showToast("¡Imagen generada con éxito!", "success");
+          showToast("¡Imagen de alta calidad generada!", "success");
         }, 'image/png');
 
       } catch (err) {
@@ -1010,12 +1021,19 @@
     async function captureScreenshot(elementId, filename) {
       const captureArea = document.getElementById(elementId);
       try {
+        // 🚀 Optimización de alta calidad para partidos y planteles
+        const originalWidth = captureArea.style.width;
+        captureArea.style.width = '650px';
+
         const canvas = await html2canvas(captureArea, { 
           backgroundColor: '#030704', 
-          scale: 2, 
+          scale: 3, // 👈 Alta definición cristalina
           useCORS: true,
+          allowTaint: true,
           ignoreElements: (el) => el.classList && el.classList.contains('no-capture-btn')
         });
+
+        captureArea.style.width = originalWidth;
 
         canvas.toBlob(async (blob) => {
           if (!blob) {
@@ -1029,7 +1047,7 @@
               await navigator.share({
                 files: [file],
                 title: 'KanchaPro',
-                text: `⚽ Partido / Fecha compartido desde KanchaPro`
+                text: `⚽ Compartido desde KanchaPro`
               });
               return;
             } catch (shareErr) {
@@ -1160,7 +1178,7 @@
           </div>
           <div class="text-right pt-2 border-t border-emerald-900/40 flex justify-between items-center">
             <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Cronograma Oficial</span>
-            <span class="text-[9px] text-emerald-500 font-black uppercase tracking-widest">KANCHAPRO.COM</span>
+            <span class="text-[9px] text-emerald-500 font-black tracking-widest">KANCHAPRO.COM</span>
           </div>
         </div>
       `;
