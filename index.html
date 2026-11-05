@@ -600,33 +600,51 @@
     </div>
   </div>
 
-  <!-- MODAL DETALLE DE PARTIDO -->
+  <!-- MODAL DETALLE DE PARTIDO (CON ESCUDOS, INCIDENCIAS Y BOTÓN COMPARTIR EN VEZ DE X) -->
   <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
-    <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
+    <div id="captureAreaMatchDetail" class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl bg-[#030704]">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
         <h3 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider">Detalles del Partido</h3>
-        <button onclick="closeModal('publicMatchModal')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
+        <span class="text-[9px] text-emerald-500 font-black tracking-widest uppercase">KANCHAPRO.COM</span>
       </div>
-      <div class="text-center py-3.5 bg-[#030704] rounded-2xl border border-emerald-900/60 space-y-1.5 shadow-inner">
+      
+      <div class="text-center py-3.5 bg-[#06120a] rounded-2xl border border-emerald-900/60 space-y-2 shadow-inner">
         <span id="pmRoundName" class="text-[10px] text-emerald-400 font-extrabold uppercase tracking-widest block">Fecha</span>
         <div class="flex justify-between items-center font-black text-white text-xs px-3 gap-2">
-          <span id="pmHomeName" class="flex-1 text-right truncate text-xs align-middle">Local</span>
+          <!-- Local con Escudo -->
+          <div class="flex items-center gap-1.5 flex-1 justify-end min-w-0">
+            <span id="pmHomeName" class="truncate text-xs align-middle text-right">Local</span>
+            <img id="pmHomeLogo" src="" class="w-6 h-6 object-cover rounded-full border border-emerald-500/50 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
+          </div>
           <span id="pmScore" class="mx-1 bg-black px-3 py-1.5 rounded-xl border border-emerald-900 text-emerald-300 text-xs font-black shadow-lg shrink-0">0 - 0</span>
-          <span id="pmAwayName" class="flex-1 text-left truncate text-xs align-middle">Visitante</span>
+          <!-- Visitante con Escudo -->
+          <div class="flex items-center gap-1.5 flex-1 justify-start min-w-0">
+            <img id="pmAwayLogo" src="" class="w-6 h-6 object-cover rounded-full border border-emerald-500/50 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
+            <span id="pmAwayName" class="truncate text-xs align-middle text-left">Visitante</span>
+          </div>
         </div>
       </div>
+
       <div class="space-y-3 max-h-60 overflow-y-auto scrollbar-thin pr-1">
         <div class="bg-[#06120a] p-3 rounded-xl border border-emerald-900/40 shadow-inner">
-          <h4 class="font-black text-emerald-300 text-[10px] mb-1.5 uppercase tracking-wider border-b border-emerald-900/40 pb-1">Plantel Local</h4>
+          <h4 class="font-black text-emerald-300 text-[10px] mb-1.5 uppercase tracking-wider border-b border-emerald-900/40 pb-1 flex items-center gap-1.5">
+            <img id="pmModalTeamHomeLogoSmall" src="" class="w-4 h-4 rounded-full object-cover" onerror="this.src=FALLBACK_LOGO"> Plantel Local
+          </h4>
           <div id="pmHomeStats" class="space-y-1 text-slate-300"></div>
         </div>
         <div class="bg-[#06120a] p-3 rounded-xl border border-emerald-900/40 shadow-inner">
-          <h4 class="font-black text-emerald-300 text-[10px] mb-1.5 uppercase tracking-wider border-b border-emerald-900/40 pb-1">Plantel Visitante</h4>
+          <h4 class="font-black text-emerald-300 text-[10px] mb-1.5 uppercase tracking-wider border-b border-emerald-900/40 pb-1 flex items-center gap-1.5">
+            <img id="pmModalTeamAwayLogoSmall" src="" class="w-4 h-4 rounded-full object-cover" onerror="this.src=FALLBACK_LOGO"> Plantel Visitante
+          </h4>
           <div id="pmAwayStats" class="space-y-1 text-slate-300"></div>
         </div>
       </div>
-      <div class="flex justify-end pt-2 border-t border-emerald-900/40">
-        <button onclick="closeModal('publicMatchModal')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl font-bold transition shadow text-xs">Cerrar</button>
+
+      <div class="flex flex-col gap-2 pt-2 border-t border-emerald-900/45">
+        <button onclick="captureTournamentScreenshot('captureAreaMatchDetail', 'Detalle_Partido')" class="no-capture-btn w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black py-2.5 rounded-xl transition shadow text-xs flex items-center justify-center gap-2">
+          <span>📸</span> Compartir Detalle / Enviar a WhatsApp
+        </button>
+        <button onclick="closeModal('publicMatchModal')" class="no-capture-btn w-full bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded-xl font-bold transition shadow text-xs">Cerrar Ventana</button>
       </div>
     </div>
   </div>
@@ -1420,6 +1438,12 @@
       document.getElementById('pmAwayName').textContent = aTeam.name;
       document.getElementById('pmScore').textContent = match.played ? `${match.home_score} - ${match.away_score}` : 'VS';
 
+      // Asignar escudos en el modal de detalle
+      document.getElementById('pmHomeLogo').src = hTeam.logo || FALLBACK_LOGO;
+      document.getElementById('pmAwayLogo').src = aTeam.logo || FALLBACK_LOGO;
+      document.getElementById('pmModalTeamHomeLogoSmall').src = hTeam.logo || FALLBACK_LOGO;
+      document.getElementById('pmModalTeamAwayLogoSmall').src = aTeam.logo || FALLBACK_LOGO;
+
       const details = match.match_details || {};
       const playerStats = details.playerStats || {};
 
@@ -1430,7 +1454,12 @@
       hPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          hStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          let iconsStr = '';
+          if (st.goals) { for(let i=0; i<st.goals; i++) iconsStr += '⚽ '; }
+          if (st.yellows) { for(let i=0; i<st.yellows; i++) iconsStr += '🟨 '; }
+          if (st.blues) { for(let i=0; i<st.blues; i++) iconsStr += '🟦 '; }
+          if (st.reds) { for(let i=0; i<st.reds; i++) iconsStr += '🟥 '; }
+          hStatsHtml += `<div class="flex justify-between items-center text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle text-[11px]">${iconsStr}</span></div>`;
         }
       });
 
@@ -1438,7 +1467,12 @@
       aPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          aStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          let iconsStr = '';
+          if (st.goals) { for(let i=0; i<st.goals; i++) iconsStr += '⚽ '; }
+          if (st.yellows) { for(let i=0; i<st.yellows; i++) iconsStr += '🟨 '; }
+          if (st.blues) { for(let i=0; i<st.blues; i++) iconsStr += '🟦 '; }
+          if (st.reds) { for(let i=0; i<st.reds; i++) iconsStr += '🟥 '; }
+          aStatsHtml += `<div class="flex justify-between items-center text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle text-[11px]">${iconsStr}</span></div>`;
         }
       });
 
