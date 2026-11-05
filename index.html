@@ -429,7 +429,7 @@
     </div>
   </footer>
 
-  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (TIPO COPAFÁCIL) -->
+  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (ESTILO COPAFÁCIL) -->
   <div id="flyerModalContainer" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -654,9 +654,7 @@
         document.documentElement.style.setProperty('--theme-color', savedColor);
       }
 
-      // Mostrar skeletons iniciales
       showSkeletons();
-
       await registrarVisita('index');
       await loadPublicData();
       
@@ -741,8 +739,6 @@
           const headerLogo = document.getElementById('headerTournamentLogo');
           headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
           document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
-          
-          // Ocultar botón de Instagram si no hay torneo seleccionado
           document.getElementById('headerInstagramBtn').classList.add('hidden');
         }
       }
@@ -848,7 +844,6 @@
       document.documentElement.style.setProperty('--theme-color', themeColor);
       localStorage.setItem('kancha_theme_color', themeColor);
 
-      // CONFIGURACIÓN DINÁMICA DEL BOTÓN DE INSTAGRAM
       const igBtn = document.getElementById('headerInstagramBtn');
       if (cat.instagram_url && cat.instagram_url.trim() !== '') {
         igBtn.href = cat.instagram_url.startsWith('http') ? cat.instagram_url : `https://${cat.instagram_url}`;
@@ -864,7 +859,6 @@
       document.getElementById('headerTournamentLogo').innerHTML = logoHtml;
       document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${cat.name}</span>`;
 
-      // ACTUALIZACIÓN DINÁMICA DE META ETIQUETAS OPEN GRAPH PARA WHATSAPP
       const currentUrl = window.location.href;
       document.getElementById('metaOgTitle').setAttribute('content', `${cat.name} — KanchaPro`);
       document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${cat.name}.`);
@@ -1293,10 +1287,10 @@
                   
                   <!-- BOTONES DE ACCIÓN PARA EL PARTIDO (INCLUYE FLYER HISTORIA) -->
                   <div class="flex items-center justify-end gap-2 pt-1">
-                    <button onclick="openMatchFlyerModal('${m.id}')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-black font-black rounded-lg transition flex items-center gap-1 shadow">
+                    <button onclick="openMatchFlyerModal('${m.id}')" class="no-capture-btn text-[9px] px-3 py-1.5 bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black rounded-lg transition flex items-center gap-1.5 shadow">
                       <span>📱</span> Flyer Historia
                     </button>
-                    <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1">
+                    <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1">
                       <span>📸</span> Partido
                     </button>
                   </div>
@@ -1313,7 +1307,7 @@
       }).join('');
     }
 
-    // LÓGICA DEL GENERADOR DE FLYERS / HISTORIAS (TIPO COPAFÁCIL)
+    // LÓGICA DEL GENERADOR DE FLYERS / HISTORIAS (ESTILO COPAFÁCIL)
     function openMatchFlyerModal(matchId) {
       const match = pubData.matches.find(m => m.id === matchId);
       if (!match) return;
@@ -1346,7 +1340,6 @@
         badgeState.className = "text-[8px] font-extrabold bg-blue-500/20 border border-blue-500/40 text-blue-300 px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0";
         scoreText.textContent = `${match.home_score} - ${match.away_score}`;
         
-        // Recopilar goles y estadísticas si existen
         const playerStats = match.match_details?.playerStats || {};
         let goalsHtml = '';
         
@@ -1381,7 +1374,7 @@
       const area = document.getElementById('flyerCaptureArea');
       try {
         const canvas = await html2canvas(area, {
-          scale: 3, // Alta definición para historias de IG / WA
+          scale: 3,
           useCORS: true,
           backgroundColor: '#030704'
         });
