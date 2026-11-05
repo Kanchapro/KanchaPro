@@ -429,7 +429,7 @@
     </div>
   </footer>
 
-  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (ESTILO COPAFÁCIL) -->
+  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (ESTILO COPAFÁCIL / FOTO ADJUNTA) -->
   <div id="flyerModalContainer" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -437,7 +437,7 @@
         <button onclick="closeModal('flyerModalContainer')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
       </div>
 
-      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) -->
+      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) - BASADA EN TU IMAGEN -->
       <div id="flyerCaptureArea" class="w-[320px] h-[568px] mx-auto rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-2xl text-white font-sans bg-slate-950 border border-emerald-500/30">
         
         <!-- Textura / Gradiente de Fondo Dinámico -->
@@ -600,7 +600,7 @@
     </div>
   </div>
 
-  <!-- MODAL DETALLE DE PARTIDO (CON ESCUDOS, INCIDENCIAS Y BOTÓN COMPARTIR EN VEZ DE X) -->
+  <!-- MODAL DETALLE DE PARTIDO -->
   <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div id="captureAreaMatchDetail" class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl bg-[#030704]">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -1325,7 +1325,7 @@
       }).join('');
     }
 
-    // LÓGICA DEL GENERADOR DE FLYERS / HISTORIAS (ESTILO COPAFÁCIL)
+    // LÓGICA DEL GENERADOR DE FLYERS / HISTORIAS (ESTILO FOTO ADJUNTA)
     function openMatchFlyerModal(matchId) {
       const match = pubData.matches.find(m => m.id === matchId);
       if (!match) return;
@@ -1335,7 +1335,6 @@
       const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
       const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
 
-      // Fondo aleatorio dinámico
       const randomBg = flyerBackgrounds[Math.floor(Math.random() * flyerBackgrounds.length)];
       const captureArea = document.getElementById('flyerCaptureArea');
       captureArea.style.background = randomBg;
@@ -1438,7 +1437,6 @@
       document.getElementById('pmAwayName').textContent = aTeam.name;
       document.getElementById('pmScore').textContent = match.played ? `${match.home_score} - ${match.away_score}` : 'VS';
 
-      // Asignar escudos en el modal de detalle
       document.getElementById('pmHomeLogo').src = hTeam.logo || FALLBACK_LOGO;
       document.getElementById('pmAwayLogo').src = aTeam.logo || FALLBACK_LOGO;
       document.getElementById('pmModalTeamHomeLogoSmall').src = hTeam.logo || FALLBACK_LOGO;
