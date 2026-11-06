@@ -637,7 +637,6 @@
     let currentFixtureFilter = 'all';
     const STORAGE_FAV_KEY = 'kanchapro_favorite_tournament';
 
-    // FONDOS ALEATORIOS PARA LOS FLYERS
     const flyerBackgrounds = [
       "radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.45) 0%, rgba(3, 7, 4, 0.95) 80%)",
       "radial-gradient(circle at 20% 80%, rgba(5, 150, 105, 0.5) 0%, rgba(0, 0, 0, 0.95) 75%)",
@@ -670,22 +669,20 @@
       select.innerHTML = '<option value="" disabled selected>Cargando torneos oficiales...</option>';
     }
 
+    // FUNCIÓN CARGA PÚBLICA FLEXIBLE (DETECTA TORNEOS CON 'category' O VACÍOS)
     async function loadPublicData() {
       if (!supabaseClient) return;
       try {
-        const [cat, team, player, match, susp] = await Promise.all([
-          supabaseClient.from('torneos_data').select('*').eq('type', 'category'),
-          supabaseClient.from('torneos_data').select('*').eq('type', 'team'),
-          supabaseClient.from('torneos_data').select('*').eq('type', 'player'),
-          supabaseClient.from('torneos_data').select('*').eq('type', 'match'),
-          supabaseClient.from('torneos_data').select('*').eq('type', 'suspension')
-        ]);
+        const { data: allData, error } = await supabaseClient.from('torneos_data').select('*');
+        if (error) throw error;
 
-        pubData.categories = cat.data || [];
-        pubData.teams = team.data || [];
-        pubData.players = player.data || [];
-        pubData.matches = match.data || [];
-        pubData.suspensions = susp.data || [];
+        const rows = allData || [];
+
+        pubData.categories = rows.filter(r => r.type === 'category' || r.type === 'torneo' || r.type === 'categoria' || !r.type);
+        pubData.teams = rows.filter(r => r.type === 'team');
+        pubData.players = rows.filter(r => r.type === 'player');
+        pubData.matches = rows.filter(r => r.type === 'match');
+        pubData.suspensions = rows.filter(r => r.type === 'suspension');
 
         const urlParams = new URLSearchParams(window.location.search);
         const requestedTorneoId = urlParams.get('torneo');
@@ -1285,7 +1282,6 @@
                   </div>
                   ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
                   
-                  <!-- BOTONES DE ACCIÓN PARA EL PARTIDO (INCLUYE FLYER HISTORIA) -->
                   <div class="flex items-center justify-end gap-2 pt-1">
                     <button onclick="openMatchFlyerModal('${m.id}')" class="no-capture-btn text-[9px] px-3 py-1.5 bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black rounded-lg transition flex items-center gap-1.5 shadow">
                       <span>📱</span> Flyer Historia
@@ -1307,7 +1303,6 @@
       }).join('');
     }
 
-    // LÓGICA DEL GENERADOR DE FLYERS / HISTORIAS (ESTILO COPAFÁCIL)
     function openMatchFlyerModal(matchId) {
       const match = pubData.matches.find(m => m.id === matchId);
       if (!match) return;
@@ -1317,7 +1312,6 @@
       const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
       const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
 
-      // Fondo aleatorio dinámico
       const randomBg = flyerBackgrounds[Math.floor(Math.random() * flyerBackgrounds.length)];
       const captureArea = document.getElementById('flyerCaptureArea');
       captureArea.style.background = randomBg;
