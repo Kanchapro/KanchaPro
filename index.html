@@ -992,25 +992,25 @@
               <div class="w-full overflow-x-auto">
                 <table class="w-full text-[11px] table-fixed min-w-[320px]">
                   <colgroup>
-                    <col style="width: 22px;">
+                    <col style="width: 20px;">
                     <col>
-                    <col style="width: 26px;">
-                    <col style="width: 26px;">
-                    <col style="width: 26px;">
-                    <col style="width: 26px;">
-                    <col style="width: 30px;">
-                    <col style="width: 34px;">
+                    <col style="width: 32px;">
+                    <col style="width: 24px;">
+                    <col style="width: 24px;">
+                    <col style="width: 24px;">
+                    <col style="width: 24px;">
+                    <col style="width: 28px;">
                   </colgroup>
                   <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] font-black tracking-wider">
                     <tr>
                       <th class="p-1.5 text-left">#</th>
                       <th class="p-1.5 text-left">Equipo</th>
+                      <th class="p-1.5 text-center font-black text-emerald-400">Pts</th>
                       <th class="p-1.5 text-center">PJ</th>
                       <th class="p-1.5 text-center">G</th>
                       <th class="p-1.5 text-center">E</th>
                       <th class="p-1.5 text-center">P</th>
                       <th class="p-1.5 text-center">DG</th>
-                      <th class="p-1.5 text-center font-black text-emerald-400">Pts</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-emerald-900/20">
@@ -1023,12 +1023,12 @@
                             <span class="truncate">${t.name}</span>
                           </div>
                         </td>
+                        <td class="p-1.5 text-center font-black text-emerald-400 text-xs align-middle">${t.points}</td>
                         <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.played}</td>
                         <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.won}</td>
                         <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.drawn}</td>
                         <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.lost}</td>
                         <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.gd}</td>
-                        <td class="p-1.5 text-center font-black text-emerald-400 text-xs align-middle">${t.points}</td>
                       </tr>
                     `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-2 align-middle italic">Sin equipos inscriptos en esta zona</td></tr>'}
                   </tbody>
@@ -1057,25 +1057,25 @@
           <div class="w-full overflow-x-auto">
             <table class="w-full text-[11px] table-fixed min-w-[320px]">
               <colgroup>
-                <col style="width: 24px;">
+                <col style="width: 22px;">
                 <col>
-                <col style="width: 28px;">
-                <col style="width: 28px;">
-                <col style="width: 28px;">
-                <col style="width: 28px;">
                 <col style="width: 32px;">
-                <col style="width: 36px;">
+                <col style="width: 26px;">
+                <col style="width: 26px;">
+                <col style="width: 26px;">
+                <col style="width: 26px;">
+                <col style="width: 30px;">
               </colgroup>
               <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] font-black tracking-wider">
                 <tr>
                   <th class="p-1.5 text-left">#</th>
                   <th class="p-1.5 text-left">Equipo</th>
+                  <th class="p-1.5 text-center font-black text-emerald-400">Pts</th>
                   <th class="p-1.5 text-center">PJ</th>
                   <th class="p-1.5 text-center">G</th>
                   <th class="p-1.5 text-center">E</th>
                   <th class="p-1.5 text-center">P</th>
                   <th class="p-1.5 text-center">DG</th>
-                  <th class="p-1.5 text-center font-black text-emerald-400">Pts</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-emerald-900/20">
@@ -1088,12 +1088,12 @@
                         <span class="truncate">${t.name}</span>
                       </div>
                     </td>
+                    <td class="p-1.5 text-center font-black text-emerald-400 text-xs align-middle">${t.points}</td>
                     <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.played}</td>
                     <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.won}</td>
                     <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.drawn}</td>
                     <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.lost}</td>
                     <td class="p-1.5 text-center text-slate-300 align-middle font-medium">${t.gd}</td>
-                    <td class="p-1.5 text-center font-black text-emerald-400 text-xs align-middle">${t.points}</td>
                   </tr>
                 `).join('')}
               </tbody>
