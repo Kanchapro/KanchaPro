@@ -669,7 +669,7 @@
       select.innerHTML = '<option value="" disabled selected>Cargando torneos oficiales...</option>';
     }
 
-    // FUNCIÓN CARGA PÚBLICA FLEXIBLE (DETECTA TORNEOS CON 'category' O VACÍOS)
+    // FUNCIÓN CARGA PÚBLICA FLEXIBLE INTEGRADA PARA DETECTAR TORNEOS CORRECTAMENTE
     async function loadPublicData() {
       if (!supabaseClient) return;
       try {
@@ -678,6 +678,7 @@
 
         const rows = allData || [];
 
+        // Filtro flexible optimizado para capturar cualquier tipo de categoría / torneo registrado
         pubData.categories = rows.filter(r => r.type === 'category' || r.type === 'torneo' || r.type === 'categoria' || !r.type);
         pubData.teams = rows.filter(r => r.type === 'team');
         pubData.players = rows.filter(r => r.type === 'player');
