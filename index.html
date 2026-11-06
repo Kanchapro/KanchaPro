@@ -437,7 +437,7 @@
         <button onclick="closeModal('flyerModalContainer')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
       </div>
 
-      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) -->
+      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) CON DATOS GIGANTES Y VISTOSOS -->
       <div id="flyerCaptureArea" class="w-[320px] h-[568px] mx-auto rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-2xl text-white font-sans border-2 border-emerald-500/60" style="background: linear-gradient(180deg, rgba(3,7,4,0.92) 0%, rgba(2,15,8,0.95) 50%, rgba(1,5,2,0.98) 100%), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop') center/cover;">
         
         <!-- Efecto de luces de estadio superpuestas -->
@@ -454,47 +454,47 @@
           <span id="flyerBadgeState" class="text-[9px] font-black bg-emerald-500 text-black px-3 py-1 rounded-full uppercase tracking-widest shadow-[0_0_15px_#10b981] shrink-0">PRÓXIMO PARTIDO</span>
         </div>
 
-        <!-- Contenido Central: Escudos Gigantes y Enfrentamiento -->
-        <div class="relative z-10 my-auto flex flex-col items-center space-y-4 text-center">
-          <span id="flyerRoundName" class="text-[11px] font-black text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-4 py-1.5 rounded-xl border border-emerald-500/40 shadow-lg">Fecha 1</span>
+        <!-- Contenido Central: Escudos Súper Gigantes y Enfrentamiento -->
+        <div class="relative z-10 my-auto flex flex-col items-center space-y-3 text-center">
+          <span id="flyerRoundName" class="text-xs font-black text-emerald-300 uppercase tracking-widest bg-emerald-950/90 px-5 py-2 rounded-2xl border-2 border-emerald-400/60 shadow-[0_0_20px_rgba(16,185,129,0.3)]">Fecha 1</span>
           
-          <div class="grid grid-cols-3 items-center w-full gap-1 my-2">
-            <!-- Local (Escudo Gigante) -->
-            <div class="flex flex-col items-center space-y-2.5">
-              <div class="w-24 h-24 rounded-3xl bg-gradient-to-b from-emerald-950/90 to-black border-2 border-emerald-400/80 flex items-center justify-center p-3 shadow-[0_0_30px_rgba(16,185,129,0.4)] backdrop-blur-md transform hover:scale-105 transition">
-                <img id="flyerHomeLogo" src="" class="w-full h-full object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.8)]" onerror="this.src=FALLBACK_LOGO" />
+          <div class="grid grid-cols-3 items-center w-full gap-2 my-1">
+            <!-- Local (Escudo Súper Gigante) -->
+            <div class="flex flex-col items-center space-y-2">
+              <div class="w-32 h-32 rounded-3xl bg-gradient-to-b from-emerald-950/90 to-black border-2 border-emerald-400/90 flex items-center justify-center p-3.5 shadow-[0_0_40px_rgba(16,185,129,0.5)] backdrop-blur-md transform hover:scale-105 transition">
+                <img id="flyerHomeLogo" src="" class="w-full h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
               </div>
-              <span id="flyerHomeName" class="text-xs font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md">Equipo Local</span>
+              <span id="flyerHomeName" class="text-xs sm:text-sm font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md">Equipo Local</span>
             </div>
 
-            <!-- VS / Marcador Central Destacado -->
+            <!-- VS / Marcador Central Gigante -->
             <div class="flex flex-col items-center justify-center">
-              <div id="flyerScoreBox" class="bg-black/90 border-2 border-emerald-400 px-3.5 py-2.5 rounded-2xl shadow-[0_0_25px_rgba(16,185,129,0.5)] backdrop-blur-xl">
-                <span id="flyerScoreText" class="text-xl sm:text-2xl font-black text-emerald-300 tracking-wider">VS</span>
+              <div id="flyerScoreBox" class="bg-black/95 border-2 border-emerald-400 px-4 py-3 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.6)] backdrop-blur-xl">
+                <span id="flyerScoreText" class="text-2xl font-black text-emerald-300 tracking-wider">VS</span>
               </div>
             </div>
 
-            <!-- Visitante (Escudo Gigante) -->
-            <div class="flex flex-col items-center space-y-2.5">
-              <div class="w-24 h-24 rounded-3xl bg-gradient-to-b from-emerald-950/90 to-black border-2 border-emerald-400/80 flex items-center justify-center p-3 shadow-[0_0_30px_rgba(16,185,129,0.4)] backdrop-blur-md transform hover:scale-105 transition">
-                <img id="flyerAwayLogo" src="" class="w-full h-full object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.8)]" onerror="this.src=FALLBACK_LOGO" />
+            <!-- Visitante (Escudo Súper Gigante) -->
+            <div class="flex flex-col items-center space-y-2">
+              <div class="w-32 h-32 rounded-3xl bg-gradient-to-b from-emerald-950/90 to-black border-2 border-emerald-400/90 flex items-center justify-center p-3.5 shadow-[0_0_40px_rgba(16,185,129,0.5)] backdrop-blur-md transform hover:scale-105 transition">
+                <img id="flyerAwayLogo" src="" class="w-full h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
               </div>
-              <span id="flyerAwayName" class="text-xs font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md">Equipo Visitante</span>
+              <span id="flyerAwayName" class="text-xs sm:text-sm font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md">Equipo Visitante</span>
             </div>
           </div>
 
           <!-- Incidencias / Goleadores si finalizó -->
-          <div id="flyerStatsContainer" class="w-full bg-black/85 backdrop-blur-md rounded-2xl p-3 border border-emerald-500/40 text-[10px] space-y-1 hidden text-left shadow-xl">
+          <div id="flyerStatsContainer" class="w-full bg-black/90 backdrop-blur-md rounded-2xl p-3 border border-emerald-500/40 text-[10px] space-y-1 hidden text-left shadow-xl">
             <div class="text-[9px] text-emerald-400 font-black uppercase tracking-wider mb-1 flex items-center gap-1"><span>⚽</span> Goleadores del Partido</div>
             <div id="flyerGoalsList" class="text-slate-200 font-medium space-y-0.5"></div>
           </div>
         </div>
 
-        <!-- Footer del Flyer -->
+        <!-- Footer del Flyer con Fecha, Hora y Cancha Grandes y Vistosos -->
         <div class="relative z-10 space-y-2.5 pt-3 border-t border-emerald-500/30">
-          <div id="flyerInfoBox" class="flex flex-col items-center justify-center text-center text-[10px] text-slate-100 font-bold space-y-0.5 bg-emerald-950/60 p-2.5 rounded-xl border border-emerald-500/30 shadow-inner">
-            <span id="flyerDateTime">🗓️ Sábado 15:30 Hs</span>
-            <span id="flyerVenue">🏟️ Cancha Oficial</span>
+          <div id="flyerInfoBox" class="flex flex-col items-center justify-center text-center space-y-1 bg-gradient-to-r from-emerald-950/90 via-emerald-900/80 to-emerald-950/90 p-3.5 rounded-2xl border-2 border-emerald-400/60 shadow-[0_0_25px_rgba(16,185,129,0.3)]">
+            <span id="flyerDateTime" class="text-xs sm:text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">🗓️ Sábado 15:30 Hs</span>
+            <span id="flyerVenue" class="text-[11px] sm:text-xs font-extrabold text-emerald-300 uppercase tracking-wide flex items-center gap-1.5">🏟️ Cancha Oficial</span>
           </div>
           
           <div class="flex justify-between items-center text-[9px] font-black text-slate-300 uppercase tracking-widest px-1">
@@ -939,7 +939,7 @@
             <div class="flex justify-between items-center font-bold text-white">
               <span class="${m.home_team === teamId ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px]">${hTeam.name}</span>
               <span class="px-2.5 py-1 bg-black rounded-lg text-emerald-300 border border-emerald-900 shrink-0 font-black">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
-              <span class="${m.away_team === teamId ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px] text-right">${aTeam.name}</span>
+              <span class=" ${m.away_team === teamId ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px] text-right">${aTeam.name}</span>
             </div>
             <div class="text-[9px] text-slate-400 font-medium truncate">📅 ${infoText}</div>
           </div>
@@ -1001,24 +1001,24 @@
                       <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-emerald-900/20">
+                  <tbody class="divide-y divide-emerald-900/20 align-top">
                     ${stats.map((t, idx) => `
                       <tr class="${idx < 2 ? 'bg-emerald-950/30 font-bold' : ''}">
-                        <td class="p-2 font-black text-emerald-400 align-middle">${idx + 1}</td>
-                        <td class="p-2 font-bold text-white max-w-[140px] align-middle">
+                        <td class="p-2 font-black text-emerald-400 align-top">${idx + 1}</td>
+                        <td class="p-2 font-bold text-white max-w-[140px] align-top">
                           <div class="flex items-center gap-2">
-                            <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 align-middle shadow" onerror="this.src=FALLBACK_LOGO">
+                            <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 align-top shadow" onerror="this.src=FALLBACK_LOGO">
                             <span class="leading-snug break-words">${t.name}</span>
                           </div>
                         </td>
-                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.played}</td>
-                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.won}</td>
-                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.drawn}</td>
-                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.lost}</td>
-                        <td class="p-2 text-center text-slate-300 align-middle font-medium">${t.gd}</td>
-                        <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle">${t.points}</td>
+                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.played}</td>
+                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.won}</td>
+                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.drawn}</td>
+                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.lost}</td>
+                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.gd}</td>
+                        <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-top">${t.points}</td>
                       </tr>
-                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-3 align-middle italic">Sin equipos inscriptos en esta zona</td></tr>'}
+                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-3 align-top italic">Sin equipos inscriptos en esta zona</td></tr>'}
                   </tbody>
                 </table>
               </div>
@@ -1046,32 +1046,32 @@
             <table class="w-full text-[10px] sm:text-xs min-w-[320px]">
               <thead class="bg-[#030704] text-slate-400 uppercase text-[9px] font-black tracking-wider">
                 <tr>
-                  <th class="p-2.5 text-left w-6 align-middle">#</th>
-                  <th class="p-2.5 text-left align-middle">Equipo</th>
-                  <th class="p-2.5 text-center w-8 align-middle">PJ</th>
-                  <th class="p-2.5 text-center w-8 align-middle">G</th>
-                  <th class="p-2.5 text-center w-8 align-middle">E</th>
-                  <th class="p-2.5 text-center w-8 align-middle">P</th>
-                  <th class="p-2.5 text-center w-9 align-middle">DG</th>
-                  <th class="p-2.5 text-center font-black text-emerald-400 w-9 align-middle">Pts</th>
+                  <th class="p-2.5 text-left w-6 align-top">#</th>
+                  <th class="p-2.5 text-left align-top">Equipo</th>
+                  <th class="p-2.5 text-center w-8 align-top">PJ</th>
+                  <th class="p-2.5 text-center w-8 align-top">G</th>
+                  <th class="p-2.5 text-center w-8 align-top">E</th>
+                  <th class="p-2.5 text-center w-8 align-top">P</th>
+                  <th class="p-2.5 text-center w-9 align-top">DG</th>
+                  <th class="p-2.5 text-center font-black text-emerald-400 w-9 align-top">Pts</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-emerald-900/20">
+              <tbody class="divide-y divide-emerald-900/20 align-top">
                 ${stats.map((t, idx) => `
                   <tr class="${idx < 4 ? 'bg-emerald-950/30 font-bold' : ''}">
-                    <td class="p-2.5 font-black text-emerald-400 align-middle">${idx + 1}</td>
-                    <td class="p-2.5 font-bold text-white max-w-[150px] align-middle">
+                    <td class="p-2.5 font-black text-emerald-400 align-top">${idx + 1}</td>
+                    <td class="p-2.5 font-bold text-white max-w-[150px] align-top">
                       <div class="flex items-center gap-2.5">
-                        <img src="${t.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full border border-emerald-500/40 shrink-0 align-middle shadow" onerror="this.src=FALLBACK_LOGO">
+                        <img src="${t.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full border border-emerald-500/40 shrink-0 align-top shadow" onerror="this.src=FALLBACK_LOGO">
                         <span class="leading-snug break-words">${t.name}</span>
                       </div>
                     </td>
-                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.played}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.won}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.drawn}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.lost}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-middle font-medium">${t.gd}</td>
-                    <td class="p-2.5 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle">${t.points}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.played}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.won}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.drawn}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.lost}</td>
+                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.gd}</td>
+                    <td class="p-2.5 text-center font-black text-emerald-400 text-xs sm:text-sm align-top">${t.points}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -1429,7 +1429,7 @@
       hPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          hStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          hStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-top">${p.name}</span><span class="font-black shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
@@ -1437,7 +1437,7 @@
       aPlayers.forEach(p => {
         const st = playerStats[p.id];
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          aStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-middle">${p.name}</span><span class="font-black shrink-0 align-middle">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          aStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-top">${p.name}</span><span class="font-black shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
@@ -1506,7 +1506,7 @@
           <div id="${safeTeamBoxId}" class="bg-[#06120a] border border-emerald-900/50 rounded-2xl overflow-hidden shadow-xl">
             <div class="flex items-center justify-between p-3.5 bg-[#030704] border-b border-emerald-900/40 gap-3">
               <button onclick="toggleTeamAccordion('${team.id}')" class="flex items-center gap-3 min-w-0 text-left flex-1 cursor-pointer group">
-                <img src="${team.logo || FALLBACK_LOGO}" class="w-8 h-8 object-cover rounded-full border border-emerald-500/50 shadow shrink-0 align-middle" onerror="this.src=FALLBACK_LOGO">
+                <img src="${team.logo || FALLBACK_LOGO}" class="w-8 h-8 object-cover rounded-full border border-emerald-500/50 shadow shrink-0 align-top" onerror="this.src=FALLBACK_LOGO">
                 <span class="font-black text-white text-xs sm:text-sm tracking-wide leading-snug break-words group-hover:text-emerald-400 transition">${team.name}</span>
                 <span class="text-[10px] text-slate-400 font-bold shrink-0 bg-black/40 px-2 py-0.5 rounded-lg border border-emerald-900/30">${teamPlayers.length} inscriptos</span>
               </button>
@@ -1533,7 +1533,7 @@
                 return `
                   <div class="flex justify-between items-center bg-[#06120a] p-2.5 rounded-xl border border-emerald-900/30 text-xs gap-3 shadow-sm">
                     <span class="font-bold text-slate-200 leading-snug break-words">👤 ${p.name} <span class="text-[9px] text-emerald-400 uppercase font-extrabold ml-1">(${p.position || 'Jugador'})</span></span>
-                    <div class="flex gap-2 text-[11px] font-black shrink-0 align-middle">
+                    <div class="flex gap-2 text-[11px] font-black shrink-0 align-top">
                       <span class="text-emerald-400">⚽ ${g}</span>
                       <span class="text-yellow-400">🟨 ${y}</span>
                       <span class="text-blue-400">🟦 ${b}</span>
@@ -1574,13 +1574,13 @@
             return `
               <div class="flex justify-between items-center bg-[#06120a] p-3 rounded-2xl border border-emerald-900/50 text-xs shadow-xl gap-3">
                 <div class="flex items-center gap-3 min-w-0">
-                  <span class="font-black text-emerald-400 text-sm w-6 text-center shrink-0 align-middle bg-emerald-950/60 rounded-xl py-1 border border-emerald-500/40 shadow">${idx + 1}</span>
+                  <span class="font-black text-emerald-400 text-sm w-6 text-center shrink-0 align-top bg-emerald-950/60 rounded-xl py-1 border border-emerald-500/40 shadow">${idx + 1}</span>
                   <div class="min-w-0">
                     <span class="font-black text-white text-xs sm:text-sm block leading-snug break-words">${item.player.name}</span>
                     <span class="text-[10px] text-slate-400 font-bold block leading-snug break-words">${t ? t.name : ''}</span>
                   </div>
                 </div>
-                <span class="font-black text-emerald-400 text-sm sm:text-base shrink-0 align-middle bg-black px-3 py-1.5 rounded-xl border border-emerald-900 shadow">⚽ ${item.goals}</span>
+                <span class="font-black text-emerald-400 text-sm sm:text-base shrink-0 align-top bg-black px-3 py-1.5 rounded-xl border border-emerald-900 shadow">⚽ ${item.goals}</span>
               </div>
             `;
           }).join('') || '<p class="text-slate-400 text-xs text-center py-10">No hay goles registrados en el torneo todavía.</p>'}
@@ -1615,7 +1615,7 @@
               <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
               <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? t.name : ''}</span>
             </div>
-            <span class="font-black text-yellow-400 text-xs shrink-0 align-middle bg-black px-2.5 py-1 rounded-lg border border-yellow-900/50 shadow">🟨 ${item.count}</span>
+            <span class="font-black text-yellow-400 text-xs shrink-0 align-top bg-black px-2.5 py-1 rounded-lg border border-yellow-900/50 shadow">🟨 ${item.count}</span>
           </div>
         `;
       }).join('') || '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas amarillas registradas.</p>';
@@ -1624,7 +1624,7 @@
       document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
         <div class="bg-red-950/25 border border-red-500/40 rounded-xl p-3 text-xs space-y-1 shadow-md">
           <span class="font-black text-white text-xs block leading-snug break-words">${s.player_name} <span class="text-[10px] font-medium text-slate-400 break-words">(${s.team_name || ''})</span></span>
-          <span class="text-[10px] text-slate-200 block align-middle font-semibold">Sanción vigente: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
+          <span class="text-[10px] text-slate-200 block align-top font-semibold">Sanción vigente: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
           <span class="text-[9px] text-slate-400 italic block leading-snug break-words">Motivo: ${s.reason || 'Sin observación'}</span>
         </div>
       `).join('') || '<p class="text-slate-400 text-xs text-center py-4 italic">No hay suspensiones vigentes en el tribunal.</p>';
