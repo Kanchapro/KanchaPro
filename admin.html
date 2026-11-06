@@ -2538,7 +2538,9 @@
       closeModal('teamModal');
       await loadAdminData();
       
-      document.getElementById('globalCategorySelect').value = activeCategoryId;
+      // Forzar que el selector global mantenga el torneo activo actual
+      const globalSelect = document.getElementById('globalCategorySelect');
+      if (globalSelect) globalSelect.value = activeCategoryId;
       renderActiveCategoryViews();
       
       alert("¡Equipo guardado y sincronizado con éxito!");
