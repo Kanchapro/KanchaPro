@@ -257,7 +257,7 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 id="captureTitleStandings" class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Tabla de Posiciones</h4>
-                <span id="captureSubtitleStandings" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
+                <span id="captureSubtitleStandings" class="text-[10px] text-slate-300 font-bold uppercase block leading-snug whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -314,7 +314,7 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Fase de Playoffs / Llaves</h4>
-                <span id="captureSubtitlePlayoffs" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
+                <span id="captureSubtitlePlayoffs" class="text-[10px] text-slate-300 font-bold uppercase block leading-snug whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -352,7 +352,7 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Tabla de Goleadores</h4>
-                <span id="captureSubtitleScorers" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
+                <span id="captureSubtitleScorers" class="text-[10px] text-slate-300 font-bold uppercase block leading-snug whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -382,7 +382,7 @@
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
                 <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Tribunal de Disciplina y Sanciones</h4>
-                <span id="captureSubtitleDiscipline" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
+                <span id="captureSubtitleDiscipline" class="text-[10px] text-slate-300 font-bold uppercase block leading-snug whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
@@ -989,17 +989,17 @@
           groupsHtml += `
             <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-4 space-y-2 shadow-xl w-full">
               <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/40 pb-2">Zona / ${gName}</h4>
-              <div class="w-full">
-                <table class="w-full text-xs table-fixed">
+              <div class="w-full overflow-x-auto">
+                <table class="w-full text-xs table-fixed min-w-[360px]">
                   <colgroup>
-                    <col style="width: 28px;">
+                    <col style="width: 26px;">
                     <col>
-                    <col style="width: 32px;">
-                    <col style="width: 32px;">
-                    <col style="width: 32px;">
-                    <col style="width: 32px;">
-                    <col style="width: 36px;">
-                    <col style="width: 40px;">
+                    <col style="width: 30px;">
+                    <col style="width: 30px;">
+                    <col style="width: 30px;">
+                    <col style="width: 30px;">
+                    <col style="width: 34px;">
+                    <col style="width: 38px;">
                   </colgroup>
                   <thead class="bg-[#030704] text-slate-400 uppercase text-[9px] font-black tracking-wider">
                     <tr>
@@ -1054,17 +1054,17 @@
         }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
         container.innerHTML = `
-          <div class="w-full">
-            <table class="w-full text-xs table-fixed">
+          <div class="w-full overflow-x-auto">
+            <table class="w-full text-xs table-fixed min-w-[360px]">
               <colgroup>
-                <col style="width: 32px;">
+                <col style="width: 28px;">
                 <col>
+                <col style="width: 32px;">
+                <col style="width: 32px;">
+                <col style="width: 32px;">
+                <col style="width: 32px;">
                 <col style="width: 36px;">
-                <col style="width: 36px;">
-                <col style="width: 36px;">
-                <col style="width: 36px;">
-                <col style="width: 42px;">
-                <col style="width: 48px;">
+                <col style="width: 40px;">
               </colgroup>
               <thead class="bg-[#030704] text-slate-400 uppercase text-[9px] font-black tracking-wider">
                 <tr>
