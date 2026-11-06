@@ -1408,7 +1408,6 @@
             if (b.won !== a.won) return b.won - a.won;
             return b.gd - a.gd;
           } else {
-            // Criterio por defecto
             return b.gd - a.gd;
           }
         });
@@ -2494,6 +2493,11 @@
       const name = document.getElementById('modalTeamName').value.trim();
       const instagram = document.getElementById('modalTeamInstagram').value.trim();
       const fileInput = document.getElementById('modalTeamFile');
+      
+      if (!activeCategoryId) {
+        alert("Error: No hay ningún torneo seleccionado actualmente. Selecciona o crea uno arriba.");
+        return;
+      }
       if (!name) return alert("Ingresa el nombre del equipo.");
 
       let logoUrl = '';
@@ -2516,9 +2520,10 @@
       }
 
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, instagram }).eq('id', id);
+        const { error } = await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, instagram }).eq('id', id);
+        if (error) { alert("Error al actualizar: " + error.message); return; }
       } else {
-        await supabaseClient.from('torneos_data').insert([{
+        const { error } = await supabaseClient.from('torneos_data').insert([{
           id: 'team_' + Date.now(), 
           type: 'team', 
           name, 
@@ -2527,10 +2532,16 @@
           category_id: activeCategoryId, 
           group_name: ''
         }]);
+        if (error) { alert("Error al guardar en Supabase: " + error.message); return; }
       }
+
       closeModal('teamModal');
       await loadAdminData();
-      alert("¡Equipo guardado con éxito!");
+      
+      document.getElementById('globalCategorySelect').value = activeCategoryId;
+      renderActiveCategoryViews();
+      
+      alert("¡Equipo guardado y sincronizado con éxito!");
     }
 
     function openPlayerModal() {
