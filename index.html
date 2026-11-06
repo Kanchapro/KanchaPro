@@ -521,7 +521,7 @@
       </div>
       <div class="space-y-3 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px] font-medium">
         <p>En <strong>KanchaPro</strong> protegemos rigurosamente la privacidad y confidencialidad de nuestros usuarios y visitantes. Esta política describe el tratamiento de los datos en el portal.</p>
-        <p><strong>Uso de Cookies y Anuncios de Google:</strong> KanchaPro integra servicios de monetización publicitaria como <em>Google AdSense</em>. Google utiliza cookies para personalizar anuncios basados en las visitas previas del usuario a este o distintos sitios de internet.</p>
+        <p><strong>Uso de Cookies y Anuncios de Google:</strong> KanchaPro integra servicios de monetización publicitaria como <em>Google AdSense</em>. Google utilizes cookies para personalizar anuncios basados en las visitas previas del usuario a este o distintos sitios de internet.</p>
         <p><strong>Recopilación de Datos:</strong> Registramos exclusivamente métricas técnicas agregadas de navegación (dispositivos, sesiones de visualización) para optimizar el rendimiento del software y garantizar una experiencia de usuario fluida.</p>
       </div>
       <div class="pt-2 border-t border-emerald-900/40">
@@ -669,7 +669,7 @@
       select.innerHTML = '<option value="" disabled selected>Cargando torneos oficiales...</option>';
     }
 
-    // FUNCIÓN CARGA PÚBLICA FLEXIBLE INTEGRADA PARA DETECTAR TORNEOS CORRECTAMENTE
+    // FUNCIÓN CARGA PÚBLICA FLEXIBLE ACTUALIZADA CON CAPTURA DE ERROR DETALLADA
     async function loadPublicData() {
       if (!supabaseClient) return;
       try {
@@ -678,7 +678,6 @@
 
         const rows = allData || [];
 
-        // Filtro flexible optimizado para capturar cualquier tipo de categoría / torneo registrado
         pubData.categories = rows.filter(r => r.type === 'category' || r.type === 'torneo' || r.type === 'categoria' || !r.type);
         pubData.teams = rows.filter(r => r.type === 'team');
         pubData.players = rows.filter(r => r.type === 'player');
@@ -694,8 +693,9 @@
 
         populatePublicCategorySelect();
       } catch (err) { 
-        console.error("Error al cargar datos públicos:", err); 
-        showToast("Error al sincronizar con el servidor", "error");
+        console.error("Error detallado de Supabase:", err); 
+        const errorMsg = err.message || JSON.stringify(err);
+        showToast("Error: " + errorMsg, "error");
       }
     }
 
