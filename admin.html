@@ -114,7 +114,7 @@
       </div>
     </div>
 
-    <!-- Pestañas (Añadido Sponsors) -->
+    <!-- Pestañas -->
     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-9 gap-1.5 glass-card rounded-xl p-2 border border-green-900/30">
       <button onclick="switchAdminTab('teams', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center tab-active font-semibold transition">🛡️ Equipos</button>
       <button onclick="switchAdminTab('players', event)" class="admin-tab px-2.5 py-2 rounded-lg text-xs text-center text-slate-400 font-semibold transition hover:text-white">👥 Planteles</button>
@@ -227,7 +227,7 @@
       </div>
     </div>
 
-    <!-- Tab 5: Playoffs / Llaves (Copa de Oro y Copa de Plata) -->
+    <!-- Tab 5: Playoffs / Llaves -->
     <div id="adm-playoffs" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
@@ -558,6 +558,18 @@
         <div class="flex-1 font-bold text-white truncate text-right pr-2" id="mdHomeName">Local</div>
         <div class="flex items-center gap-1.5 text-green-400 font-bold text-sm">VS</div>
         <div class="flex-1 font-bold text-white truncate text-left pl-2" id="mdAwayName">Visitante</div>
+      </div>
+
+      <!-- SECCIÓN ESTADO DEL PARTIDO -->
+      <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex items-center justify-between">
+        <div>
+          <span class="font-bold text-green-300 block">¿El partido ya se jugó?</span>
+          <span class="text-[10px] text-slate-400 block">Si está en "No jugado", no sumará puntos ni estadísticas.</span>
+        </div>
+        <select id="modalMatchPlayedStatus" class="bg-black border border-green-900 rounded px-2.5 py-1.5 text-white text-xs font-bold">
+          <option value="false">❌ No jugado todavía</option>
+          <option value="true">✅ Partido Jugado / Finalizado</option>
+        </select>
       </div>
 
       <div class="space-y-4 max-h-[380px] overflow-y-auto scrollbar-thin pr-1">
@@ -1345,7 +1357,7 @@
                 let g = 0, y = 0, r = 0, b = 0;
                 dbData.matches.forEach(m => {
                   const st = m.match_details?.playerStats?.[p.id];
-                  if (st) { 
+                  if (m.played && st) { 
                     g += (st.goals || 0); 
                     y += (st.yellows || 0); 
                     r += (st.reds || 0); 
@@ -1429,7 +1441,7 @@
       let g = 0, y = 0, r = 0, b = 0;
       dbData.matches.forEach(m => {
         const st = m.match_details?.playerStats?.[playerId];
-        if (st) { 
+        if (m.played && st) { 
           g += (st.goals || 0); 
           y += (st.yellows || 0); 
           r += (st.reds || 0); 
@@ -1559,7 +1571,7 @@
 
       let scorersList = categoryPlayers.map(p => {
         let totalGoals = 0;
-        matches.forEach(m => {
+        matches.filter(m => m.played).forEach(m => {
           const st = m.match_details?.playerStats?.[p.id];
           if (st) totalGoals += (st.goals || 0);
         });
@@ -1647,7 +1659,7 @@
         let totalY = 0, totalR = 0, totalB = 0;
         dbData.matches.forEach(m => {
           const st = m.match_details?.playerStats?.[p.id];
-          if (st) {
+          if (m.played && st) {
             totalY += (st.yellows || 0);
             totalR += (st.reds || 0);
             totalB += (st.blues || 0);
@@ -1861,6 +1873,7 @@
     async function saveMatchDetail() {
       const matchId = document.getElementById('modalMatchId').value;
       const match = dbData.matches.find(m => m.id === matchId);
+      const isPlayed = document.getElementById('modalMatchPlayedStatus').value === 'true';
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       const allCategoryPlayers = dbData.players.filter(p => teams.map(t => t.id).includes(p.team_id));
 
@@ -1887,9 +1900,9 @@
       }
 
       const { error: matchError } = await supabaseClient.from('torneos_data').update({
-        home_score: totalHomeGoals,
-        away_score: totalAwayGoals,
-        played: true,
+        home_score: isPlayed ? totalHomeGoals : 0,
+        away_score: isPlayed ? totalAwayGoals : 0,
+        played: isPlayed,
         match_details: { playerStats }
       }).eq('id', matchId);
 
@@ -2645,6 +2658,9 @@
       document.getElementById('modalMatchId').value = match.id;
       document.getElementById('mdHomeName').textContent = hTeam.name;
       document.getElementById('mdAwayName').textContent = aTeam.name;
+
+      // Cargar el selector de estado de juego (Jugado / No Jugado)
+      document.getElementById('modalMatchPlayedStatus').value = match.played ? 'true' : 'false';
 
       const details = match.match_details || {};
       const playerStats = details.playerStats || {};
