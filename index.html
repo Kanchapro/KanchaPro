@@ -426,7 +426,7 @@
     </div>
   </footer>
 
-  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (ESTILO ESTADIO PROFESIONAL IDÉNTICO A LAS IMÁGENES) -->
+  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS -->
   <div id="flyerModalContainer" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-xl">
     <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -434,13 +434,11 @@
         <button onclick="closeModal('flyerModalContainer')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
       </div>
 
-      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) CON ESTADIO, CÉSPED, PELOTA Y LUCES -->
+      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) -->
       <div id="flyerCaptureArea" class="w-[320px] h-[568px] mx-auto rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-2xl text-white font-sans border-2 border-white/20" style="background: linear-gradient(180deg, rgba(2,6,12,0.85) 0%, rgba(2,12,24,0.92) 50%, rgba(1,3,6,0.96) 100%), url('https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=600&auto=format&fit=crop') center/cover;">
         
-        <!-- Efecto de luces de estadio y humo ambiental -->
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(16,185,129,0.3)_0%,transparent_75%)] pointer-events-none"></div>
 
-        <!-- 1. HEADER DEL FLYER: Corona, Nombre del Torneo / Categoría y Fecha -->
         <div class="relative z-10 flex flex-col items-center text-center space-y-1">
           <span class="text-lg">👑</span>
           <h3 id="flyerTournamentTitle" class="text-base sm:text-lg font-black italic tracking-wider uppercase text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">COPA PROMOCIONAL</h3>
@@ -452,10 +450,8 @@
           </div>
         </div>
 
-        <!-- 2. CONTENIDO CENTRAL: ESCUDOS GIGANTES Y "VS" -->
         <div class="relative z-10 my-auto flex flex-col items-center space-y-2 text-center">
           <div class="grid grid-cols-3 items-center w-full gap-1 my-1">
-            <!-- Local -->
             <div class="flex flex-col items-center space-y-1.5">
               <div class="w-28 h-28 rounded-2xl bg-black/70 border-2 border-white/20 flex items-center justify-center p-3 shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md">
                 <img id="flyerHomeLogo" src="" class="w-full h-full object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
@@ -463,12 +459,10 @@
               <span id="flyerHomeName" class="text-[11px] font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md w-32 px-1">Equipo Local</span>
             </div>
 
-            <!-- VS Central -->
             <div class="flex flex-col items-center justify-center">
               <span class="text-2xl sm:text-3xl font-black italic text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)]">VS</span>
             </div>
 
-            <!-- Visitante -->
             <div class="flex flex-col items-center space-y-1.5">
               <div class="w-28 h-28 rounded-2xl bg-black/70 border-2 border-white/20 flex items-center justify-center p-3 shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md">
                 <img id="flyerAwayLogo" src="" class="w-full h-full object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
@@ -477,28 +471,23 @@
             </div>
           </div>
 
-          <!-- Goleadores / Incidencias si finalizó -->
           <div id="flyerStatsContainer" class="w-full bg-black/90 backdrop-blur-md rounded-xl p-2.5 border border-emerald-500/40 text-[10px] space-y-0.5 hidden text-left shadow-xl">
             <div class="text-[9px] text-emerald-400 font-black uppercase tracking-wider mb-0.5">⚽ Goleadores</div>
             <div id="flyerGoalsList" class="text-slate-200 font-medium space-y-0.5"></div>
           </div>
         </div>
 
-        <!-- 3. FOOTER DEL FLYER: HORA GRANDE, CANCHA Y PELOTA ABAJO -->
         <div class="relative z-10 space-y-2 pt-2">
-          <!-- Caja de Hora Gigante -->
           <div class="bg-gradient-to-r from-black/90 via-emerald-950/80 to-black/90 border-2 border-emerald-500/60 p-3 rounded-2xl text-center shadow-[0_0_25px_rgba(16,185,129,0.3)]">
             <span id="flyerDateTime" class="text-lg sm:text-xl font-black italic text-white tracking-wider drop-shadow-lg block">22:20 HS</span>
           </div>
 
-          <!-- Cancha / Ubicación -->
           <div class="bg-black/90 border border-white/20 p-2.5 rounded-xl text-center shadow-lg">
             <span id="flyerVenue" class="text-[10px] font-extrabold uppercase tracking-wide text-slate-200 flex items-center justify-center gap-1.5">
               <span>📍</span> <span class="truncate">CLUB DEPORTIVO MORAVA</span>
             </span>
           </div>
 
-          <!-- Imagen de la Pelota de Fútsal / Fútbol abajo (detonante visual estilo póster) -->
           <div class="flex justify-center pt-1">
             <div class="w-12 h-12 rounded-full overflow-hidden border border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.4)] bg-black">
               <img src="https://images.unsplash.com/photo-1614632537456-c323f07a7d32?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover" alt="Pelota">
@@ -508,7 +497,6 @@
 
       </div>
 
-      <!-- Botón Descargar / Compartir Flyer -->
       <div class="pt-2">
         <button onclick="downloadFlyerImage()" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black py-3 rounded-xl transition shadow-xl text-xs flex items-center justify-center gap-2">
           <span>📸 Descargar o Compartir Historia</span>
@@ -526,10 +514,9 @@
       </div>
       <div class="space-y-3 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px] font-medium">
         <p>En <strong>KanchaPro</strong> protegemos rigurosamente la privacidad y confidencialidad de nuestros usuarios y visitantes. Esta política describe el tratamiento de los datos en el portal.</p>
-        <p><strong>Uso de Cookies y Anuncios:</strong> KanchaPro integra servicios de monetización publicitaria mediante plataformas de redes de anuncios asociadas.</p>
       </div>
       <div class="pt-2 border-t border-emerald-900/40">
-        <button onclick="closeModal('privacyModal')" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black py-2.5 rounded-xl transition shadow text-xs">Entendido</button>
+        <button onclick="closeModal('privacyModal')" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 text-black font-black py-2.5 rounded-xl transition shadow text-xs">Entendido</button>
       </div>
     </div>
   </div>
@@ -948,9 +935,9 @@
     function renderPublicStandings(teams, matches, cat) {
       const container = document.getElementById('publicStandingsContainer');
       
-      // LÓGICA CORREGIDA: Busca dinámicamente los puntos por victoria configurados en el panel admin (soporta win_points, points_win, points_for_win o se fija en 3 por defecto)
+      // LÓGICA CORREGIDA: Lee correctamente el valor configurado (soporta 2, 3 o cualquier otro valor)
       const winPoints = Number(cat.win_points) !== undefined && !isNaN(Number(cat.win_points)) && Number(cat.win_points) !== 0 ? Number(cat.win_points) : 
-                        (Number(cat.points_win) || Number(cat.points_for_win) || 3);
+                        (Number(cat.points_win) || Number(cat.points_for_win) || Number(cat.pts_win) || 3);
 
       if (cat.tournament_type === 'cup') {
         const groupCount = cat.group_config?.count || 2;
