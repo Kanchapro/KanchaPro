@@ -109,7 +109,6 @@
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 
-    // SISTEMA DE TOASTS PROFESIONALES
     function showToast(message, type = 'success') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -159,9 +158,7 @@
         </div>
       </div>
 
-      <!-- BOTONES DE ACCESO, INSTAGRAM Y COMPARTIR -->
       <div class="flex items-center gap-2 shrink-0">
-        <!-- BOTÓN INSTAGRAM DINÁMICO -->
         <a id="headerInstagramBtn" href="#" target="_blank" class="hidden text-[11px] px-3 py-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-90 text-white font-black rounded-xl transition items-center gap-1.5 shadow-[0_4px_15px_rgba(236,72,153,0.3)]" title="Seguir en Instagram">
           <span>📸</span> <span class="text-[10px] hidden sm:inline">Instagram</span>
         </a>
@@ -175,7 +172,6 @@
       </div>
     </div>
 
-    <!-- BUSCADOR Y SELECTOR DE TORNEO -->
     <div class="max-w-5xl mx-auto flex items-center gap-2 w-full">
       <div class="relative w-32 sm:w-44 shrink-0">
         <input type="text" id="tournamentSearchInput" placeholder="🔍 Buscar torneo..." oninput="filterTournaments(this.value)" class="w-full bg-[#06120a] border border-emerald-900/60 rounded-xl px-3 py-1.5 text-white text-[11px] focus:outline-none focus:border-emerald-400 transition shadow-inner font-medium">
@@ -194,7 +190,6 @@
   <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-5 space-y-4">
     
-    <!-- SECCIÓN DE BIENVENIDA / FAVORITOS (EDITORIAL DE ÉLITE) -->
     <div id="welcomeFavoritesSection" class="glass-card rounded-3xl p-6 sm:p-10 text-center space-y-6 shadow-2xl border border-emerald-500/30 relative overflow-hidden">
       <div class="absolute -top-24 -left-24 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-green-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -209,7 +204,6 @@
         <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">Administra y sigue campeonatos barriales, ligas juveniles y torneos de futsal con precisión profesional. Tablas automatizadas, fixtures en vivo, goleadores y tribunal de disciplina en tiempo real.</p>
       </div>
 
-      <!-- BANNER CTA ORGANIZADORES -->
       <div class="bg-gradient-to-r from-emerald-950/90 via-emerald-900/50 to-emerald-950/90 border border-emerald-500/40 rounded-2xl p-5 sm:p-6 text-left space-y-3 shadow-2xl relative z-10">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="space-y-1">
@@ -273,13 +267,12 @@
         </div>
       </div>
 
-      <!-- Tab 2: Fixture con Filtros Rápidos -->
+      <!-- Tab 2: Fixture -->
       <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
             <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0"></span> Calendario de Partidos y Resultados
           </h3>
-          <!-- FILTROS RÁPIDOS DE FIXTURE -->
           <div class="flex items-center gap-1.5 bg-[#030704] p-1 rounded-xl border border-emerald-900/50 w-full sm:w-auto">
             <button onclick="setFixtureFilter('all', event)" class="fixture-filter-btn px-3 py-1 rounded-lg text-[10px] font-black bg-emerald-500 text-black transition flex-1 sm:flex-initial">Todos</button>
             <button onclick="setFixtureFilter('pending', event)" class="fixture-filter-btn px-3 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition flex-1 sm:flex-initial">Pendientes</button>
@@ -289,7 +282,7 @@
         <div id="publicMatchesContainer" class="space-y-4 max-h-[620px] overflow-y-auto scrollbar-thin pr-1"></div>
       </div>
 
-      <!-- Tab 3: Horarios por Club -->
+      <!-- Tab 3: Horarios -->
       <div id="pub-horarios" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div>
           <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
@@ -330,7 +323,7 @@
         </div>
       </div>
 
-      <!-- Tab 5: Equipos y Planteles -->
+      <!-- Tab 5: Equipos -->
       <div id="pub-teams" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
           <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0"></span> Equipos Participantes y Planteles Inscriptos
@@ -433,7 +426,7 @@
     </div>
   </footer>
 
-  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (ESTILO ÉLITE / TV CON CANCHA DE FONDO Y ESCUDOS GIGANTES) -->
+  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS (ESTILO ESTADIO PROFESIONAL IDÉNTICO A LAS IMÁGENES) -->
   <div id="flyerModalContainer" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-xl">
     <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -441,69 +434,75 @@
         <button onclick="closeModal('flyerModalContainer')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
       </div>
 
-      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) CON DATOS GIGANTES Y VISTOSOS -->
-      <div id="flyerCaptureArea" class="w-[320px] h-[568px] mx-auto rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-2xl text-white font-sans border-2 border-emerald-500/60" style="background: linear-gradient(180deg, rgba(3,7,4,0.92) 0%, rgba(2,15,8,0.95) 50%, rgba(1,5,2,0.98) 100%), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop') center/cover;">
+      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) CON ESTADIO, CÉSPED, PELOTA Y LUCES -->
+      <div id="flyerCaptureArea" class="w-[320px] h-[568px] mx-auto rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-2xl text-white font-sans border-2 border-white/20" style="background: linear-gradient(180deg, rgba(2,6,12,0.85) 0%, rgba(2,12,24,0.92) 50%, rgba(1,3,6,0.96) 100%), url('https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=600&auto=format&fit=crop') center/cover;">
         
-        <!-- Efecto de luces de estadio superpuestas -->
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(16,185,129,0.25)_0%,transparent_70%)] pointer-events-none"></div>
+        <!-- Efecto de luces de estadio y humo ambiental -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(16,185,129,0.3)_0%,transparent_75%)] pointer-events-none"></div>
 
-        <!-- Header del Flyer -->
-        <div class="relative z-10 flex justify-between items-center border-b border-emerald-500/30 pb-3">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-8 h-8 rounded-full border border-emerald-400 bg-emerald-950 flex items-center justify-center overflow-hidden shadow-[0_0_10px_#10b981]">
-              <img id="flyerCatLogo" src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO" />
-            </div>
-            <span id="flyerCatName" class="text-[10px] font-black uppercase tracking-widest text-emerald-300 truncate">KanchaPro Tournaments</span>
+        <!-- 1. HEADER DEL FLYER: Corona, Nombre del Torneo / Categoría y Fecha -->
+        <div class="relative z-10 flex flex-col items-center text-center space-y-1">
+          <span class="text-lg">👑</span>
+          <h3 id="flyerTournamentTitle" class="text-base sm:text-lg font-black italic tracking-wider uppercase text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] leading-tight">COPA PROMOCIONAL</h3>
+          <div class="bg-black/80 px-4 py-1 rounded-full border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+            <span id="flyerCategoryBadge" class="text-[10px] font-black uppercase tracking-widest text-emerald-300">CATEGORÍA B</span>
           </div>
-          <span id="flyerBadgeState" class="text-[9px] font-black bg-emerald-500 text-black px-3 py-1 rounded-full uppercase tracking-widest shadow-[0_0_15px_#10b981] shrink-0">PRÓXIMO PARTIDO</span>
+          <div class="bg-black/90 px-4 py-1 rounded-xl border border-white/20 mt-1 shadow-lg">
+            <span id="flyerRoundName" class="text-xs font-black italic uppercase tracking-wider text-slate-200">FECHA 1</span>
+          </div>
         </div>
 
-        <!-- Contenido Central: Escudos Súper Gigantes y Enfrentamiento -->
-        <div class="relative z-10 my-auto flex flex-col items-center space-y-3 text-center">
-          <span id="flyerRoundName" class="text-xs font-black text-emerald-300 uppercase tracking-widest bg-emerald-950/90 px-5 py-2 rounded-2xl border-2 border-emerald-400/60 shadow-[0_0_20px_rgba(16,185,129,0.3)]">Fecha 1</span>
-          
-          <div class="grid grid-cols-3 items-center w-full gap-2 my-1">
-            <!-- Local (Escudo Súper Gigante) -->
-            <div class="flex flex-col items-center space-y-2">
-              <div class="w-32 h-32 rounded-3xl bg-gradient-to-b from-emerald-950/90 to-black border-2 border-emerald-400/90 flex items-center justify-center p-3.5 shadow-[0_0_40px_rgba(16,185,129,0.5)] backdrop-blur-md transform hover:scale-105 transition">
-                <img id="flyerHomeLogo" src="" class="w-full h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
+        <!-- 2. CONTENIDO CENTRAL: ESCUDOS GIGANTES Y "VS" -->
+        <div class="relative z-10 my-auto flex flex-col items-center space-y-2 text-center">
+          <div class="grid grid-cols-3 items-center w-full gap-1 my-1">
+            <!-- Local -->
+            <div class="flex flex-col items-center space-y-1.5">
+              <div class="w-28 h-28 rounded-2xl bg-black/70 border-2 border-white/20 flex items-center justify-center p-3 shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                <img id="flyerHomeLogo" src="" class="w-full h-full object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
               </div>
-              <span id="flyerHomeName" class="text-xs sm:text-sm font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md">Equipo Local</span>
+              <span id="flyerHomeName" class="text-[11px] font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md w-32 px-1">Equipo Local</span>
             </div>
 
-            <!-- VS / Marcador Central Gigante -->
+            <!-- VS Central -->
             <div class="flex flex-col items-center justify-center">
-              <div id="flyerScoreBox" class="bg-black/95 border-2 border-emerald-400 px-4 py-3 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.6)] backdrop-blur-xl">
-                <span id="flyerScoreText" class="text-2xl font-black text-emerald-300 tracking-wider">VS</span>
-              </div>
+              <span class="text-2xl sm:text-3xl font-black italic text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.8)]">VS</span>
             </div>
 
-            <!-- Visitante (Escudo Súper Gigante) -->
-            <div class="flex flex-col items-center space-y-2">
-              <div class="w-32 h-32 rounded-3xl bg-gradient-to-b from-emerald-950/90 to-black border-2 border-emerald-400/90 flex items-center justify-center p-3.5 shadow-[0_0_40px_rgba(16,185,129,0.5)] backdrop-blur-md transform hover:scale-105 transition">
-                <img id="flyerAwayLogo" src="" class="w-full h-full object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
+            <!-- Visitante -->
+            <div class="flex flex-col items-center space-y-1.5">
+              <div class="w-28 h-28 rounded-2xl bg-black/70 border-2 border-white/20 flex items-center justify-center p-3 shadow-[0_10px_25px_rgba(0,0,0,0.8)] backdrop-blur-md">
+                <img id="flyerAwayLogo" src="" class="w-full h-full object-contain drop-shadow-[0_8px_8px_rgba(0,0,0,0.9)]" onerror="this.src=FALLBACK_LOGO" />
               </div>
-              <span id="flyerAwayName" class="text-xs sm:text-sm font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md">Equipo Visitante</span>
+              <span id="flyerAwayName" class="text-[11px] font-black uppercase tracking-tight text-white leading-tight line-clamp-2 drop-shadow-md w-32 px-1">Equipo Visitante</span>
             </div>
           </div>
 
-          <!-- Incidencias / Goleadores si finalizó -->
-          <div id="flyerStatsContainer" class="w-full bg-black/90 backdrop-blur-md rounded-2xl p-3 border border-emerald-500/40 text-[10px] space-y-1 hidden text-left shadow-xl">
-            <div class="text-[9px] text-emerald-400 font-black uppercase tracking-wider mb-1 flex items-center gap-1"><span>⚽</span> Goleadores del Partido</div>
+          <!-- Goleadores / Incidencias si finalizó -->
+          <div id="flyerStatsContainer" class="w-full bg-black/90 backdrop-blur-md rounded-xl p-2.5 border border-emerald-500/40 text-[10px] space-y-0.5 hidden text-left shadow-xl">
+            <div class="text-[9px] text-emerald-400 font-black uppercase tracking-wider mb-0.5">⚽ Goleadores</div>
             <div id="flyerGoalsList" class="text-slate-200 font-medium space-y-0.5"></div>
           </div>
         </div>
 
-        <!-- Footer del Flyer con Fecha, Hora y Cancha Grandes y Vistosos -->
-        <div class="relative z-10 space-y-2.5 pt-3 border-t border-emerald-500/30">
-          <div id="flyerInfoBox" class="flex flex-col items-center justify-center text-center space-y-1 bg-gradient-to-r from-emerald-950/90 via-emerald-900/80 to-emerald-950/90 p-3.5 rounded-2xl border-2 border-emerald-400/60 shadow-[0_0_25px_rgba(16,185,129,0.3)]">
-            <span id="flyerDateTime" class="text-xs sm:text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">🗓️ Sábado 15:30 Hs</span>
-            <span id="flyerVenue" class="text-[11px] sm:text-xs font-extrabold text-emerald-300 uppercase tracking-wide flex items-center gap-1.5">🏟️ Cancha Oficial</span>
+        <!-- 3. FOOTER DEL FLYER: HORA GRANDE, CANCHA Y PELOTA ABAJO -->
+        <div class="relative z-10 space-y-2 pt-2">
+          <!-- Caja de Hora Gigante -->
+          <div class="bg-gradient-to-r from-black/90 via-emerald-950/80 to-black/90 border-2 border-emerald-500/60 p-3 rounded-2xl text-center shadow-[0_0_25px_rgba(16,185,129,0.3)]">
+            <span id="flyerDateTime" class="text-lg sm:text-xl font-black italic text-white tracking-wider drop-shadow-lg block">22:20 HS</span>
           </div>
-          
-          <div class="flex justify-between items-center text-[9px] font-black text-slate-300 uppercase tracking-widest px-1">
-            <span class="text-emerald-400">KANCHAPRO.APP</span>
-            <span>#VivíElFútbol</span>
+
+          <!-- Cancha / Ubicación -->
+          <div class="bg-black/90 border border-white/20 p-2.5 rounded-xl text-center shadow-lg">
+            <span id="flyerVenue" class="text-[10px] font-extrabold uppercase tracking-wide text-slate-200 flex items-center justify-center gap-1.5">
+              <span>📍</span> <span class="truncate">CLUB DEPORTIVO MORAVA</span>
+            </span>
+          </div>
+
+          <!-- Imagen de la Pelota de Fútsal / Fútbol abajo (detonante visual estilo póster) -->
+          <div class="flex justify-center pt-1">
+            <div class="w-12 h-12 rounded-full overflow-hidden border border-white/30 shadow-[0_0_15px_rgba(255,255,255,0.4)] bg-black">
+              <img src="https://images.unsplash.com/photo-1614632537456-c323f07a7d32?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover" alt="Pelota">
+            </div>
           </div>
         </div>
 
@@ -518,7 +517,7 @@
     </div>
   </div>
 
-  <!-- MODAL: POLÍTICA DE PRIVACIDAD -->
+  <!-- MODALES DE POLÍTICA, TÉRMINOS Y DETALLES -->
   <div id="privacyModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 sm:p-6 rounded-3xl max-w-lg w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -528,7 +527,6 @@
       <div class="space-y-3 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px] font-medium">
         <p>En <strong>KanchaPro</strong> protegemos rigurosamente la privacidad y confidencialidad de nuestros usuarios y visitantes. Esta política describe el tratamiento de los datos en el portal.</p>
         <p><strong>Uso de Cookies y Anuncios:</strong> KanchaPro integra servicios de monetización publicitaria mediante plataformas de redes de anuncios asociadas.</p>
-        <p><strong>Recopilación de Datos:</strong> Registramos exclusivamente métricas técnicas agregadas de navegación (dispositivos, sesiones de visualización) para optimizar el rendimiento del software y garantizar una experiencia de usuario fluida.</p>
       </div>
       <div class="pt-2 border-t border-emerald-900/40">
         <button onclick="closeModal('privacyModal')" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black py-2.5 rounded-xl transition shadow text-xs">Entendido</button>
@@ -536,7 +534,6 @@
     </div>
   </div>
 
-  <!-- MODAL: TÉRMINOS Y CONDICIONES -->
   <div id="termsModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 sm:p-6 rounded-3xl max-w-lg w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -544,18 +541,14 @@
         <button onclick="closeModal('termsModal')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
       </div>
       <div class="space-y-3 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px] font-medium">
-        <p>Al acceder, navegar y utilizar el portal web de <strong>KanchaPro</strong>, el usuario acepta de manera expresa los siguientes términos normativos de servicio:</p>
-        <p><strong>1. Ámbito de la Plataforma:</strong> KanchaPro provee una infraestructura tecnológica destinada a la administración, cómputo automatizado y difusión pública de torneos de fútbol y ligas deportivas.</p>
-        <p><strong>2. Veracidad de la Información:</strong> La carga de resultados, planteles y fallos disciplinarios es administrada de forma exclusiva por los organizadores acreditados de cada torneo.</p>
-        <p><strong>3. Propiedad Intelectual:</strong> El diseño, arquitectura de software y marcas de KanchaPro están protegidos por derechos de autor.</p>
+        <p>Al acceder, navegar y utilizar el portal web de <strong>KanchaPro</strong>, el usuario acepta de manera expresa los términos normativos de servicio.</p>
       </div>
       <div class="pt-2 border-t border-emerald-900/40">
-        <button onclick="closeModal('termsModal')" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black py-2.5 rounded-xl transition shadow text-xs">Aceptar Términos</button>
+        <button onclick="closeModal('termsModal')" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 text-black font-black py-2.5 rounded-xl transition shadow text-xs">Aceptar Términos</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: SOBRE NOSOTROS -->
   <div id="aboutModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 sm:p-6 rounded-3xl max-w-lg w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -563,22 +556,14 @@
         <button onclick="closeModal('aboutModal')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
       </div>
       <div class="space-y-3 max-h-[380px] overflow-y-auto scrollbar-thin pr-1 text-slate-300 leading-relaxed text-[11px] font-medium">
-        <p><strong>¿Qué es KanchaPro?</strong></p>
-        <p>KanchaPro es el ecosistema digital de referencia diseñado para simplificar la gestión integral de campeonatos de fútbol. Ofrecemos herramientas de nivel profesional tanto para organizadores de ligas como para delegados, jugadores y simpatizantes.</p>
-        <p><strong>Nuestros Pilares:</strong></p>
-        <ul class="list-disc pl-4 space-y-1.5">
-          <li><strong>Automatización Total:</strong> Fixtures inteligentes, cálculo automático de puntos y diferencia de goles.</li>
-          <li><strong>Transparencia:</strong> Tablas de goleadores y boletines de sanciones accesibles al instante desde cualquier teléfono celular o computadora.</li>
-          <li><strong>Experiencia de Élite:</strong> Diseño moderno y optimizado para compartir en redes sociales y WhatsApp.</li>
-        </ul>
+        <p>KanchaPro es el ecosistema digital de referencia diseñado para simplificar la gestión integral de campeonatos de fútbol y futsal.</p>
       </div>
       <div class="pt-2 border-t border-emerald-900/40">
-        <button onclick="closeModal('aboutModal')" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black py-2.5 rounded-xl transition shadow text-xs">Cerrar</button>
+        <button onclick="closeModal('aboutModal')" class="w-full bg-gradient-to-r from-emerald-400 to-green-500 text-black font-black py-2.5 rounded-xl transition shadow text-xs">Cerrar</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL HORARIOS POR CLUB (PÚBLICO) -->
   <div id="publicClubHorariosModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -606,7 +591,6 @@
     </div>
   </div>
 
-  <!-- MODAL DETALLE DE PARTIDO -->
   <div id="publicMatchModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -644,9 +628,9 @@
     const STORAGE_FAV_KEY = 'kanchapro_favorite_tournament';
 
     const flyerBackgrounds = [
-      "linear-gradient(180deg, rgba(3,7,4,0.92) 0%, rgba(2,15,8,0.95) 50%, rgba(1,5,2,0.98) 100%), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop') center/cover",
-      "linear-gradient(180deg, rgba(2,10,5,0.92) 0%, rgba(0,0,0,0.96) 50%, rgba(2,20,10,0.95) 100%), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop') center/cover",
-      "linear-gradient(180deg, rgba(3,12,7,0.93) 0%, rgba(1,5,3,0.97) 50%, rgba(0,0,0,0.99) 100%), url('https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=600&auto=format&fit=crop') center/cover"
+      "linear-gradient(180deg, rgba(2,6,12,0.85) 0%, rgba(2,12,24,0.92) 50%, rgba(1,3,6,0.96) 100%), url('https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=600&auto=format&fit=crop') center/cover",
+      "linear-gradient(180deg, rgba(12,2,6,0.85) 0%, rgba(24,2,12,0.92) 50%, rgba(6,1,3,0.96) 100%), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop') center/cover",
+      "linear-gradient(180deg, rgba(6,2,12,0.85) 0%, rgba(12,2,24,0.92) 50%, rgba(3,1,6,0.96) 100%), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop') center/cover"
     ];
 
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
@@ -702,8 +686,7 @@
         populatePublicCategorySelect();
       } catch (err) { 
         console.error("Error detallado de Supabase:", err); 
-        const errorMsg = err.message || JSON.stringify(err);
-        showToast("Error: " + errorMsg, "error");
+        showToast("Error: " + (err.message || JSON.stringify(err)), "error");
       }
     }
 
@@ -1120,11 +1103,7 @@
               });
               return;
             } catch (shareErr) {
-              if (shareErr.name !== 'AbortError') {
-                console.log("Error en share nativo:", shareErr);
-              } else {
-                return;
-              }
+              if (shareErr.name !== 'AbortError') console.log(shareErr);
             }
           }
 
@@ -1159,40 +1138,27 @@
         captureArea.style.width = originalWidth;
 
         canvas.toBlob(async (blob) => {
-          if (!blob) {
-            showToast("No se pudo generar la imagen", "error");
-            return;
-          }
+          if (!blob) return;
           const file = new File([blob], filename, { type: 'image/png' });
 
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
-              await navigator.share({
-                files: [file],
-                title: 'KanchaPro',
-                text: `⚽ Compartido desde KanchaPro`
-              });
+              await navigator.share({ files: [file], title: 'KanchaPro', text: '⚽ Compartido desde KanchaPro' });
               return;
             } catch (shareErr) {
-              if (shareErr.name !== 'AbortError') {
-                console.log("Error en share nativo:", shareErr);
-              } else {
-                return;
-              }
+              if (shareErr.name !== 'AbortError') console.log(shareErr);
             }
           }
 
-          const imageURL = URL.createObjectURL(blob);
           const link = document.createElement('a');
-          link.href = imageURL;
+          link.href = URL.createObjectURL(blob);
           link.download = filename;
           link.click();
           showToast("¡Imagen guardada con éxito!", "success");
         }, 'image/png');
-
       } catch (err) {
         console.error(err);
-        showToast("Hubo un error al generar la captura", "error");
+        showToast("Error al generar la captura", "error");
       }
     }
 
@@ -1266,13 +1232,10 @@
         const roundContentId = 'round-content-' + roundName.replace(/[^a-zA-Z0-9]/g, '_');
         const roundIconId = 'round-icon-' + roundName.replace(/[^a-zA-Z0-9]/g, '_');
         const roundNameClean = roundName.replace(/[^a-zA-Z0-9]/g, '_');
-        
-        // Dejar abierta la primera fecha por defecto, y las demás cerradas
         const isOpen = index === 0;
 
         return `
         <div id="${safeRoundId}" class="bg-[#06120a] border border-emerald-900/50 rounded-2xl overflow-hidden shadow-xl">
-          <!-- CABECERA DESPLEGABLE DE LA FECHA -->
           <div class="flex items-center justify-between p-3.5 sm:p-4 bg-[#030704] border-b border-emerald-900/50 gap-3">
             <button onclick="toggleRoundAccordion('${roundContentId}', '${roundIconId}')" class="flex items-center gap-3 min-w-0 text-left flex-1 cursor-pointer group">
               <div class="w-9 h-9 rounded-xl bg-emerald-950 border border-emerald-500/50 flex items-center justify-center overflow-hidden shrink-0 shadow">
@@ -1294,7 +1257,6 @@
             </div>
           </div>
 
-          <!-- CONTENIDO DE PARTIDOS (DESPLEGABLE) -->
           <div id="${roundContentId}" class="p-3 sm:p-4 space-y-2.5 bg-[#030704] ${isOpen ? '' : 'hidden'}">
             ${roundsMap[roundName].map(m => {
               const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
@@ -1329,10 +1291,6 @@
                 </div>
               `;
             }).join('')}
-            <div class="text-right pt-2 border-t border-emerald-900/40 flex justify-between items-center text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-2">
-              <span>Cronograma Oficial</span>
-              <span class="text-emerald-500 font-black">KANCHAPRO.COM</span>
-            </div>
           </div>
         </div>
       `;
@@ -1352,23 +1310,20 @@
       const captureArea = document.getElementById('flyerCaptureArea');
       captureArea.style.background = randomBg;
 
-      document.getElementById('flyerCatName').textContent = cat ? cat.name : 'KanchaPro';
-      if (cat && cat.logo) document.getElementById('flyerCatLogo').src = cat.logo;
+      document.getElementById('flyerTournamentTitle').textContent = cat ? cat.name.toUpperCase() : 'COPA PROMOCIONAL';
+      document.getElementById('flyerCategoryBadge').textContent = cat ? (cat.category_name || cat.name).toUpperCase() : 'CATEGORÍA B';
+      document.getElementById('flyerRoundName').textContent = (match.round_name || 'FECHA 1').toUpperCase();
 
-      document.getElementById('flyerRoundName').textContent = match.round_name || 'Fecha Oficial';
       document.getElementById('flyerHomeName').textContent = hTeam.name;
       document.getElementById('flyerHomeLogo').src = hTeam.logo || FALLBACK_LOGO;
       document.getElementById('flyerAwayName').textContent = aTeam.name;
       document.getElementById('flyerAwayLogo').src = aTeam.logo || FALLBACK_LOGO;
 
-      const badgeState = document.getElementById('flyerBadgeState');
-      const scoreText = document.getElementById('flyerScoreText');
       const statsContainer = document.getElementById('flyerStatsContainer');
+      const timeBox = document.getElementById('flyerDateTime');
 
       if (match.played) {
-        badgeState.textContent = 'RESULTADO FINAL';
-        badgeState.className = "text-[9px] font-black bg-blue-500 text-black px-3 py-1 rounded-full uppercase tracking-widest shadow-[0_0_15px_#3b82f6] shrink-0";
-        scoreText.textContent = `${match.home_score} - ${match.away_score}`;
+        timeBox.textContent = `${match.home_score} - ${match.away_score} (FINAL)`;
         
         const playerStats = match.match_details?.playerStats || {};
         let goalsHtml = '';
@@ -1388,14 +1343,11 @@
           statsContainer.classList.add('hidden');
         }
       } else {
-        badgeState.textContent = 'PRÓXIMO PARTIDO';
-        badgeState.className = "text-[9px] font-black bg-emerald-500 text-black px-3 py-1 rounded-full uppercase tracking-widest shadow-[0_0_15px_#10b981] shrink-0";
-        scoreText.textContent = 'VS';
+        timeBox.textContent = `${match.match_time || '22:20'} HS`;
         statsContainer.classList.add('hidden');
       }
 
-      document.getElementById('flyerDateTime').textContent = `🗓️ ${match.match_day || 'A programar'} — ${match.match_time || ''}`;
-      document.getElementById('flyerVenue').textContent = `🏟️ ${match.match_venue || 'Cancha Oficial'}`;
+      document.getElementById('flyerVenue').innerHTML = `<span>📍</span> <span>${(match.match_venue || 'CLUB DEPORTIVO MORAVA').toUpperCase()}</span>`;
 
       openModal('flyerModalContainer');
     }
@@ -1552,9 +1504,6 @@
             </div>
             
             <div id="team-roster-${team.id}" class="hidden p-3 space-y-2 bg-[#030704] relative">
-              <div class="hidden">
-                <img src="${logoUrl}" class="w-4 h-4" onerror="this.src=FALLBACK_LOGO">
-              </div>
               ${teamPlayers.length > 0 ? teamPlayers.map(p => {
                 let g = 0, y = 0, b = 0, r = 0;
                 pubData.matches.forEach(m => {
@@ -1573,10 +1522,6 @@
                   </div>
                 `;
               }).join('') : '<p class="text-slate-400 text-xs italic text-center py-3">Sin jugadores inscriptos en este equipo.</p>'}
-              <div class="text-right pt-2 border-t border-emerald-900/40 mt-2 flex justify-between items-center">
-                <span class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Plantel Oficial</span>
-                <span class="text-[9px] text-emerald-500 font-black tracking-widest">KANCHAPRO.COM</span>
-              </div>
             </div>
           </div>
         `;
@@ -1643,7 +1588,7 @@
         return `
           <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
             <div class="min-w-0">
-              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
+              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</th>
               <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? t.name : ''}</span>
             </div>
             <span class="font-black text-yellow-400 text-xs shrink-0 align-top bg-black px-2.5 py-1 rounded-lg border border-yellow-900/50 shadow">🟨 ${item.count}</span>
