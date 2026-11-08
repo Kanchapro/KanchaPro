@@ -935,9 +935,13 @@
     function renderPublicStandings(teams, matches, cat) {
       const container = document.getElementById('publicStandingsContainer');
       
-      // LÓGICA CORREGIDA: Lee correctamente el valor configurado (soporta 2, 3 o cualquier otro valor)
-      const winPoints = Number(cat.win_points) !== undefined && !isNaN(Number(cat.win_points)) && Number(cat.win_points) !== 0 ? Number(cat.win_points) : 
-                        (Number(cat.points_win) || Number(cat.points_for_win) || Number(cat.pts_win) || 3);
+      // LÓGICA ROBUSTA: Inspecciona todas las variantes posibles de nombres de columnas de Supabase
+      let rawWinPoints = cat.win_points !== undefined ? cat.win_points : 
+                         (cat.points_win !== undefined ? cat.points_win : 
+                         (cat.points_for_win !== undefined ? cat.points_for_win : 
+                         (cat.pts_win !== undefined ? cat.pts_win : undefined)));
+                         
+      const winPoints = (rawWinPoints !== undefined && !isNaN(Number(rawWinPoints))) ? Number(rawWinPoints) : 3;
 
       if (cat.tournament_type === 'cup') {
         const groupCount = cat.group_config?.count || 2;
