@@ -935,7 +935,6 @@
     function renderPublicStandings(teams, matches, cat) {
       const container = document.getElementById('publicStandingsContainer');
       
-      // LÓGICA ROBUSTA: Inspecciona todas las variantes posibles de nombres de columnas de Supabase
       let rawWinPoints = cat.win_points !== undefined ? cat.win_points : 
                          (cat.points_win !== undefined ? cat.points_win : 
                          (cat.points_for_win !== undefined ? cat.points_for_win : 
@@ -969,35 +968,35 @@
             <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-2.5 sm:p-4 space-y-2 shadow-xl">
               <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/40 pb-2">Zona / ${gName}</h4>
               <div class="overflow-x-auto scrollbar-thin">
-                <table class="w-full text-[9px] sm:text-xs min-w-[300px]">
+                <table class="w-full text-[10px] sm:text-xs min-w-[320px] border-collapse">
                   <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
                     <tr>
-                      <th class="p-1.5 text-left w-5 align-middle">#</th>
-                      <th class="p-1.5 text-left align-middle">Equipo</th>
-                      <th class="p-1.5 text-center font-black text-emerald-400 w-7 align-middle">Pts</th>
-                      <th class="p-1.5 text-center w-6 align-middle">PJ</th>
-                      <th class="p-1.5 text-center w-6 align-middle">G</th>
-                      <th class="p-1.5 text-center w-6 align-middle">E</th>
-                      <th class="p-1.5 text-center w-6 align-middle">P</th>
-                      <th class="p-1.5 text-center w-7 align-middle">DG</th>
+                      <th class="p-2 text-left w-6 align-middle">#</th>
+                      <th class="p-2 text-left align-middle">Equipo</th>
+                      <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
+                      <th class="p-2 text-center w-7 align-middle">PJ</th>
+                      <th class="p-2 text-center w-7 align-middle">G</th>
+                      <th class="p-2 text-center w-7 align-middle">E</th>
+                      <th class="p-2 text-center w-7 align-middle">P</th>
+                      <th class="p-2 text-center w-8 align-middle">DG</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-emerald-900/20 align-top">
+                  <tbody class="divide-y divide-emerald-900/20">
                     ${stats.map((t, idx) => `
                       <tr class="${idx < 2 ? 'bg-emerald-950/30 font-bold' : ''}">
-                        <td class="p-1.5 font-black text-emerald-400 align-middle">${idx + 1}</td>
-                        <td class="p-1.5 font-bold text-white max-w-[120px] align-middle">
-                          <div class="flex items-center gap-1.5">
-                            <img src="${t.logo || FALLBACK_LOGO}" class="w-4 h-4 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
-                            <span class="leading-snug truncate">${t.name}</span>
+                        <td class="p-2 font-black text-emerald-400 align-middle leading-normal">${idx + 1}</td>
+                        <td class="p-2 font-bold text-white align-middle leading-normal">
+                          <div class="flex items-center gap-2 py-0.5">
+                            <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
+                            <span class="whitespace-nowrap overflow-hidden text-ellipsis">${t.name}</span>
                           </div>
                         </td>
-                        <td class="p-1.5 text-center font-black text-emerald-400 text-xs align-middle">${t.points}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.played}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.won}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.drawn}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.lost}</td>
-                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.gd}</td>
+                        <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle leading-normal">${t.points}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.played}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.won}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.drawn}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.lost}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.gd}</td>
                       </tr>
                     `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-3 italic">Sin equipos inscriptos</td></tr>'}
                   </tbody>
@@ -1024,10 +1023,10 @@
 
         container.innerHTML = `
           <div class="overflow-x-auto scrollbar-thin">
-            <table class="w-full text-[9px] sm:text-xs min-w-[300px]">
+            <table class="w-full text-[10px] sm:text-xs min-w-[320px] border-collapse">
               <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
                 <tr>
-                  <th class="p-2 text-left w-5 align-middle">#</th>
+                  <th class="p-2 text-left w-6 align-middle">#</th>
                   <th class="p-2 text-left align-middle">Equipo</th>
                   <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
                   <th class="p-2 text-center w-7 align-middle">PJ</th>
@@ -1037,22 +1036,22 @@
                   <th class="p-2 text-center w-8 align-middle">DG</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-emerald-900/20 align-top">
+              <tbody class="divide-y divide-emerald-900/20">
                 ${stats.map((t, idx) => `
                   <tr class="${idx < 4 ? 'bg-emerald-950/30 font-bold' : ''}">
-                    <td class="p-2 font-black text-emerald-400 align-middle">${idx + 1}</td>
-                    <td class="p-2 font-bold text-white max-w-[130px] align-middle">
-                      <div class="flex items-center gap-2">
+                    <td class="p-2 font-black text-emerald-400 align-middle leading-normal">${idx + 1}</td>
+                    <td class="p-2 font-bold text-white align-middle leading-normal">
+                      <div class="flex items-center gap-2 py-0.5">
                         <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
-                        <span class="leading-snug truncate">${t.name}</span>
+                        <span class="whitespace-nowrap overflow-hidden text-ellipsis">${t.name}</span>
                       </div>
                     </td>
-                    <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle">${t.points}</td>
-                    <td class="p-2 text-center text-slate-300 align-middle">${t.played}</td>
-                    <td class="p-2 text-center text-slate-300 align-middle">${t.won}</td>
-                    <td class="p-2 text-center text-slate-300 align-middle">${t.drawn}</td>
-                    <td class="p-2 text-center text-slate-300 align-middle">${t.lost}</td>
-                    <td class="p-2 text-center text-slate-300 align-middle">${t.gd}</td>
+                    <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle leading-normal">${t.points}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.played}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.won}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.drawn}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.lost}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.gd}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -1076,7 +1075,9 @@
           backgroundColor: '#030704', 
           scale: 3, 
           useCORS: true,
-          allowTaint: true
+          allowTaint: true,
+          scrollX: 0,
+          scrollY: 0
         });
 
         captureArea.style.width = originalWidth;
@@ -1126,6 +1127,8 @@
           scale: 3, 
           useCORS: true,
           allowTaint: true,
+          scrollX: 0,
+          scrollY: 0,
           ignoreElements: (el) => el.classList && el.classList.contains('no-capture-btn')
         });
 
@@ -1352,7 +1355,9 @@
         const canvas = await html2canvas(area, {
           scale: 3,
           useCORS: true,
-          backgroundColor: '#030704'
+          backgroundColor: '#030704',
+          scrollX: 0,
+          scrollY: 0
         });
 
         canvas.toBlob(async (blob) => {
@@ -1577,7 +1582,7 @@
 
       const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
 
-      document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.map(item => {
+      document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.link(item => {}).length === 0 ? yellowsSorted.map(item => {
         const t = teams.find(x => x.id === item.player.team_id);
         return `
           <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
@@ -1588,7 +1593,7 @@
             <span class="font-black text-yellow-400 text-xs shrink-0 align-top bg-black px-2.5 py-1 rounded-lg border border-yellow-900/50 shadow">🟨 ${item.count}</span>
           </div>
         `;
-      }).join('') || '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas amarillas registradas.</p>';
+      }).join('') : '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas amarillas registradas.</p>';
 
       const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId);
       document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
