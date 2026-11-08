@@ -989,40 +989,40 @@
           }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
           groupsHtml += `
-            <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-3 sm:p-4 space-y-2 shadow-xl">
+            <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-2.5 sm:p-4 space-y-2 shadow-xl">
               <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/40 pb-2">Zona / ${gName}</h4>
               <div class="overflow-x-auto scrollbar-thin">
-                <table class="w-full text-[10px] sm:text-xs min-w-[320px]">
-                  <thead class="bg-[#030704] text-slate-400 uppercase text-[9px] font-black tracking-wider">
+                <table class="w-full text-[9px] sm:text-xs min-w-[300px]">
+                  <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
                     <tr>
-                      <th class="p-2 text-left w-6 align-middle">#</th>
-                      <th class="p-2 text-left align-middle">Equipo</th>
-                      <th class="p-2 text-center w-7 align-middle">PJ</th>
-                      <th class="p-2 text-center w-7 align-middle">G</th>
-                      <th class="p-2 text-center w-7 align-middle">E</th>
-                      <th class="p-2 text-center w-7 align-middle">P</th>
-                      <th class="p-2 text-center w-8 align-middle">DG</th>
-                      <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
+                      <th class="p-1.5 text-left w-5 align-middle">#</th>
+                      <th class="p-1.5 text-left align-middle">Equipo</th>
+                      <th class="p-1.5 text-center font-black text-emerald-400 w-7 align-middle">Pts</th>
+                      <th class="p-1.5 text-center w-6 align-middle">PJ</th>
+                      <th class="p-1.5 text-center w-6 align-middle">G</th>
+                      <th class="p-1.5 text-center w-6 align-middle">E</th>
+                      <th class="p-1.5 text-center w-6 align-middle">P</th>
+                      <th class="p-1.5 text-center w-7 align-middle">DG</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-emerald-900/20 align-top">
                     ${stats.map((t, idx) => `
                       <tr class="${idx < 2 ? 'bg-emerald-950/30 font-bold' : ''}">
-                        <td class="p-2 font-black text-emerald-400 align-top">${idx + 1}</td>
-                        <td class="p-2 font-bold text-white max-w-[140px] align-top">
-                          <div class="flex items-center gap-2">
-                            <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 align-top shadow" onerror="this.src=FALLBACK_LOGO">
-                            <span class="leading-snug break-words">${t.name}</span>
+                        <td class="p-1.5 font-black text-emerald-400 align-middle">${idx + 1}</td>
+                        <td class="p-1.5 font-bold text-white max-w-[120px] align-middle">
+                          <div class="flex items-center gap-1.5">
+                            <img src="${t.logo || FALLBACK_LOGO}" class="w-4 h-4 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
+                            <span class="leading-snug truncate">${t.name}</span>
                           </div>
                         </td>
-                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.played}</td>
-                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.won}</td>
-                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.drawn}</td>
-                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.lost}</td>
-                        <td class="p-2 text-center text-slate-300 align-top font-medium">${t.gd}</td>
-                        <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-top">${t.points}</td>
+                        <td class="p-1.5 text-center font-black text-emerald-400 text-xs align-middle">${t.points}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.played}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.won}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.drawn}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.lost}</td>
+                        <td class="p-1.5 text-center text-slate-300 align-middle">${t.gd}</td>
                       </tr>
-                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-3 align-top italic">Sin equipos inscriptos en esta zona</td></tr>'}
+                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-3 italic">Sin equipos inscriptos</td></tr>'}
                   </tbody>
                 </table>
               </div>
@@ -1047,35 +1047,35 @@
 
         container.innerHTML = `
           <div class="overflow-x-auto scrollbar-thin">
-            <table class="w-full text-[10px] sm:text-xs min-w-[320px]">
-              <thead class="bg-[#030704] text-slate-400 uppercase text-[9px] font-black tracking-wider">
+            <table class="w-full text-[9px] sm:text-xs min-w-[300px]">
+              <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
                 <tr>
-                  <th class="p-2.5 text-left w-6 align-top">#</th>
-                  <th class="p-2.5 text-left align-top">Equipo</th>
-                  <th class="p-2.5 text-center w-8 align-top">PJ</th>
-                  <th class="p-2.5 text-center w-8 align-top">G</th>
-                  <th class="p-2.5 text-center w-8 align-top">E</th>
-                  <th class="p-2.5 text-center w-8 align-top">P</th>
-                  <th class="p-2.5 text-center w-9 align-top">DG</th>
-                  <th class="p-2.5 text-center font-black text-emerald-400 w-9 align-top">Pts</th>
+                  <th class="p-2 text-left w-5 align-middle">#</th>
+                  <th class="p-2 text-left align-middle">Equipo</th>
+                  <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
+                  <th class="p-2 text-center w-7 align-middle">PJ</th>
+                  <th class="p-2 text-center w-7 align-middle">G</th>
+                  <th class="p-2 text-center w-7 align-middle">E</th>
+                  <th class="p-2 text-center w-7 align-middle">P</th>
+                  <th class="p-2 text-center w-8 align-middle">DG</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-emerald-900/20 align-top">
                 ${stats.map((t, idx) => `
                   <tr class="${idx < 4 ? 'bg-emerald-950/30 font-bold' : ''}">
-                    <td class="p-2.5 font-black text-emerald-400 align-top">${idx + 1}</td>
-                    <td class="p-2.5 font-bold text-white max-w-[150px] align-top">
-                      <div class="flex items-center gap-2.5">
-                        <img src="${t.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full border border-emerald-500/40 shrink-0 align-top shadow" onerror="this.src=FALLBACK_LOGO">
-                        <span class="leading-snug break-words">${t.name}</span>
+                    <td class="p-2 font-black text-emerald-400 align-middle">${idx + 1}</td>
+                    <td class="p-2 font-bold text-white max-w-[130px] align-middle">
+                      <div class="flex items-center gap-2">
+                        <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
+                        <span class="leading-snug truncate">${t.name}</span>
                       </div>
                     </td>
-                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.played}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.won}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.drawn}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.lost}</td>
-                    <td class="p-2.5 text-center text-slate-300 align-top font-medium">${t.gd}</td>
-                    <td class="p-2.5 text-center font-black text-emerald-400 text-xs sm:text-sm align-top">${t.points}</td>
+                    <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle">${t.points}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle">${t.played}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle">${t.won}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle">${t.drawn}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle">${t.lost}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle">${t.gd}</td>
                   </tr>
                 `).join('')}
               </tbody>
