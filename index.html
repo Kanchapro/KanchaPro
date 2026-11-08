@@ -947,8 +947,10 @@
 
     function renderPublicStandings(teams, matches, cat) {
       const container = document.getElementById('publicStandingsContainer');
-      // Sincronización exacta con los puntos por victoria configurados en el panel admin
-      const winPoints = Number(cat.win_points) || Number(cat.points_win) || Number(cat.points_for_win) || (cat.sport_type === 'futsal' ? 2 : 3);
+      
+      // LÓGICA CORREGIDA: Busca dinámicamente los puntos por victoria configurados en el panel admin (soporta win_points, points_win, points_for_win o se fija en 3 por defecto)
+      const winPoints = Number(cat.win_points) !== undefined && !isNaN(Number(cat.win_points)) && Number(cat.win_points) !== 0 ? Number(cat.win_points) : 
+                        (Number(cat.points_win) || Number(cat.points_for_win) || 3);
 
       if (cat.tournament_type === 'cup') {
         const groupCount = cat.group_config?.count || 2;
