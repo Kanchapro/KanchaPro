@@ -1164,7 +1164,7 @@
 
     function shareTournamentWhatsApp() {
       const url = window.location.href;
-      const text = `⚽ *¡Seguí el torneo en KanchaPro!* 🏆\n\n📱 *Instalalo como app en tu celular o PC en 3 simples pasos:*\n1️⃣ Tocá los *tres puntitos (⋮)* arriba en tu navegador.\n2️⃣ Seleccioná *"Instalar aplicación"* o *"Agregar a la pantalla principal"*.\n3️⃣ ¡Listo! Acceso directo instantáneo.\n\n🔗 *Entrá acá:* ${url}`;
+      const text = `⚽ *¡Seguí el torneo en KanchaPro!* 🏆\n\n📱 *Instalalo como app en tu celular o PC en 3 simples pasos:*\n1️⃣ Tocá los *tres puntitos (⋮)* arriba en tu navegador.\n2️⃣ Seleccioná *"Instalar aplicación"* o *"Agregar a la pantalla principal"*\n3️⃣ ¡Listo! Acceso directo instantáneo.\n\n🔗 *Entrá acá:* ${url}`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
@@ -1588,7 +1588,7 @@
         return `
           <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
             <div class="min-w-0">
-              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</th>
+              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
               <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? t.name : ''}</span>
             </div>
             <span class="font-black text-yellow-400 text-xs shrink-0 align-top bg-black px-2.5 py-1 rounded-lg border border-yellow-900/50 shadow">🟨 ${item.count}</span>
