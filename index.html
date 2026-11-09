@@ -1582,7 +1582,7 @@
 
       const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
 
-      document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.link(item => {}).length === 0 ? yellowsSorted.map(item => {
+      document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.length > 0 ? yellowsSorted.map(item => {
         const t = teams.find(x => x.id === item.player.team_id);
         return `
           <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
