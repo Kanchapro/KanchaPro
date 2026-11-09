@@ -1461,8 +1461,11 @@
 
     function renderStandingsView(teams, matches, cat) {
       const container = document.getElementById('adminStandingsContainer');
-      const ptsWin = cat.pts_win ?? 3;
-      const ptsDraw = cat.pts_draw ?? 1;
+      
+      // Obtener los puntos configurados en el torneo (dinámicos)
+      const ptsWin = cat.pts_win !== undefined ? cat.pts_win : (cat.win_points !== undefined ? cat.win_points : 3);
+      const ptsDraw = cat.pts_draw !== undefined ? cat.pts_draw : (cat.points_draw !== undefined ? cat.points_draw : 1);
+      
       const criteria = cat.tie_breaker || 'gd';
 
       function sortStats(statsList) {
