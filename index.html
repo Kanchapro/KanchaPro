@@ -935,10 +935,12 @@
     function renderPublicStandings(teams, matches, cat) {
       const container = document.getElementById('publicStandingsContainer');
       
+      // Búsqueda flexible de los puntos por victoria configurados en Supabase o el objeto del torneo
       let rawWinPoints = cat.win_points !== undefined ? cat.win_points : 
                          (cat.points_win !== undefined ? cat.points_win : 
                          (cat.points_for_win !== undefined ? cat.points_for_win : 
-                         (cat.pts_win !== undefined ? cat.pts_win : undefined)));
+                         (cat.pts_win !== undefined ? cat.pts_win : 
+                         (cat.winPoints !== undefined ? cat.winPoints : undefined))));
                          
       const winPoints = (rawWinPoints !== undefined && !isNaN(Number(rawWinPoints))) ? Number(rawWinPoints) : 3;
 
