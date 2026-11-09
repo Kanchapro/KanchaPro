@@ -83,7 +83,7 @@
     <h1 class="text-sm font-black text-green-400">KANCHA<span class="text-white">PRO</span> <span class="text-[10px] text-slate-400 font-normal">| Admin Total</span></h1>
     <div class="flex items-center gap-1.5">
       <span id="userEmailBadge" class="text-[10px] text-slate-400 hidden sm:inline-block"></span>
-      <a href="index.html" class="text-[11px] px-2.5 py-1.5 bg-slate-800 text-green-400 rounded-lg font-semibold border border-green-500/20">👁️ Ver Portal</a>
+      <button onclick="verPortalTorneoActivo()" class="text-[11px] px-2.5 py-1.5 bg-slate-800 text-green-400 rounded-lg font-semibold border border-green-500/20 hover:bg-slate-700 transition">👁️ Ver Portal</button>
       <button onclick="logoutAdmin()" class="text-[11px] px-2.5 py-1.5 bg-red-900/40 text-red-300 rounded-lg font-semibold border border-red-500/30">Salir</button>
     </div>
   </header>
@@ -857,6 +857,16 @@
     async function logoutAdmin() {
       if (supabaseClient) await supabaseClient.auth.signOut();
       window.location.reload();
+    }
+
+    // Función para abrir el portal apuntando directamente al torneo activo
+    function verPortalTorneoActivo() {
+      const baseUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+      if (activeCategoryId) {
+        window.open(`${baseUrl}?torneo=${activeCategoryId}`, '_blank');
+      } else {
+        window.open(baseUrl, '_blank');
+      }
     }
 
     async function loadAdminData() {
