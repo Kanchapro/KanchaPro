@@ -3,161 +3,194 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Estadísticas y Resumen — KanchaPro</title>
+  <title>Analítica de Tráfico — KanchaPro</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --theme-color: #16a34a;
+    :root { --theme-color: #16a34a; }
+    body { 
+      font-family: 'Montserrat', sans-serif; 
+      background-color: #040705; 
+      color: #f0fdf4; 
+      background-image: radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.15) 0%, transparent 60%); 
+      -webkit-tap-highlight-color: transparent; 
     }
-    body { font-family: 'Montserrat', sans-serif; background-color: #060907; color: #f0fdf4; background-image: radial-gradient(circle at 50% 0%, rgba(22, 163, 74, 0.12) 0%, transparent 60%); -webkit-tap-highlight-color: transparent; }
-    .glass-card { background: rgba(11, 20, 14, 0.92); backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.18); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
-    .btn-green { background-color: #16a34a; transition: background 0.2s; }
-    .btn-green:hover { background-color: #15803d; }
+    .glass-card { 
+      background: rgba(10, 18, 12, 0.95); 
+      backdrop-filter: blur(20px); 
+      border: 1px solid rgba(34, 197, 94, 0.2); 
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); 
+    }
+    .btn-green { 
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); 
+      transition: all 0.2s ease; 
+    }
+    .btn-green:hover { 
+      background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+      transform: translateY(-1px);
+    }
     .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
     .scrollbar-thin::-webkit-scrollbar-track { background: #060907; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
+    
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    .animate-pulse-subtle { animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col p-3 sm:p-6 max-w-5xl mx-auto space-y-6">
 
   <!-- PANTALLA DE LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4 backdrop-blur-md">
-    <div class="glass-card p-6 rounded-2xl max-w-sm w-full text-center space-y-4 border border-green-500/30 shadow-2xl">
-      <div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-xl flex items-center justify-center mx-auto text-xl border border-green-500/30">🔐</div>
-      <h2 class="text-base font-black text-white">Acceso Restringido</h2>
-      <p class="text-xs text-slate-400">Introduce tus credenciales para ver las estadísticas.</p>
+    <div class="glass-card p-6 sm:p-8 rounded-3xl max-w-sm w-full text-center space-y-5 border border-green-500/30 shadow-2xl">
+      <div class="w-14 h-14 bg-gradient-to-br from-green-500/20 to-emerald-600/10 text-green-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-green-500/30 shadow-inner">🔐</div>
+      <div class="space-y-1">
+        <h2 class="text-base font-black text-white">Acceso Restringido</h2>
+        <p class="text-xs text-slate-400">Introduce tus credenciales para ver las analíticas de tráfico.</p>
+      </div>
       <div class="space-y-3 text-left">
         <div>
-          <label class="block text-[11px] text-slate-300 mb-1">Usuario:</label>
-          <input type="text" id="userInput" class="w-full bg-[#0b0f0d] border border-green-900 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-green-500" placeholder="Usuario">
+          <label class="block text-[11px] font-bold text-slate-300 mb-1">Usuario:</label>
+          <input type="text" id="userInput" class="w-full bg-[#050806] border border-green-900/60 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-green-500 transition shadow-inner" placeholder="Usuario">
         </div>
         <div>
-          <label class="block text-[11px] text-slate-300 mb-1">Contraseña:</label>
-          <input type="password" id="passInput" class="w-full bg-[#0b0f0d] border border-green-900 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-green-500" placeholder="Contraseña">
+          <label class="block text-[11px] font-bold text-slate-300 mb-1">Contraseña:</label>
+          <input type="password" id="passInput" class="w-full bg-[#050806] border border-green-900/60 rounded-xl px-3.5 py-2.5 text-white text-xs focus:outline-none focus:border-green-500 transition shadow-inner" placeholder="Contraseña" onkeypress="if(event.key === 'Enter') handleLogin()">
         </div>
       </div>
-      <button onclick="handleLogin()" class="w-full btn-green text-white font-bold py-2.5 rounded-xl text-xs transition shadow-lg">Ingresar</button>
+      <button onclick="handleLogin()" class="w-full btn-green text-white font-bold py-3 rounded-xl text-xs transition shadow-lg shadow-green-900/30">Ingresar al Panel</button>
       <div class="pt-1">
-        <a href="index.html" class="text-[11px] text-slate-400 hover:text-green-400 underline">← Volver al Portal</a>
+        <a href="index.html" class="text-[11px] text-slate-400 hover:text-green-400 underline transition">← Volver al Portal</a>
       </div>
     </div>
   </div>
 
-  <!-- CONTENIDO DE ESTADÍSTICAS -->
+  <!-- CONTENIDO PRINCIPAL -->
   <div id="statsMainContent" class="space-y-6 hidden">
-    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-green-900/40 pb-4">
-      <h1 class="text-sm sm:text-lg font-black text-green-400">📊 Panel General y Estadísticas — KanchaPro</h1>
-      <div class="flex items-center gap-2">
-        <a href="admin.html" class="text-xs bg-emerald-600/20 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 font-bold hover:bg-emerald-600/30 transition shadow-sm">← Volver al Admin</a>
-        <button onclick="logout()" class="text-xs bg-red-900/40 text-red-300 px-3 py-1.5 rounded-xl border border-red-500/30 font-bold hover:bg-red-900/60 transition shadow-sm">Salir</button>
+    <!-- HEADER -->
+    <header class="glass-card p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-green-500/20 shadow-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/30 flex items-center justify-center text-green-400 font-bold text-lg">📈</div>
+        <div>
+          <h1 class="text-sm sm:text-base font-black text-white">Dashboard de Tráfico y Navegación</h1>
+          <p class="text-[11px] text-slate-400">Analítica de accesos, dispositivos y comportamiento en tiempo real</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <button onclick="loadStats()" class="text-xs bg-emerald-600/20 text-emerald-300 px-3 py-2 rounded-xl border border-emerald-500/30 hover:bg-emerald-600/30 transition font-bold flex items-center gap-1.5">🔄 Actualizar</button>
+        <a href="admin.html" class="text-xs bg-emerald-600/20 text-emerald-300 px-3 py-2 rounded-xl border border-emerald-500/30 font-bold hover:bg-emerald-600/30 transition shadow-sm">← Admin</a>
+        <button onclick="logout()" class="text-xs bg-red-950/40 text-red-300 px-3 py-2 rounded-xl border border-red-500/30 font-bold hover:bg-red-900/50 transition shadow-sm">Salir</button>
       </div>
     </header>
 
-    <!-- TRÁFICO Y VISITAS -->
+    <!-- TRÁFICO PRINCIPAL DE PÁGINAS -->
     <div class="space-y-3">
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">🌐 Tráfico y Accesos</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="glass-card p-5 rounded-2xl space-y-2 border border-green-500/30 shadow-lg">
-          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Portal Público (Index)</span>
-          <div id="indexVisitsCount" class="text-3xl font-black text-green-400">Cargando...</div>
-          <p class="text-[11px] text-slate-500">Total de visitas registradas en la página principal.</p>
-        </div>
-        <div class="glass-card p-5 rounded-2xl space-y-2 border border-blue-500/30 shadow-lg">
-          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Panel de Administración (Admin)</span>
-          <div id="adminVisitsCount" class="text-3xl font-black text-blue-400">Cargando...</div>
-          <p class="text-[11px] text-slate-500">Total de accesos al panel de gestión.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ANALÍTICA DE TRÁFICO DETALLADA (DISPOSITIVOS Y SECCIONES) -->
-    <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
-      <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
-        <h3 class="text-sm font-bold text-green-300">📈 Analítica Detallada de Navegación</h3>
-        <span class="text-[10px] text-slate-400 italic">Desglose de comportamiento de usuarios</span>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Dispositivos -->
-        <div class="space-y-2">
-          <h4 class="text-xs font-bold text-slate-400 uppercase">📱 Dispositivos Utilizados</h4>
-          <div id="deviceStatsContainer" class="text-xs text-slate-300 space-y-1">
-            <p class="italic text-slate-500">Calculando dispositivos...</p>
-          </div>
-        </div>
-        <!-- Secciones más visitadas -->
-        <div class="space-y-2">
-          <h4 class="text-xs font-bold text-slate-400 uppercase">📂 Secciones Más Consultadas</h4>
-          <div id="sectionsStatsContainer" class="text-xs text-slate-300 space-y-1">
-            <p class="italic text-slate-500">Calculando secciones...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RESUMEN GENERAL DE DATOS -->
-    <div class="space-y-3">
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">⚽ Resumen General del Sistema</h3>
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">🌐 Visitas por Tipo de Pantalla</h3>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="glass-card p-4 rounded-xl space-y-1 border border-green-900/40 text-center">
-          <span class="text-[10px] text-slate-400 uppercase font-bold block">Torneos / Categorías</span>
-          <div id="statTotalCategories" class="text-xl font-black text-green-400">-</div>
+        <div class="glass-card p-4 rounded-xl space-y-1 border border-green-500/30 text-center">
+          <span class="text-[10px] text-slate-400 font-bold uppercase block">Portal Público (Index)</span>
+          <div id="indexVisitsCount" class="text-2xl sm:text-3xl font-black text-green-400 animate-pulse-subtle">...</div>
         </div>
-        <div class="glass-card p-4 rounded-xl space-y-1 border border-green-900/40 text-center">
-          <span class="text-[10px] text-slate-400 uppercase font-bold block">Equipos Inscriptos</span>
-          <div id="statTotalTeams" class="text-xl font-black text-green-400">-</div>
+        <div class="glass-card p-4 rounded-xl space-y-1 border border-blue-500/30 text-center">
+          <span class="text-[10px] text-slate-400 font-bold uppercase block">Panel Admin</span>
+          <div id="adminVisitsCount" class="text-2xl sm:text-3xl font-black text-blue-400 animate-pulse-subtle">...</div>
         </div>
-        <div class="glass-card p-4 rounded-xl space-y-1 border border-green-900/40 text-center">
-          <span class="text-[10px] text-slate-400 uppercase font-bold block">Jugadores Fichados</span>
-          <div id="statTotalPlayers" class="text-xl font-black text-green-400">-</div>
+        <div class="glass-card p-4 rounded-xl space-y-1 border border-purple-500/30 text-center">
+          <span class="text-[10px] text-slate-400 font-bold uppercase block">Vistas a Torneos</span>
+          <div id="tournamentVisitsCount" class="text-2xl sm:text-3xl font-black text-purple-400 animate-pulse-subtle">...</div>
         </div>
-        <div class="glass-card p-4 rounded-xl space-y-1 border border-green-900/40 text-center">
-          <span class="text-[10px] text-slate-400 uppercase font-bold block">Goles convertidos</span>
-          <div id="statTotalGoals" class="text-xl font-black text-green-400">-</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TARJETAS Y DISCIPLINA GENERAL -->
-    <div class="space-y-3">
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">🟥 Tribunal y Sanciones Globales</h3>
-      <div class="grid grid-cols-3 gap-3">
-        <div class="glass-card p-3 rounded-xl border border-yellow-500/30 text-center">
-          <span class="text-[10px] text-yellow-400 uppercase font-bold block">🟨 Amarillas</span>
-          <div id="statTotalYellows" class="text-lg font-black text-yellow-300">-</div>
-        </div>
-        <div class="glass-card p-3 rounded-xl border border-blue-500/30 text-center">
-          <span class="text-[10px] text-blue-400 uppercase font-bold block">🟦 Azules</span>
-          <div id="statTotalBlues" class="text-lg font-black text-blue-300">-</div>
-        </div>
-        <div class="glass-card p-3 rounded-xl border border-red-500/30 text-center">
-          <span class="text-[10px] text-red-500 uppercase font-bold block">🟥 Rojas / Sanciones</span>
-          <div id="statTotalReds" class="text-lg font-black text-red-400">-</div>
+        <div class="glass-card p-4 rounded-xl space-y-1 border border-yellow-500/30 text-center">
+          <span class="text-[10px] text-slate-400 font-bold uppercase block">Total Registrado</span>
+          <div id="totalVisitsCount" class="text-2xl sm:text-3xl font-black text-yellow-400 animate-pulse-subtle">...</div>
         </div>
       </div>
     </div>
 
-    <!-- ESTADÍSTICAS POR REGIÓN / ZONA -->
-    <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-green-900/40 pb-3">
-        <h3 class="text-sm font-bold text-green-300">🗺️ Resumen por Región / Localidad</h3>
-        <span class="text-[10px] text-slate-400 italic">Agrupado por zona o nombre del torneo</span>
+    <!-- NAVEGACIÓN DETALLADA Y DISPOSITIVOS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Dispositivos y Sistemas Operativos -->
+      <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
+        <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
+          <h3 class="text-sm font-bold text-green-300 flex items-center gap-1.5">📱 Dispositivos y Plataformas</h3>
+          <span class="text-[10px] text-slate-400 italic">Dispositivos de acceso</span>
+        </div>
+        <div id="deviceStatsContainer" class="text-xs text-slate-300 space-y-2">
+          <p class="text-xs text-slate-500 italic">Calculando métricas de dispositivos...</p>
+        </div>
       </div>
-      <div id="regionsStatsContainer" class="space-y-2">
-        <p class="text-xs text-slate-400 italic">Calculando estadísticas por región...</p>
+
+      <!-- Páginas / Secciones Más Visitadas -->
+      <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
+        <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
+          <h3 class="text-sm font-bold text-green-300 flex items-center gap-1.5">📂 Secciones / Módulos Populares</h3>
+          <span class="text-[10px] text-slate-400 italic">Ranking de interés</span>
+        </div>
+        <div id="sectionsStatsContainer" class="text-xs text-slate-300 space-y-2">
+          <p class="text-xs text-slate-500 italic">Calculando secciones...</p>
+        </div>
       </div>
     </div>
 
-    <!-- Torneos Más Visitados / Detallados -->
+    <!-- ANÁLISIS DE ACTIVIDAD TEMPORAL Y REGIONAL -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Tráfico por Horario / Actividad -->
+      <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
+        <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
+          <h3 class="text-sm font-bold text-green-300 flex items-center gap-1.5">⏰ Distribución por Franja Horaria</h3>
+          <span class="text-[10px] text-slate-400 italic">Horarios de mayor tráfico</span>
+        </div>
+        <div id="hourlyStatsContainer" class="space-y-2">
+          <p class="text-xs text-slate-500 italic">Analizando franjas horarias...</p>
+        </div>
+      </div>
+
+      <!-- Tráfico por Región / Localidad -->
+      <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
+        <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
+          <h3 class="text-sm font-bold text-green-300 flex items-center gap-1.5">🗺️ Tráfico por Región / Localidad</h3>
+          <span class="text-[10px] text-slate-400 italic">Zona geográfica del torneo</span>
+        </div>
+        <div id="regionsStatsContainer" class="space-y-2">
+          <p class="text-xs text-slate-500 italic">Calculando tráfico regional...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANKING DE TORNEOS MÁS BUSCADOS -->
     <div class="glass-card p-5 rounded-2xl space-y-4 border border-green-500/30 shadow-lg">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-3">
-        <h3 class="text-sm font-bold text-green-300">🏆 Detalle de Torneos Más Visitados</h3>
-        <button onclick="loadStats()" class="text-[11px] bg-emerald-600/20 text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/30 hover:bg-emerald-600/30 transition">🔄 Actualizar</button>
+        <h3 class="text-sm font-bold text-green-300 flex items-center gap-1.5">🏆 Ranking de Categorías / Torneos por Visitas</h3>
+        <span class="text-[10px] text-slate-400 italic">Torneos más seguidos</span>
       </div>
       <div id="tournamentsStatsContainer" class="space-y-2">
-        <p class="text-xs text-slate-400 italic">Cargando datos de torneos...</p>
+        <p class="text-xs text-slate-500 italic">Cargando ranking...</p>
+      </div>
+    </div>
+
+    <!-- RESUMEN TÉCNICO DE TORNEOS (COMPACTO Y SECUNDARIO) -->
+    <div class="glass-card p-4 rounded-2xl space-y-2 border border-slate-800 opacity-80 hover:opacity-100 transition">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">📊 Resumen General del Sistema (Datos Internos)</span>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+        <div class="bg-[#050806] p-2.5 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-500 block">Torneos</span>
+          <strong id="statTotalCategories" class="text-slate-200">-</strong>
+        </div>
+        <div class="bg-[#050806] p-2.5 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-500 block">Equipos</span>
+          <strong id="statTotalTeams" class="text-slate-200">-</strong>
+        </div>
+        <div class="bg-[#050806] p-2.5 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-500 block">Jugadores</span>
+          <strong id="statTotalPlayers" class="text-slate-200">-</strong>
+        </div>
+        <div class="bg-[#050806] p-2.5 rounded-xl border border-slate-800">
+          <span class="text-[10px] text-slate-500 block">Goles Totales</span>
+          <strong id="statTotalGoals" class="text-slate-200">-</strong>
+        </div>
       </div>
     </div>
   </div>
@@ -202,18 +235,9 @@
     async function loadStats() {
       if (!supabaseClient) return;
       try {
-        const { count: indexCount } = await supabaseClient
+        const { data: statsData } = await supabaseClient
           .from('visitor_stats')
-          .select('*', { count: 'exact', head: true })
-          .eq('page_type', 'index');
-
-        const { count: adminCount } = await supabaseClient
-          .from('visitor_stats')
-          .select('*', { count: 'exact', head: true })
-          .eq('page_type', 'admin');
-
-        document.getElementById('indexVisitsCount').textContent = indexCount || 0;
-        document.getElementById('adminVisitsCount').textContent = adminCount || 0;
+          .select('*');
 
         const { data: allData } = await supabaseClient
           .from('torneos_data')
@@ -224,92 +248,102 @@
         const players = allData ? allData.filter(x => x.type === 'player') : [];
         const matches = allData ? allData.filter(x => x.type === 'match') : [];
 
+        // Datos Internos Compactos
         document.getElementById('statTotalCategories').textContent = categories.length;
         document.getElementById('statTotalTeams').textContent = teams.length;
         document.getElementById('statTotalPlayers').textContent = players.length;
 
         let totalGoals = 0;
-        let totalYellows = 0;
-        let totalBlues = 0;
-        let totalReds = 0;
-
         matches.forEach(m => {
-          if (m.played) {
-            totalGoals += Number(m.home_score || 0) + Number(m.away_score || 0);
-          }
-          const details = m.match_details?.playerStats || {};
-          Object.values(details).forEach(st => {
-            totalYellows += Number(st.yellows || 0);
-            totalBlues += Number(st.blues || 0);
-            totalReds += Number(st.reds || 0);
-          });
+          if (m.played) totalGoals += Number(m.home_score || 0) + Number(m.away_score || 0);
         });
-
         document.getElementById('statTotalGoals').textContent = totalGoals;
-        document.getElementById('statTotalYellows').textContent = totalYellows;
-        document.getElementById('statTotalBlues').textContent = totalBlues;
-        document.getElementById('statTotalReds').textContent = totalReds;
 
-        const { data: statsData } = await supabaseClient
-          .from('visitor_stats')
-          .select('*');
+        // --- PROCESAMIENTO DE ANALÍTICA DE TRÁFICO ---
+        let indexVisits = 0;
+        let adminVisits = 0;
+        let tournamentVisits = 0;
+        let totalVisits = statsData ? statsData.length : 0;
 
-        let deviceCounts = { mobile: 0, desktop: 0, other: 0 };
+        let deviceCounts = { mobile: 0, desktop: 0, tablet: 0, other: 0 };
         let sectionCounts = {};
+        let hourlyCounts = { 'Mañana (6-12)': 0, 'Tarde (12-18)': 0, 'Noche (18-24)': 0, 'Madrugada (0-6)': 0 };
         let tournamentCounts = {};
         let regionStats = {};
 
         if (statsData) {
           statsData.forEach(row => {
-            let dev = row.device_type || 'mobile';
-            if (deviceCounts[dev] !== undefined) deviceCounts[dev]++;
+            let sec = row.page_type || 'index';
+            if (sec === 'index') indexVisits++;
+            else if (sec === 'admin') adminVisits++;
+            else if (row.category_id) tournamentVisits++;
+
+            sectionCounts[sec] = (sectionCounts[sec] || 0) + 1;
+
+            let dev = (row.device_type || 'mobile').toLowerCase();
+            if (dev.includes('mobile') || dev.includes('celular') || dev.includes('phone')) deviceCounts.mobile++;
+            else if (dev.includes('desktop') || dev.includes('pc')) deviceCounts.desktop++;
+            else if (dev.includes('tablet')) deviceCounts.tablet++;
             else deviceCounts.other++;
 
-            let sec = row.page_type || 'index';
-            sectionCounts[sec] = (sectionCounts[sec] || 0) + 1;
+            if (row.created_at) {
+              let hour = new Date(row.created_at).getHours();
+              if (hour >= 6 && hour < 12) hourlyCounts['Mañana (6-12)']++;
+              else if (hour >= 12 && hour < 18) hourlyCounts['Tarde (12-18)']++;
+              else if (hour >= 18 && hour < 24) hourlyCounts['Noche (18-24)']++;
+              else hourlyCounts['Madrugada (0-6)']++;
+            }
           });
         }
 
+        document.getElementById('indexVisitsCount').textContent = indexVisits;
+        document.getElementById('adminVisitsCount').textContent = adminVisits;
+        document.getElementById('tournamentVisitsCount').textContent = tournamentVisits;
+        document.getElementById('totalVisitsCount').textContent = totalVisits;
+
+        // Dispositivos
+        const totalDevs = Math.max(1, totalVisits);
         document.getElementById('deviceStatsContainer').innerHTML = `
-          <div class="flex justify-between bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 items-center">
-            <span>📱 Celulares / Móviles</span> <strong class="text-green-400">${deviceCounts.mobile}</strong>
+          <div class="flex justify-between bg-[#050806] p-3 rounded-xl border border-green-900/40 items-center">
+            <span>📱 Celulares / Móviles</span> 
+            <span class="text-xs font-bold text-green-400">${deviceCounts.mobile} (${Math.round((deviceCounts.mobile/totalDevs)*100)}%)</span>
           </div>
-          <div class="flex justify-between bg-[#0b0f0d] p-2.5 rounded-xl border border-green-900/30 items-center">
-            <span>💻 PCs / Escritorio</span> <strong class="text-green-400">${deviceCounts.desktop}</strong>
+          <div class="flex justify-between bg-[#050806] p-3 rounded-xl border border-green-900/40 items-center">
+            <span>💻 PCs / Escritorio</span> 
+            <span class="text-xs font-bold text-green-400">${deviceCounts.desktop} (${Math.round((deviceCounts.desktop/totalDevs)*100)}%)</span>
           </div>
+          ${deviceCounts.tablet > 0 ? `
+          <div class="flex justify-between bg-[#050806] p-3 rounded-xl border border-green-900/40 items-center">
+            <span>📱 Tablets</span> 
+            <span class="text-xs font-bold text-green-400">${deviceCounts.tablet}</span>
+          </div>` : ''}
         `;
 
-        const sectionsContainer = document.getElementById('sectionsStatsContainer');
+        // Secciones
         const sortedSections = Object.entries(sectionCounts).sort((a, b) => b[1] - a[1]);
-        if (sortedSections.length === 0) {
-          sectionsContainer.innerHTML = '<p class="text-xs text-slate-500 italic">Sin registros de secciones.</p>';
-        } else {
-          sectionsContainer.innerHTML = sortedSections.map(([sec, count]) => `
-            <div class="flex justify-between bg-[#0b0f0d] p-2 rounded-xl border border-green-900/30 items-center">
-              <span class="capitalize">📂 ${sec}</span> <strong class="text-green-400">${count} visitas</strong>
+        document.getElementById('sectionsStatsContainer').innerHTML = sortedSections.length === 0 
+          ? '<p class="text-xs text-slate-500 italic">Sin registros de navegación.</p>' 
+          : sortedSections.map(([sec, count]) => `
+            <div class="flex justify-between bg-[#050806] p-2.5 rounded-xl border border-green-900/40 items-center">
+              <span class="capitalize">📂 ${sec}</span> 
+              <strong class="text-green-400">${count} accesos</strong>
             </div>
           `).join('');
-        }
 
+        // Franja Horaria
+        document.getElementById('hourlyStatsContainer').innerHTML = Object.entries(hourlyCounts).map(([range, count]) => `
+          <div class="flex justify-between bg-[#050806] p-2.5 rounded-xl border border-green-900/40 items-center text-xs">
+            <span>🌆 ${range}</span> 
+            <strong class="text-green-400">${count} visitas</strong>
+          </div>
+        `).join('');
+
+        // Categorías / Torneos & Regiones
         categories.forEach(cat => {
           let region = cat.region || cat.zone || 'Presidencia Roque Sáenz Peña y Zona';
-          
-          if (!regionStats[region]) {
-            regionStats[region] = { tournaments: 0, visits: 0, teams: 0 };
-          }
+          if (!regionStats[region]) regionStats[region] = { visits: 0, tournaments: 0 };
           regionStats[region].tournaments++;
-
           tournamentCounts[cat.id] = { name: cat.name, region: region, count: 0 };
-        });
-
-        teams.forEach(t => {
-          const cat = categories.find(c => c.id === t.category_id);
-          if (cat) {
-            let region = cat.region || cat.zone || 'Presidencia Roque Sáenz Peña y Zona';
-            if (regionStats[region]) {
-              regionStats[region].teams++;
-            }
-          }
         });
 
         if (statsData) {
@@ -317,77 +351,63 @@
             if (row.category_id && tournamentCounts[row.category_id]) {
               tournamentCounts[row.category_id].count++;
               let reg = tournamentCounts[row.category_id].region;
-              if (regionStats[reg]) {
-                regionStats[reg].visits++;
-              }
+              if (regionStats[reg]) regionStats[reg].visits++;
             }
           });
         }
 
-        const regionsContainer = document.getElementById('regionsStatsContainer');
-        const regionKeys = Object.keys(regionStats);
-
-        if (regionKeys.length === 0) {
-          regionsContainer.innerHTML = '<p class="text-xs text-slate-500 italic">No hay datos regionales disponibles.</p>';
-        } else {
-          regionsContainer.innerHTML = `
+        // Tabla Regiones
+        document.getElementById('regionsStatsContainer').innerHTML = Object.keys(regionStats).length === 0
+          ? '<p class="text-xs text-slate-500 italic">Sin datos regionales.</p>'
+          : `
             <div class="overflow-x-auto scrollbar-thin">
-              <table class="w-full text-xs min-w-[320px]">
-                <thead class="bg-[#0b0f0d] text-slate-400 uppercase text-[10px]">
+              <table class="w-full text-xs min-w-[280px]">
+                <thead class="bg-[#050806] text-slate-400 uppercase text-[10px]">
                   <tr>
-                    <th class="p-2 text-left">Región / Localidad</th>
+                    <th class="p-2 text-left">Región</th>
                     <th class="p-2 text-center">Torneos</th>
-                    <th class="p-2 text-center">Equipos</th>
-                    <th class="p-2 text-center">Visitas Totales</th>
+                    <th class="p-2 text-center">Visitas</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-green-900/20">
-                  ${Object.entries(regionStats).map(([reg, data]) => `
+                  ${Object.entries(regionStats).map(([reg, d]) => `
                     <tr>
                       <td class="p-2 text-white font-bold">📍 ${reg}</td>
-                      <td class="p-2 text-center text-slate-300">${data.tournaments}</td>
-                      <td class="p-2 text-center text-slate-300">${data.teams}</td>
-                      <td class="p-2 text-center text-green-400 font-bold">${data.visits}</td>
+                      <td class="p-2 text-center text-slate-300">${d.tournaments}</td>
+                      <td class="p-2 text-center text-green-400 font-bold">${d.visits}</td>
                     </tr>
                   `).join('')}
                 </tbody>
               </table>
             </div>
           `;
-        }
 
-        const container = document.getElementById('tournamentsStatsContainer');
+        // Ranking Torneos
         const sortedTournaments = Object.values(tournamentCounts).sort((a, b) => b.count - a.count);
-
-        if (categories.length === 0) {
-          container.innerHTML = '<p class="text-xs text-slate-500 italic">No hay torneos registrados.</p>';
-          return;
-        }
-
-        container.innerHTML = `
-          <div class="overflow-x-auto scrollbar-thin">
-            <table class="w-full text-xs min-w-[300px]">
-              <thead class="bg-[#0b0f0d] text-slate-400 uppercase text-[10px]">
-                <tr>
-                  <th class="p-2 text-left">#</th>
-                  <th class="p-2 text-left">Torneo</th>
-                  <th class="p-2 text-left">Región</th>
-                  <th class="p-2 text-center">Visitas</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-green-900/20">
-                ${sortedTournaments.map((t, idx) => `
-                  <tr class="${idx === 0 && t.count > 0 ? 'bg-green-900/10 font-bold' : ''}">
-                    <td class="p-2 text-green-400">${idx + 1}</td>
-                    <td class="p-2 text-white">${t.name} ${idx === 0 && t.count > 0 ? '🔥' : ''}</td>
-                    <td class="p-2 text-slate-400 text-[11px]">${t.region}</td>
-                    <td class="p-2 text-center text-green-400 font-bold">${t.count}</td>
+        document.getElementById('tournamentsStatsContainer').innerHTML = sortedTournaments.length === 0
+          ? '<p class="text-xs text-slate-500 italic">No hay torneos registrados.</p>'
+          : `
+            <div class="overflow-x-auto scrollbar-thin">
+              <table class="w-full text-xs min-w-[300px]">
+                <thead class="bg-[#050806] text-slate-400 uppercase text-[10px]">
+                  <tr>
+                    <th class="p-2 text-left">#</th>
+                    <th class="p-2 text-left">Torneo</th>
+                    <th class="p-2 text-center">Visitas</th>
                   </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
+                </thead>
+                <tbody class="divide-y divide-green-900/20">
+                  ${sortedTournaments.map((t, idx) => `
+                    <tr class="${idx === 0 && t.count > 0 ? 'bg-green-900/20 font-bold' : ''}">
+                      <td class="p-2 text-green-400">${idx + 1}</td>
+                      <td class="p-2 text-white">${t.name} ${idx === 0 && t.count > 0 ? '🔥' : ''}</td>
+                      <td class="p-2 text-center text-green-400 font-bold">${t.count}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
 
       } catch (err) {
         console.error("Error al cargar estadísticas:", err);
