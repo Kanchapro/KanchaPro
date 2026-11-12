@@ -171,7 +171,7 @@
           </label>
         </div>
         <div class="flex gap-2">
-          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar Automático por Fecha</button>
+          <button onclick="generateAutomaticFixture()" class="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold py-2 rounded-lg transition">⚡ Generar / Actualizar Automático</button>
           <button onclick="openMatchModal()" class="btn-green flex-1 text-white text-[11px] font-bold py-2 rounded-lg">+ Programar Manual</button>
         </div>
       </div>
@@ -1472,7 +1472,6 @@
     function renderStandingsView(teams, matches, cat) {
       const container = document.getElementById('adminStandingsContainer');
       
-      // Obtener los puntos configurados en el torneo (dinámicos)
       const ptsWin = cat.pts_win !== undefined ? cat.pts_win : (cat.win_points !== undefined ? cat.win_points : 3);
       const ptsDraw = cat.pts_draw !== undefined ? cat.pts_draw : (cat.points_draw !== undefined ? cat.points_draw : 1);
       
@@ -1935,10 +1934,21 @@
       if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
       
       const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
+      
+      // Rescatar partidos jugados para no perder resultados ni estadísticas de la Fecha 1
+      let playedMatchesToKeep = existingLeagueMatches.filter(m => m.played);
+
       if (existingLeagueMatches.length > 0) {
-        if (!confirm("Ya existe un fixture. ¿Deseas borrarlo y generar uno nuevo?")) return;
+        let msg = playedMatchesToKeep.length > 0 
+          ? `Ya existen partidos cargados. Hay ${playedMatchesToKeep.length} partido(s) ya JUGADO(S) (ej. Fecha 1) que se mantendrán intactos. Los partidos pendientes se reestructurarán con los nuevos equipos. ¿Deseas continuar?`
+          : "Ya existe un fixture generado. ¿Deseas rearmarlo con los equipos actuales?";
+        if (!confirm(msg)) return;
+
+        // Borrar solo los partidos NO jugados de la base de datos para rearmar el resto
         for (let m of existingLeagueMatches) {
-          await supabaseClient.from('torneos_data').delete().eq('id', m.id);
+          if (!m.played) {
+            await supabaseClient.from('torneos_data').delete().eq('id', m.id);
+          }
         }
       }
 
@@ -2147,7 +2157,7 @@
       }
 
       await loadAdminData();
-      alert("¡Fixture generado con éxito (con opción interzonal aplicada)!");
+      alert("¡Fixture actualizado con éxito! Se incorporaron los nuevos equipos manteniendo los resultados de los partidos ya jugados.");
     }
 
     function openMatchModal(isEdit = false, matchId = null) {
@@ -2672,7 +2682,6 @@
       document.getElementById('mdHomeName').textContent = hTeam.name;
       document.getElementById('mdAwayName').textContent = aTeam.name;
 
-      // Cargar el selector de estado de juego (Jugado / No Jugado)
       document.getElementById('modalMatchPlayedStatus').value = match.played ? 'true' : 'false';
 
       const details = match.match_details || {};
