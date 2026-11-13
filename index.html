@@ -102,7 +102,7 @@
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6InZqX2Fub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     const FALLBACK_LOGO = "https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
@@ -403,8 +403,17 @@
 
   </main>
 
-  <!-- FOOTER DE ÉLITE -->
-  <footer class="bg-[#030704] border-t border-emerald-950/80 py-6 px-4 text-slate-400 text-[11px] mt-auto max-w-5xl w-full mx-auto space-y-4">
+  <!-- FOOTER DE ÉLITE CON SECCIÓN DINÁMICA DE SPONSORS -->
+  <footer class="bg-[#030704] border-t border-emerald-950/80 py-6 px-4 text-slate-400 text-[11px] mt-auto max-w-5xl w-full mx-auto space-y-5">
+    
+    <!-- BLOQUE DE PATROCINADORES / SPONSORS -->
+    <div id="publicSponsorsContainer" class="space-y-2.5 border-b border-emerald-900/40 pb-5 text-center">
+      <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest block">Comercios y Marcas Auspiciantes</span>
+      <div id="publicSponsorsGrid" class="flex flex-wrap items-center justify-center gap-4 pt-1">
+        <!-- Se llena dinámicamente con JS -->
+      </div>
+    </div>
+
     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-emerald-900/30 pb-4">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -609,7 +618,7 @@
   </div>
 
   <script>
-    let pubData = { categories: [], teams: [], players: [], matches: [], suspensions: [] };
+    let pubData = { categories: [], teams: [], players: [], matches: [], suspensions: [], sponsors: [] };
     let currentPublicCatId = null;
     let currentFixtureFilter = 'all';
     const STORAGE_FAV_KEY = 'kanchapro_favorite_tournament';
@@ -658,6 +667,7 @@
         pubData.players = rows.filter(r => r.type === 'player');
         pubData.matches = rows.filter(r => r.type === 'match');
         pubData.suspensions = rows.filter(r => r.type === 'suspension');
+        pubData.sponsors = rows.filter(r => r.type === 'sponsor');
 
         if (pubData.categories.length === 0 && rows.length > 0) {
           pubData.categories = rows;
@@ -716,6 +726,7 @@
           headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
           document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
           document.getElementById('headerInstagramBtn').classList.add('hidden');
+          renderPublicSponsors(); // Renderiza sponsors globales o vacíos si no hay torneo
         }
       }
     }
@@ -866,6 +877,35 @@
       renderPublicTeamsAndRosters(teams, players, cat.sport_type === 'futsal');
       renderPublicScorers(players, teams);
       renderPublicDiscipline(players, teams, teamIds);
+      renderPublicSponsors();
+    }
+
+    function renderPublicSponsors() {
+      const grid = document.getElementById('publicSponsorsGrid');
+      const container = document.getElementById('publicSponsorsContainer');
+      if (!grid || !container) return;
+
+      const sponsors = pubData.sponsors.filter(s => s.category_id === currentPublicCatId);
+
+      if (sponsors.length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'block';
+      grid.innerHTML = sponsors.map(s => {
+        const content = `
+          <div class="flex items-center gap-2 bg-[#06120a] px-3 py-1.5 rounded-xl border border-emerald-950 shadow hover:border-emerald-500 transition">
+            <img src="${s.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full border border-emerald-500/30" onerror="this.src=FALLBACK_LOGO">
+            <span class="text-xs font-bold text-white">${s.name}</span>
+          </div>
+        `;
+        if (s.link) {
+          const safeLink = s.link.startsWith('http') ? s.link : `https://${s.link}`;
+          return `<a href="${safeLink}" target="_blank" title="Visitar ${s.name}">${content}</a>`;
+        }
+        return content;
+      }).join('');
     }
 
     function renderPublicHorariosClubsGrid() {
@@ -935,7 +975,6 @@
     function renderPublicStandings(teams, matches, cat) {
       const container = document.getElementById('publicStandingsContainer');
       
-      // Lógica corregida para obtener los puntos por victoria configurados en el torneo (soporta 2, 3 o los que se hayan guardado)
       let rawWinPoints = cat.pts_win !== undefined ? cat.pts_win : 
                          (cat.win_points !== undefined ? cat.win_points : 
                          (cat.points_win !== undefined ? cat.points_win : 
