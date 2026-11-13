@@ -93,6 +93,45 @@
       background-size: 200% 100%;
       animation: shimmer 1.5s infinite;
     }
+
+    /* ESTILOS TIPO GOOGLE ADSENSE PARA SPONSORS LOCALES */
+    .adsense-sponsor-container {
+      background: rgba(6, 15, 10, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin: 10px auto;
+      max-width: 728px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .adsense-sponsor-container:hover {
+      border-color: rgba(16, 185, 129, 0.5);
+      box-shadow: 0 12px 35px rgba(16, 185, 129, 0.15);
+    }
+    .adsense-badge {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1px 6px;
+      border-radius: 4px;
+      align-self: flex-end;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+    .adsense-banner-img {
+      width: 100%;
+      max-height: 90px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #030704;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-black">
@@ -403,14 +442,13 @@
 
   </main>
 
-  <!-- FOOTER DE ÉLITE CON SECCIÓN DINÁMICA DE SPONSORS -->
+  <!-- FOOTER DE ÉLITE CON SECCIÓN DE ANUNCIOS TIPO ADSENSE -->
   <footer class="bg-[#030704] border-t border-emerald-950/80 py-6 px-4 text-slate-400 text-[11px] mt-auto max-w-5xl w-full mx-auto space-y-5">
     
-    <!-- BLOQUE DE PATROCINADORES / SPONSORS -->
-    <div id="publicSponsorsContainer" class="space-y-2.5 border-b border-emerald-900/40 pb-5 text-center">
-      <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest block">Comercios y Marcas Auspiciantes</span>
-      <div id="publicSponsorsGrid" class="flex flex-wrap items-center justify-center gap-4 pt-1">
-        <!-- Se llena dinámicamente con JS -->
+    <!-- BLOQUE DE PUBLICIDADES TIPO ADSENSE -->
+    <div id="publicSponsorsContainer" class="space-y-2 border-b border-emerald-900/40 pb-5 text-center">
+      <div id="publicSponsorsGrid" class="space-y-3">
+        <!-- Se llena dinámicamente con estilo de anuncios profesionales -->
       </div>
     </div>
 
@@ -726,7 +764,7 @@
           headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
           document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
           document.getElementById('headerInstagramBtn').classList.add('hidden');
-          renderPublicSponsors(); // Renderiza sponsors globales o vacíos si no hay torneo
+          renderPublicSponsors(); 
         }
       }
     }
@@ -880,6 +918,7 @@
       renderPublicSponsors();
     }
 
+    // RENDERIZADO PROFESIONAL ESTILO GOOGLE ADSENSE
     function renderPublicSponsors() {
       const grid = document.getElementById('publicSponsorsGrid');
       const container = document.getElementById('publicSponsorsContainer');
@@ -894,17 +933,17 @@
 
       container.style.display = 'block';
       grid.innerHTML = sponsors.map(s => {
-        const content = `
-          <div class="flex items-center gap-2 bg-[#06120a] px-3 py-1.5 rounded-xl border border-emerald-950 shadow hover:border-emerald-500 transition">
-            <img src="${s.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full border border-emerald-500/30" onerror="this.src=FALLBACK_LOGO">
-            <span class="text-xs font-bold text-white">${s.name}</span>
+        const safeLink = s.link ? (s.link.startsWith('http') ? s.link : `https://${s.link}`) : '#';
+        const hasLink = s.link && s.link.trim() !== '';
+
+        return `
+          <div class="adsense-sponsor-container">
+            <span class="adsense-badge">Anuncio Patrocinado</span>
+            <a href="${safeLink}" ${hasLink ? 'target="_blank"' : ''} title="${s.name}" class="w-full flex justify-center">
+              <img src="${s.logo || FALLBACK_LOGO}" alt="${s.name}" class="adsense-banner-img" onerror="this.src=FALLBACK_LOGO">
+            </a>
           </div>
         `;
-        if (s.link) {
-          const safeLink = s.link.startsWith('http') ? s.link : `https://${s.link}`;
-          return `<a href="${safeLink}" target="_blank" title="Visitar ${s.name}">${content}</a>`;
-        }
-        return content;
       }).join('');
     }
 
