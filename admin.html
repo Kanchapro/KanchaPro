@@ -18,11 +18,12 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
 
-    /* Estilos optimizados para impresión en PDF tipo Cronograma Oficial */
+    /* Estilos optimizados para impresión en PDF tipo Cronograma Oficial o Planilla */
     @media print {
       body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 10px !important; }
       body * { visibility: hidden; }
-      #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList * { visibility: visible; }
+      #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList *, #officialMatchSheet, #officialMatchSheet * { visibility: visible; }
+      #officialMatchSheet { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 0 !important; display: block !important; }
       #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 5px !important; }
       #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; display: block !important; }
       .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\], .hide-on-share { display: none !important; }
@@ -341,6 +342,78 @@
     </div>
 
   </main>
+
+  <!-- ==================== PLANILLA OFICIAL (OCULTA PARA PDF) ==================== -->
+  <div id="officialMatchSheet" class="hidden bg-white text-black p-4 rounded text-[10px] font-sans w-[800px] mx-auto">
+    <div class="border-2 border-black p-2 space-y-2">
+      <!-- Encabezado -->
+      <div class="flex justify-between items-center border-b-2 border-black pb-2">
+        <div class="font-bold text-sm">⚽ PLANILLA OFICIAL DE PARTIDO — KANCHAPRO</div>
+        <div id="sheetHeaderMeta" class="text-right text-[11px]">
+          <div><b>Fecha N°:</b> <span id="sheetRound">Fecha 1</span></div>
+          <div><b>División/Torneo:</b> <span id="sheetTournament">Torneo</span></div>
+        </div>
+      </div>
+
+      <!-- Bloque Equipo Local (Equipo A) -->
+      <div class="border border-black p-1 space-y-1">
+        <div class="bg-gray-200 font-bold p-1 flex justify-between">
+          <span>EQUIPO LOCAL: <span id="sheetHomeName" class="uppercase">Local</span></span>
+          <span>D.T. / Delegado: ___________________</span>
+        </div>
+        <table class="w-full border-collapse border border-black text-[9px]">
+          <thead>
+            <tr class="bg-gray-100 border-b border-black">
+              <th class="border border-black p-1 text-left w-36">APELLIDO Y NOMBRES</th>
+              <th class="border border-black p-1 text-center w-6">N°</th>
+              <th class="border border-black p-1 text-center w-24">FALTAS (1 2 3 4 5)</th>
+              <th class="border border-black p-1 text-center w-16">TARJETAS</th>
+              <th class="border border-black p-1 text-center">GOLES (1° / 2° Periodo)</th>
+            </tr>
+          </thead>
+          <tbody id="sheetHomePlayersTable">
+            <!-- Se completa dinámicamente con JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bloque Equipo Visitante (Equipo B) -->
+      <div class="border border-black p-1 space-y-1">
+        <div class="bg-gray-200 font-bold p-1 flex justify-between">
+          <span>EQUIPO VISITANTE: <span id="sheetAwayName" class="uppercase">Visitante</span></span>
+          <span>D.T. / Delegado: ___________________</span>
+        </div>
+        <table class="w-full border-collapse border border-black text-[9px]">
+          <thead>
+            <tr class="bg-gray-100 border-b border-black">
+              <th class="border border-black p-1 text-left w-36">APELLIDO Y NOMBRES</th>
+              <th class="border border-black p-1 text-center w-6">N°</th>
+              <th class="border border-black p-1 text-center w-24">FALTAS (1 2 3 4 5)</th>
+              <th class="border border-black p-1 text-center w-16">TARJETAS</th>
+              <th class="border border-black p-1 text-center">GOLES (1° / 2° Periodo)</th>
+            </tr>
+          </thead>
+          <tbody id="sheetAwayPlayersTable">
+            <!-- Se completa dinámicamente con JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Firmas y Árbitros -->
+      <div class="grid grid-cols-2 gap-2 pt-2 border-t border-black text-[9px]">
+        <div class="border border-black p-1">
+          <p class="font-bold">RESULTADO FINAL:</p>
+          <div class="flex justify-around py-2 font-bold text-sm">
+            <span>Local: [ &nbsp; ]</span> - <span>Visitante: [ &nbsp; ]</span>
+          </div>
+        </div>
+        <div class="border border-black p-1 space-y-1">
+          <div><b>Planillero:</b> ___________________________</div>
+          <div><b>Árbitros:</b> ____________________________</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== MODALES ==================== -->
   <div id="clubHorariosModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
@@ -1079,9 +1152,10 @@
                       ${infoText ? `<div class="text-[11px] text-slate-400 text-center font-medium">🗓️ ${infoText}</div>` : ''}
                       
                       <div class="flex justify-between items-center pt-1 border-t border-green-900/30 hide-on-share">
-                        <div class="flex gap-1.5">
-                          <button onclick="openMatchModal(true, '${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] px-2.5 py-1 rounded font-semibold">📅 Editar Info</button>
-                          <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[11px] px-2.5 py-1 rounded font-semibold">⚙️ Planilla</button>
+                        <div class="flex gap-1.5 flex-wrap">
+                          <button onclick="downloadOfficialMatchSheetPDF('${m.id}')" class="bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 text-[11px] px-2 py-1 rounded font-semibold flex items-center gap-1">📄 Planilla Oficial</button>
+                          <button onclick="openMatchModal(true, '${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] px-2 py-1 rounded font-semibold">📅 Editar Info</button>
+                          <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[11px] px-2 py-1 rounded font-semibold">⚙️ Resultados</button>
                         </div>
                         <button onclick="deleteRecord('${m.id}')" class="text-red-400 text-xs">🗑️</button>
                       </div>
@@ -1171,6 +1245,57 @@
 
     function exportFixturePDF() {
       window.print();
+    }
+
+    // ==================== FUNCIÓN PLANILLA OFICIAL PDF ====================
+    function downloadOfficialMatchSheetPDF(matchId) {
+      const match = dbData.matches.find(m => m.id === matchId);
+      if (!match) return alert("Partido no encontrado.");
+
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const teams = dbData.teams;
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
+
+      // Rellenar metadatos de la planilla
+      document.getElementById('sheetRound').textContent = match.round_name || 'Fecha';
+      document.getElementById('sheetTournament').textContent = cat ? cat.name : 'Torneo KanchaPro';
+      document.getElementById('sheetHomeName').textContent = hTeam.name;
+      document.getElementById('sheetAwayName').textContent = aTeam.name;
+
+      // Filtrar y ordenar alfabéticamente jugadores locales
+      const hPlayers = dbData.players.filter(p => p.team_id === hTeam.id).sort((a,b) => a.name.localeCompare(b.name));
+      document.getElementById('sheetHomePlayersTable').innerHTML = hPlayers.map((p, idx) => `
+        <tr class="border-b border-black">
+          <td class="border border-black p-1 font-semibold">${idx + 1}. ${p.name}</td>
+          <td class="border border-black p-1 text-center"></td>
+          <td class="border border-black p-1 text-center text-[8px] text-gray-500">_ _ _ _ _</td>
+          <td class="border border-black p-1 text-center"></td>
+          <td class="border border-black p-1 text-center"></td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" class="p-1 text-center">Sin jugadores registrados</td></tr>';
+
+      // Filtrar y ordenar alfabéticamente jugadores visitantes
+      const aPlayers = dbData.players.filter(p => p.team_id === aTeam.id).sort((a,b) => a.name.localeCompare(b.name));
+      document.getElementById('sheetAwayPlayersTable').innerHTML = aPlayers.map((p, idx) => `
+        <tr class="border-b border-black">
+          <td class="border border-black p-1 font-semibold">${idx + 1}. ${p.name}</td>
+          <td class="border border-black p-1 text-center"></td>
+          <td class="border border-black p-1 text-center text-[8px] text-gray-500">_ _ _ _ _</td>
+          <td class="border border-black p-1 text-center"></td>
+          <td class="border border-black p-1 text-center"></td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" class="p-1 text-center">Sin jugadores registrados</td></tr>';
+
+      // Mostrar temporalmente la planilla para imprimir
+      const sheet = document.getElementById('officialMatchSheet');
+      sheet.classList.remove('hidden');
+
+      // Lanzar diálogo de impresión optimizado para PDF
+      window.print();
+
+      // Ocultar de nuevo la planilla tras la impresión
+      sheet.classList.add('hidden');
     }
 
     function renderGroupsOverview(teams, cat) {
