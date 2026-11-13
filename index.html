@@ -265,13 +265,14 @@
     <!-- CONTENEDOR DE PESTAÑAS Y DATOS DEL TORNEO -->
     <div id="tournamentContentArea" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-2 border border-emerald-900/50 shadow-2xl">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-1.5">
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-1.5">
           <button onclick="switchPublicTab('standings', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center tab-active font-black flex items-center justify-center gap-1.5 transition w-full">📊 Posiciones</button>
           <button onclick="switchPublicTab('fixture', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white w-full">📅 Fixture</button>
           <button onclick="switchPublicTab('horarios', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white w-full">⏰ Horarios</button>
           <button onclick="switchPublicTab('playoffs', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white w-full">🏆 Playoffs</button>
           <button onclick="switchPublicTab('teams', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white w-full">🛡️ Equipos</button>
           <button onclick="switchPublicTab('scorers', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white w-full">⚽ Goleadores</button>
+          <button onclick="switchPublicTab('cards', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white w-full">🟨 Tarjetas</button>
           <button onclick="switchPublicTab('discipline', event)" class="public-tab px-3 py-2.5 rounded-xl text-[11px] text-center text-slate-400 font-bold flex items-center justify-center gap-1.5 transition hover:text-white w-full">🟥 Sanciones</button>
         </div>
       </div>
@@ -400,10 +401,42 @@
         </div>
       </div>
 
-      <!-- Tab 7: Sanciones -->
+      <!-- Tab 7: Tarjetas -->
+      <div id="pub-cards" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h3 class="text-xs sm:text-sm font-black text-yellow-400 tracking-wider flex items-center gap-2 uppercase">
+            <span class="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse shrink-0 shadow-[0_0_10px_#facc15]"></span> Acumulado de Tarjetas Amarillas
+          </h3>
+          <button onclick="captureTournamentScreenshot('captureAreaCards', 'Control_Tarjetas')" class="btn-theme text-black font-black text-[11px] px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-xl bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 w-full sm:w-auto justify-center">
+            📸 Compartir / Enviar a WhatsApp
+          </button>
+        </div>
+        <div id="captureAreaCards" class="space-y-4 bg-[#030704] p-4 sm:p-5 rounded-2xl border border-emerald-900/60 shadow-2xl relative">
+          <div class="flex items-start justify-between border-b border-emerald-900/50 pb-3.5 mb-3 gap-3">
+            <div class="flex items-start gap-3 min-w-0 flex-1">
+              <div id="captureLogoCards" class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/50 flex items-center justify-center overflow-hidden shrink-0 mt-0.5 shadow">
+                <img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">
+              </div>
+              <div class="min-w-0 flex-1 space-y-0.5">
+                <h4 class="text-xs sm:text-sm font-black text-yellow-400 uppercase tracking-wider leading-tight">Acumulado de Tarjetas Amarillas</h4>
+                <span id="captureSubtitleCards" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/50 space-y-3 shadow-inner">
+            <div id="pubYellowCardsList" class="space-y-2 max-h-[500px] overflow-y-auto scrollbar-thin pr-1"></div>
+          </div>
+          <div class="text-right pt-3 border-t border-emerald-900/40 flex justify-between items-center">
+            <span class="text-[9px] text-slate-500 font-bold tracking-widest uppercase">Control Disciplinario</span>
+            <span class="text-[9px] text-emerald-500 font-black tracking-widest uppercase">KANCHAPRO.COM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 8: Sanciones -->
       <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
+          <h3 class="text-xs sm:text-sm font-black text-red-400 tracking-wider flex items-center gap-2 uppercase">
             <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shrink-0 shadow-[0_0_10px_#ef4444]"></span> Tribunal de Disciplina y Sanciones
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaDiscipline', 'Tribunal_Disciplina')" class="btn-theme text-black font-black text-[11px] px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-xl bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 w-full sm:w-auto justify-center">
@@ -417,20 +450,14 @@
                 <img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
-                <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-wider leading-tight">Tribunal de Disciplina y Sanciones</h4>
+                <h4 class="text-xs sm:text-sm font-black text-red-400 uppercase tracking-wider leading-tight">Tribunal de Disciplina y Sanciones</h4>
                 <span id="captureSubtitleDiscipline" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/50 space-y-3 shadow-inner">
-              <h4 class="font-black text-yellow-400 text-xs flex items-center gap-2 uppercase tracking-wider">🟨 Acumulado de Tarjetas Amarillas</h4>
-              <div id="pubYellowCardsList" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
-            </div>
-            <div class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/50 space-y-3 shadow-inner">
-              <h4 class="font-black text-red-400 text-xs flex items-center gap-2 uppercase tracking-wider">🟥 Jugadores Suspendidos</h4>
-              <div id="pubSuspensionsList" class="space-y-2 max-h-72 overflow-y-auto scrollbar-thin pr-1"></div>
-            </div>
+          <div class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/50 space-y-3 shadow-inner">
+            <h4 class="font-black text-red-400 text-xs flex items-center gap-2 uppercase tracking-wider">🟥 Jugadores Suspendidos / Boletín de Penas</h4>
+            <div id="pubSuspensionsList" class="space-y-2 max-h-[500px] overflow-y-auto scrollbar-thin pr-1"></div>
           </div>
           <div class="text-right pt-3 border-t border-emerald-900/40 flex justify-between items-center">
             <span class="text-[9px] text-slate-500 font-bold tracking-widest uppercase">Boletín Oficial de Penas</span>
@@ -892,12 +919,12 @@
       }
       document.getElementById('metaOgUrl').setAttribute('content', currentUrl);
 
-      ['captureLogoStandings', 'captureLogoPlayoffs', 'captureLogoScorers', 'captureLogoDiscipline'].forEach(id => {
+      ['captureLogoStandings', 'captureLogoPlayoffs', 'captureLogoScorers', 'captureLogoCards', 'captureLogoDiscipline'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = logoHtml;
       });
 
-      ['captureSubtitleStandings', 'captureSubtitlePlayoffs', 'captureSubtitleScorers', 'captureSubtitleDiscipline'].forEach(id => {
+      ['captureSubtitleStandings', 'captureSubtitlePlayoffs', 'captureSubtitleScorers', 'captureSubtitleCards', 'captureSubtitleDiscipline'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = `${cat.name} — Portal Oficial`;
       });
@@ -1645,19 +1672,16 @@
 
     function renderPublicDiscipline(players, teams, teamIds) {
       let yellowMap = {};
-      let redMap = {};
 
       players.forEach(p => {
-        let totalY = 0, totalR = 0;
+        let totalY = 0;
         pubData.matches.forEach(m => {
           const st = m.match_details?.playerStats?.[p.id];
           if (st) {
             totalY += (st.yellows || 0);
-            totalR += (st.reds || 0);
           }
         });
         if (totalY > 0) yellowMap[p.id] = { player: p, count: totalY };
-        if (totalR > 0) redMap[p.id] = { player: p, count: totalR };
       });
 
       const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
