@@ -2763,24 +2763,33 @@
       const team = dbData.teams.find(t => t.id === teamId);
       const player = dbData.players.find(p => p.id === playerId);
 
-      const { error } = await supabaseClient.from('torneos_data').insert([{
-        id: 'susp_' + Date.now(),
-        type: 'suspension',
-        category_id: activeCategoryId,
-        player_name: player ? player.name : 'Jugador',
-        team_name: team ? team.name : '',
-        remaining_matches,
-        reason
-      }]);
+      try {
+        const { error } = await supabaseClient.from('torneos_data').insert([{
+          id: 'susp_' + Date.now(),
+          type: 'suspension',
+          category_id: activeCategoryId,
+          player_name: player ? player.name : 'Jugador',
+          team_name: team ? team.name : '',
+          remaining_matches,
+          reason
+        }]);
 
-      if (error) {
-        alert("Error al guardar sanción: " + error.message);
-        return;
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        closeModal('suspensionModal');
+        await loadAdminData();
+        alert("¡Sanción guardada con éxito!");
+
+      } catch (err) {
+        console.error("Error al guardar sanción:", err);
+        if (err.message.includes('Failed to fetch') || !navigator.onLine) {
+          alert("Error de conexión: No se pudo contactar con el servidor. Verifica tu señal de internet e intenta nuevamente.");
+        } else {
+          alert("Error al guardar sanción: " + err.message);
+        }
       }
-
-      closeModal('suspensionModal');
-      await loadAdminData();
-      alert("¡Sanción guardada con éxito!");
     }
 
     async function deleteRecord(id) {
