@@ -35,7 +35,6 @@ const FALLBACK_LOGO = "https://raw.githubusercontent.com/Kanchapro/KanchaPro/mai
 let supabaseClient = null;
 
 if (typeof supabase !== 'undefined') {
-    // Configuración robusta con PKCE para evitar bucles de redirección OAuth
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
         auth: {
             flowType: 'pkce',
@@ -829,10 +828,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     await registrarVisita('admin');
 
     if (supabaseClient) {
-        // Manejar de forma segura la sesión proveniente de la URL con PKCE
+        // 1. Manejar de forma segura la sesión proveniente de la URL con PKCE
         await supabaseClient.auth.getSessionFromUrl({ storeSession: true });
 
-        // 1. Obtener la sesión actual de manera directa y limpia al cargar
+        // 2. Obtener la sesión actual de manera directa
         const { data: { session }, error } = await supabaseClient.auth.getSession();
         
         if (error) {
@@ -844,16 +843,20 @@ window.addEventListener('DOMContentLoaded', async () => {
             if (window.location.hash || window.location.search.includes('code=')) {
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
-            checkUserPermissions(session);
+            await checkUserPermissions(session);
+        } else {
+            // Asegurar que se muestre el login si no hay sesión activa
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('adminMainPanel').classList.add('hidden');
         }
 
-        // 2. Escuchar cambios de estado posteriores
-        supabaseClient.auth.onAuthStateChange((event, session) => {
+        // 3. Escuchar cambios de estado posteriores de forma robusta
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
             if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user) {
-                if (window.location.hash) {
+                if (window.location.hash || window.location.search.includes('code=')) {
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }
-                checkUserPermissions(session);
+                await checkUserPermissions(session);
             } else if (event === 'SIGNED_OUT') {
                 document.getElementById('loginScreen').classList.remove('hidden');
                 document.getElementById('adminMainPanel').classList.add('hidden');
@@ -867,6 +870,8 @@ async function checkUserPermissions(session) {
         currentUserEmail = session.user.email;
         const badge = document.getElementById('userEmailBadge');
         if (badge) badge.textContent = `👤 ${currentUserEmail}`;
+        
+        // Desbloquear el panel primero para evitar parpadeos y luego cargar datos
         unlockAdminPanel();
     }
 }
@@ -881,7 +886,10 @@ async function loginWithGoogle() {
         const { error } = await supabaseClient.auth.signInWithOAuth({ 
             provider: 'google', 
             options: { 
-                redirectTo: redirectUrl
+                redirectTo: redirectUrl,
+                queryParams: {
+                    prompt: 'select_account'
+                }
             } 
         });
         if (error) {
@@ -894,14 +902,14 @@ async function loginWithGoogle() {
 }
 
 function unlockAdminPanel() {
-document.getElementById('loginScreen').classList.add('hidden');
-document.getElementById('adminMainPanel').classList.remove('hidden');
-loadAdminData();
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminMainPanel').classList.remove('hidden');
+    loadAdminData();
 }
 
 async function logoutAdmin() {
-if (supabaseClient) await supabaseClient.auth.signOut();
-window.location.reload();
+    if (supabaseClient) await supabaseClient.auth.signOut();
+    window.location.reload();
 }
 
 function verPortalTorneoActivo() {
