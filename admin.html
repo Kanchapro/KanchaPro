@@ -316,16 +316,29 @@
       </div>
     </div>
 
-    <!-- Tab 7: Sponsors -->
+    <!-- Tab 7: Sponsors (Banners estilo AdSense en Pie de Página) -->
     <div id="adm-sponsors" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
-      <div class="flex justify-between items-center">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
-          <h3 class="text-sm font-bold text-green-300">Patrocinadores y Comercios Auspiciantes</h3>
-          <p class="text-[10px] text-slate-400">Administra las marcas o locales que apoyan este torneo</p>
+          <h3 class="text-sm font-bold text-green-300">Publicidad / Banner Sponsor (Pie de Página)</h3>
+          <p class="text-[10px] text-slate-400">Configura banners publicitarios estilo AdSense para el pie de página de este torneo.</p>
         </div>
-        <button onclick="openSponsorModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Patrocinador</button>
+        <button onclick="openSponsorModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg shrink-0">+ Nuevo Banner</button>
       </div>
-      <div id="adminSponsorsList" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+
+      <!-- Guía de medidas estándar estilo AdSense -->
+      <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 text-[11px] text-slate-300 flex flex-col sm:flex-row justify-between gap-2">
+        <div>
+          <span class="font-bold text-green-400 block">📐 Medidas recomendadas (Formato AdSense Pie de Página):</span>
+          <span>• <b>Escritorio / Tablet:</b> 728 × 90 px (Leaderboard)</span><br>
+          <span>• <b>Celulares (Móvil):</b> 320 × 100 px (Banner Grande) o 320 × 50 px</span>
+        </div>
+        <div class="text-[10px] text-slate-400 sm:text-right flex flex-col justify-center">
+          <span>Si cargas varios banners activos, rotarán automáticamente cada 6 segundos en el portal.</span>
+        </div>
+      </div>
+
+      <div id="adminSponsorsList" class="space-y-3"></div>
     </div>
 
     <!-- Tab 8: Moderadores -->
@@ -715,25 +728,60 @@
     </div>
   </div>
 
+  <!-- Modal Sponsor / Banner AdSense -->
   <div id="sponsorModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
-    <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
-      <h3 id="sponsorModalTitle" class="text-sm font-bold text-green-400">Registrar Patrocinador</h3>
+    <div class="glass-card p-5 rounded-2xl max-w-md w-full space-y-3 border border-green-500/30 text-xs">
+      <h3 id="sponsorModalTitle" class="text-sm font-bold text-green-400">Configurar Banner Publicitario</h3>
       <input type="hidden" id="modalSponsorId">
+      
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Comercio / Marca:</label>
-        <input type="text" id="modalSponsorName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Supermercado El Ahorro">
+        <label class="block text-[11px] text-slate-300 mb-1">Nombre del Anunciante / Comercio:</label>
+        <input type="text" id="modalSponsorName" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej. Ferretería San Martín">
       </div>
+
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Logo / Imagen:</label>
-        <input type="file" id="modalSponsorFile" accept="image/*" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2 text-white text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700">
+        <label class="block text-[11px] text-slate-300 mb-1">Formato / Tamaño del Banner:</label>
+        <select id="modalSponsorSize" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs">
+          <option value="responsive">Adaptable Automático (728x90 PC / 320x100 Móvil) — Recomendado</option>
+          <option value="728x90">Leaderboard Estándar (728 × 90 px)</option>
+          <option value="320x100">Banner Móvil Grande (320 × 100 px)</option>
+          <option value="320x50">Banner Móvil Clásico (320 × 50 px)</option>
+        </select>
       </div>
+
       <div>
-        <label class="block text-[11px] text-slate-300 mb-1">Enlace Web o Red Social (Opcional):</label>
-        <input type="text" id="modalSponsorLink" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="https://instagram.com/comercio">
+        <label class="block text-[11px] text-slate-300 mb-1">Imagen del Banner (JPG, PNG, WEBP o GIF):</label>
+        <input type="file" id="modalSponsorFile" accept="image/*" onchange="previewSponsorBanner(event)" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2 text-white text-xs file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700">
+        <p class="text-[10px] text-slate-400 mt-1">Usa una imagen horizontal rectangular.</p>
       </div>
+
+      <!-- Vista previa en vivo estilo AdSense -->
+      <div id="sponsorBannerPreviewBox" class="hidden bg-[#060a08] p-2.5 rounded-xl border border-green-900/40 space-y-1">
+        <div class="flex justify-between items-center text-[9px] text-slate-500 uppercase tracking-wider">
+          <span>Vista previa (Pie de página)</span>
+          <span>Anuncio / Sponsor</span>
+        </div>
+        <div class="w-full h-[75px] bg-black rounded overflow-hidden flex items-center justify-center border border-slate-800">
+          <img id="sponsorBannerPreviewImg" src="" class="w-full h-full object-contain">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Enlace al hacer clic (WhatsApp, Instagram o Web):</label>
+        <input type="text" id="modalSponsorLink" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="https://wa.me/5493644... o https://instagram.com/...">
+      </div>
+
+      <div class="flex items-center justify-between bg-[#0b0f0d] p-2.5 rounded-lg border border-green-900/40">
+        <span class="text-[11px] text-slate-300 font-semibold">Estado del Banner en el Portal:</span>
+        <label class="flex items-center gap-1.5 cursor-pointer font-bold text-green-400">
+          <input type="checkbox" id="modalSponsorActive" checked class="w-4 h-4 accent-green-600 rounded">
+          <span>Activo (Visible)</span>
+        </label>
+      </div>
+
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('sponsorModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
-        <button onclick="saveSponsorFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
+        <button onclick="saveSponsorFromModal()" class="btn-green px-4 py-1.5 text-white rounded-lg font-bold">Guardar Banner</button>
       </div>
     </div>
   </div>
@@ -859,7 +907,6 @@
       window.location.reload();
     }
 
-    // Función para abrir el portal apuntando directamente al torneo activo
     function verPortalTorneoActivo() {
       const baseUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
       if (activeCategoryId) {
@@ -1758,41 +1805,82 @@
       }).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
     }
 
+    function previewSponsorBanner(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('sponsorBannerPreviewImg').src = e.target.result;
+        document.getElementById('sponsorBannerPreviewBox').classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
     function renderSponsorsView() {
       const sponsors = dbData.sponsors.filter(s => s.category_id === activeCategoryId);
       const container = document.getElementById('adminSponsorsList');
       if (!container) return;
 
-      container.innerHTML = sponsors.map(s => `
-        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex flex-col items-center text-center space-y-2 relative">
-          <div class="w-14 h-14 rounded-full bg-green-950 flex items-center justify-center border border-green-500/30 overflow-hidden">
-            <img src="${s.logo || FALLBACK_LOGO}" class="w-full h-full object-cover" onerror="this.src='${FALLBACK_LOGO}'">
+      container.innerHTML = sponsors.map(s => {
+        const isActive = s.is_active !== false;
+        const sizeLabel = s.banner_size || 'responsive';
+        return `
+          <div class="bg-[#0b0f0d] p-3 rounded-xl border ${isActive ? 'border-green-500/40' : 'border-slate-800 opacity-60'} space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ${isActive ? 'bg-green-600/30 text-green-300 border border-green-500/40' : 'bg-slate-800 text-slate-400'}">
+                  ${isActive ? '● Activo' : '○ Pausado'}
+                </span>
+                <span class="font-bold text-white">${s.name}</span>
+                <span class="text-[10px] text-slate-400 hidden sm:inline">(${sizeLabel})</span>
+              </div>
+              <div class="flex gap-1.5">
+                <button onclick="openSponsorModal(true, '${s.id}')" class="bg-blue-600/30 text-blue-300 px-2.5 py-1 rounded text-[11px] font-semibold">✏️ Editar</button>
+                <button onclick="deleteRecord('${s.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️</button>
+              </div>
+            </div>
+
+            <!-- Simulación del bloque AdSense -->
+            <div class="relative w-full max-w-[728px] mx-auto h-[80px] sm:h-[90px] bg-[#060a08] border border-slate-800 rounded-lg overflow-hidden flex items-center justify-center">
+              <span class="absolute top-1 right-1.5 bg-black/75 text-[8px] text-slate-400 px-1.5 py-0.5 rounded border border-slate-700 uppercase tracking-wider z-10">Sponsor</span>
+              <img src="${s.logo || FALLBACK_LOGO}" class="w-full h-full object-contain" onerror="this.src='${FALLBACK_LOGO}'">
+            </div>
+
+            ${s.link ? `<div class="text-[10px] text-blue-400 truncate">🔗 Destino: <a href="${s.link}" target="_blank" class="underline">${s.link}</a></div>` : '<div class="text-[10px] text-slate-500">Sin enlace de destino</div>'}
           </div>
-          <span class="font-bold text-white text-xs truncate w-full">${s.name}</span>
-          ${s.link ? `<a href="${s.link}" target="_blank" class="text-[10px] text-blue-400 truncate w-full underline">🌐 Visitar enlace</a>` : ''}
-          <div class="flex gap-1 pt-1">
-            <button onclick="openSponsorModal(true, '${s.id}')" class="bg-blue-600/30 text-blue-300 px-2 py-1 rounded text-[10px]">✏️</button>
-            <button onclick="deleteRecord('${s.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[10px]">🗑️</button>
-          </div>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-xs col-span-full">No hay patrocinadores agregados en este torneo.</p>';
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-4">No hay banners publicitarios configurados para este torneo.</p>';
     }
 
     function openSponsorModal(isEdit, sponsorId) {
       if (!activeCategoryId) return alert("Selecciona un torneo primero.");
+      const previewBox = document.getElementById('sponsorBannerPreviewBox');
+      const previewImg = document.getElementById('sponsorBannerPreviewImg');
+
       if (isEdit) {
-        document.getElementById('sponsorModalTitle').textContent = 'Editar Patrocinador';
+        document.getElementById('sponsorModalTitle').textContent = 'Editar Banner Publicitario';
         const sp = dbData.sponsors.find(s => s.id === sponsorId);
         document.getElementById('modalSponsorId').value = sp.id;
         document.getElementById('modalSponsorName').value = sp.name;
+        document.getElementById('modalSponsorSize').value = sp.banner_size || 'responsive';
         document.getElementById('modalSponsorLink').value = sp.link || '';
+        document.getElementById('modalSponsorActive').checked = sp.is_active !== false;
         document.getElementById('modalSponsorFile').value = '';
+        if (sp.logo) {
+          previewImg.src = sp.logo;
+          previewBox.classList.remove('hidden');
+        } else {
+          previewBox.classList.add('hidden');
+        }
       } else {
-        document.getElementById('sponsorModalTitle').textContent = 'Registrar Patrocinador';
+        document.getElementById('sponsorModalTitle').textContent = 'Nuevo Banner Publicitario';
         document.getElementById('modalSponsorId').value = '';
         document.getElementById('modalSponsorName').value = '';
+        document.getElementById('modalSponsorSize').value = 'responsive';
         document.getElementById('modalSponsorLink').value = '';
+        document.getElementById('modalSponsorActive').checked = true;
         document.getElementById('modalSponsorFile').value = '';
+        previewBox.classList.add('hidden');
       }
       openModal('sponsorModal');
     }
@@ -1800,9 +1888,12 @@
     async function saveSponsorFromModal() {
       const id = document.getElementById('modalSponsorId').value;
       const name = document.getElementById('modalSponsorName').value.trim();
+      const banner_size = document.getElementById('modalSponsorSize').value;
       const link = document.getElementById('modalSponsorLink').value.trim();
+      const is_active = document.getElementById('modalSponsorActive').checked;
       const fileInput = document.getElementById('modalSponsorFile');
-      if (!name) return alert("Ingresa el nombre del patrocinador.");
+
+      if (!name) return alert("Ingresa el nombre del comercio o anunciante.");
 
       let logoUrl = '';
       if (id) {
@@ -1813,18 +1904,26 @@
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         const fileExt = file.name.split('.').pop();
-        const fileName = `sponsor_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+        const fileName = `banner_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
         const { error } = await supabaseClient.storage.from('escudos').upload(fileName, file);
         if (error) {
-          alert("Error al subir el logo: " + error.message);
+          alert("Error al subir el banner: " + error.message);
           return;
         }
         const { data: publicURLData } = supabaseClient.storage.from('escudos').getPublicUrl(fileName);
         logoUrl = publicURLData.publicUrl;
       }
 
+      if (!logoUrl && !id) return alert("Por favor selecciona una imagen para el banner.");
+
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, link }).eq('id', id);
+        await supabaseClient.from('torneos_data').update({
+          name,
+          logo: logoUrl || logoUrl,
+          link,
+          banner_size,
+          is_active
+        }).eq('id', id);
       } else {
         await supabaseClient.from('torneos_data').insert([{
           id: 'sponsor_' + Date.now(),
@@ -1832,13 +1931,15 @@
           category_id: activeCategoryId,
           name,
           logo: logoUrl,
-          link
+          link,
+          banner_size,
+          is_active
         }]);
       }
 
       closeModal('sponsorModal');
       await loadAdminData();
-      alert("¡Patrocinador guardado con éxito!");
+      alert("¡Banner publicitario guardado con éxito!");
     }
 
     function renderModeratorsView() {
@@ -1935,7 +2036,6 @@
       
       const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
       
-      // Rescatar partidos jugados para no perder resultados ni estadísticas de la Fecha 1
       let playedMatchesToKeep = existingLeagueMatches.filter(m => m.played);
 
       if (existingLeagueMatches.length > 0) {
@@ -1944,7 +2044,6 @@
           : "Ya existe un fixture generado. ¿Deseas rearmarlo con los equipos actuales?";
         if (!confirm(msg)) return;
 
-        // Borrar solo los partidos NO jugados de la base de datos para rearmar el resto
         for (let m of existingLeagueMatches) {
           if (!m.played) {
             await supabaseClient.from('torneos_data').delete().eq('id', m.id);
