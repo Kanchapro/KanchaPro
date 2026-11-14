@@ -94,6 +94,7 @@
       animation: shimmer 1.5s infinite;
     }
 
+    /* ESTILOS TIPO GOOGLE ADSENSE PARA SPONSORS LOCALES */
     .adsense-sponsor-container {
       background: rgba(6, 15, 10, 0.95);
       border: 1px solid rgba(16, 185, 129, 0.25);
@@ -135,11 +136,12 @@
 </head>
 <body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-black">
 
+  <!-- CONTENEDOR DE TOASTS FLOTANTES -->
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6InZqX2Fub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     const FALLBACK_LOGO = "https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png";
     let supabaseClient = null;
     if (typeof supabase !== 'undefined') {
@@ -182,6 +184,7 @@
     }
   </script>
 
+  <!-- HEADER DE ÉLITE PROFESIONAL -->
   <header class="bg-[#030704]/90 border-b border-emerald-950/80 px-3.5 py-3 sticky top-0 z-40 backdrop-blur-xl shadow-2xl space-y-2.5">
     <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
       <div class="flex items-center gap-2.5 min-w-0">
@@ -223,6 +226,7 @@
     </div>
   </header>
 
+  <!-- CONTENIDO PRINCIPAL -->
   <main class="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-5 space-y-4">
     
     <div id="welcomeFavoritesSection" class="glass-card rounded-3xl p-6 sm:p-10 text-center space-y-6 shadow-2xl border border-emerald-500/30 relative overflow-hidden">
@@ -258,6 +262,7 @@
       <div id="favoritesListContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-left relative z-10"></div>
     </div>
 
+    <!-- CONTENEDOR DE PESTAÑAS Y DATOS DEL TORNEO -->
     <div id="tournamentContentArea" class="space-y-4 hidden">
       <div class="glass-card rounded-2xl p-2 border border-emerald-900/50 shadow-2xl">
         <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-1.5">
@@ -272,6 +277,7 @@
         </div>
       </div>
 
+      <!-- Tab 1: Posiciones -->
       <div id="pub-standings" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
@@ -301,6 +307,7 @@
         </div>
       </div>
 
+      <!-- Tab 2: Fixture -->
       <div id="pub-fixture" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
@@ -315,6 +322,7 @@
         <div id="publicMatchesContainer" class="space-y-4 max-h-[620px] overflow-y-auto scrollbar-thin pr-1"></div>
       </div>
 
+      <!-- Tab 3: Horarios -->
       <div id="pub-horarios" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div>
           <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
@@ -325,6 +333,7 @@
         <div id="publicHorariosClubsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 pt-2"></div>
       </div>
 
+      <!-- Tab 4: Playoffs -->
       <div id="pub-playoffs" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
@@ -354,6 +363,7 @@
         </div>
       </div>
 
+      <!-- Tab 5: Equipos -->
       <div id="pub-teams" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
           <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full shrink-0"></span> Equipos Participantes y Planteles Inscriptos
@@ -361,6 +371,7 @@
         <div id="publicTeamsContainer" class="space-y-3"></div>
       </div>
 
+      <!-- Tab 6: Goleadores -->
       <div id="pub-scorers" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-emerald-400 tracking-wider flex items-center gap-2 uppercase">
@@ -390,6 +401,7 @@
         </div>
       </div>
 
+      <!-- Tab 7: Tarjetas -->
       <div id="pub-cards" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-yellow-400 tracking-wider flex items-center gap-2 uppercase">
@@ -421,6 +433,7 @@
         </div>
       </div>
 
+      <!-- Tab 8: Sanciones -->
       <div id="pub-discipline" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-red-400 tracking-wider flex items-center gap-2 uppercase">
@@ -456,10 +469,14 @@
 
   </main>
 
+  <!-- FOOTER DE ÉLITE CON SECCIÓN DE ANUNCIOS TIPO ADSENSE -->
   <footer class="bg-[#030704] border-t border-emerald-950/80 py-6 px-4 text-slate-400 text-[11px] mt-auto max-w-5xl w-full mx-auto space-y-5">
     
+    <!-- BLOQUE DE PUBLICIDADES TIPO ADSENSE -->
     <div id="publicSponsorsContainer" class="space-y-2 border-b border-emerald-900/40 pb-5 text-center">
-      <div id="publicSponsorsGrid" class="space-y-3"></div>
+      <div id="publicSponsorsGrid" class="space-y-3">
+        <!-- Se llena dinámicamente con estilo de anuncios profesionales -->
+      </div>
     </div>
 
     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-emerald-900/30 pb-4">
@@ -483,6 +500,7 @@
     </div>
   </footer>
 
+  <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS -->
   <div id="flyerModalContainer" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-xl">
     <div class="glass-card p-5 rounded-3xl max-w-sm w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -490,6 +508,7 @@
         <button onclick="closeModal('flyerModalContainer')" class="text-slate-400 hover:text-white font-bold text-sm px-2 py-1 bg-emerald-950/40 rounded-lg">✕</button>
       </div>
 
+      <!-- ÁREA DE CAPTURA VERTICAL ESTILO HISTORIA (9:16) -->
       <div id="flyerCaptureArea" class="w-[320px] h-[568px] mx-auto rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden shadow-2xl text-white font-sans border-2 border-white/20" style="background: linear-gradient(180deg, rgba(2,6,12,0.85) 0%, rgba(2,12,24,0.92) 50%, rgba(1,3,6,0.96) 100%), url('https://images.unsplash.com/photo-1518091043644-c1d4457512c6?q=80&w=600&auto=format&fit=crop') center/cover;">
         
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(16,185,129,0.3)_0%,transparent_75%)] pointer-events-none"></div>
@@ -560,6 +579,7 @@
     </div>
   </div>
 
+  <!-- MODALES DE POLÍTICA, TÉRMINOS Y DETALLES -->
   <div id="privacyModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-md">
     <div class="glass-card p-5 sm:p-6 rounded-3xl max-w-lg w-full space-y-4 border border-emerald-500/40 my-auto text-xs shadow-2xl">
       <div class="flex justify-between items-center border-b border-emerald-900/50 pb-3">
@@ -702,23 +722,21 @@
     async function loadPublicData() {
       if (!supabaseClient) return;
       try {
-        const [catsRes, teamsRes, playersRes, matchesRes, suspensionsRes, sponsorsRes] = await Promise.all([
-          supabaseClient.from('torneos').select('*'), // <-- Apunta a la tabla correcta 'torneos'
-          supabaseClient.from('equipos').select('*'),
-          supabaseClient.from('jugadores').select('*'),
-          supabaseClient.from('partidos').select('*'),
-          supabaseClient.from('sanciones').select('*').then(r => r, e => ({ data: [], error: e })),
-          supabaseClient.from('sponsors').select('*').then(r => r, e => ({ data: [], error: e }))
-        ]);
+        const { data: allData, error } = await supabaseClient.from('torneos_data').select('*');
+        if (error) throw error;
 
-        if (catsRes.error) throw catsRes.error;
+        const rows = allData || [];
 
-        pubData.categories = catsRes.data || [];
-        pubData.teams = teamsRes.data || [];
-        pubData.players = playersRes.data || [];
-        pubData.matches = matchesRes.data || [];
-        pubData.suspensions = suspensionsRes.data || [];
-        pubData.sponsors = sponsorsRes.data || [];
+        pubData.categories = rows.filter(r => r.type === 'category' || r.type === 'torneo' || r.type === 'categoria' || r.type === 'tournament' || !r.type);
+        pubData.teams = rows.filter(r => r.type === 'team');
+        pubData.players = rows.filter(r => r.type === 'player');
+        pubData.matches = rows.filter(r => r.type === 'match');
+        pubData.suspensions = rows.filter(r => r.type === 'suspension');
+        pubData.sponsors = rows.filter(r => r.type === 'sponsor');
+
+        if (pubData.categories.length === 0 && rows.length > 0) {
+          pubData.categories = rows;
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const requestedTorneoId = urlParams.get('torneo');
@@ -744,7 +762,7 @@
       }
       
       select.innerHTML = '<option value="" disabled selected>-- Seleccionar torneo oficial --</option>' + 
-        catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name || c.nombre}</option>`).join('');
+        catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
       
       renderFavoritesSection();
 
@@ -798,7 +816,7 @@
           <div class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-sm text-emerald-400 font-black shrink-0 shadow">⭐</div>
           <div class="min-w-0 flex-1">
             <span class="text-[9px] text-yellow-400 font-extrabold uppercase tracking-widest block">Torneo Favorito Guardado</span>
-            <span class="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 truncate block">${favCat.name || favCat.nombre}</span>
+            <span class="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 truncate block">${favCat.name}</span>
           </div>
         </button>
       `;
@@ -807,7 +825,7 @@
     function filterTournaments(query) {
       const q = query.toLowerCase().trim();
       if (!q) { populatePublicCategorySelect(pubData.categories); return; }
-      const filtered = pubData.categories.filter(c => (c.name || c.nombre || '').toLowerCase().includes(q));
+      const filtered = pubData.categories.filter(c => c.name.toLowerCase().includes(q));
       populatePublicCategorySelect(filtered);
     }
 
@@ -889,14 +907,13 @@
       }
 
       const logoHtml = cat.logo ? `<img src="${cat.logo}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">` : `<img src="${FALLBACK_LOGO}" class="w-full h-full object-cover">`;
-      const catName = cat.name || cat.nombre || '';
       
       document.getElementById('headerTournamentLogo').innerHTML = logoHtml;
-      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${catName}</span>`;
+      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${cat.name}</span>`;
 
       const currentUrl = window.location.href;
-      document.getElementById('metaOgTitle').setAttribute('content', `${catName} — KanchaPro`);
-      document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${catName}.`);
+      document.getElementById('metaOgTitle').setAttribute('content', `${cat.name} — KanchaPro`);
+      document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${cat.name}.`);
       if (cat.logo) {
         document.getElementById('metaOgImage').setAttribute('content', cat.logo);
       }
@@ -909,14 +926,14 @@
 
       ['captureSubtitleStandings', 'captureSubtitlePlayoffs', 'captureSubtitleScorers', 'captureSubtitleCards', 'captureSubtitleDiscipline'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.textContent = `${catName} — Portal Oficial`;
+        if (el) el.textContent = `${cat.name} — Portal Oficial`;
       });
 
-      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId || t.torneo_id === currentPublicCatId);
-      const matches = pubData.matches.filter(m => (m.category_id === currentPublicCatId || m.torneo_id === currentPublicCatId) && !m.is_playoff);
-      const playoffMatches = pubData.matches.filter(m => (m.category_id === currentPublicCatId || m.torneo_id === currentPublicCatId) && m.is_playoff);
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
+      const playoffMatches = pubData.matches.filter(m => m.category_id === currentPublicCatId && m.is_playoff);
       const teamIds = teams.map(t => t.id);
-      const players = pubData.players.filter(p => teamIds.includes(p.team_id) || teamIds.includes(p.equipo_id));
+      const players = pubData.players.filter(p => teamIds.includes(p.team_id));
 
       renderPublicStandings(teams, matches, cat);
       renderPublicMatches(teams, matches);
@@ -928,12 +945,13 @@
       renderPublicSponsors();
     }
 
+    // RENDERIZADO PROFESIONAL ESTILO GOOGLE ADSENSE
     function renderPublicSponsors() {
       const grid = document.getElementById('publicSponsorsGrid');
       const container = document.getElementById('publicSponsorsContainer');
       if (!grid || !container) return;
 
-      const sponsors = pubData.sponsors.filter(s => s.category_id === currentPublicCatId || s.torneo_id === currentPublicCatId);
+      const sponsors = pubData.sponsors.filter(s => s.category_id === currentPublicCatId);
 
       if (sponsors.length === 0) {
         container.style.display = 'none';
@@ -948,8 +966,8 @@
         return `
           <div class="adsense-sponsor-container">
             <span class="adsense-badge">Anuncio Patrocinado</span>
-            <a href="${safeLink}" ${hasLink ? 'target="_blank"' : ''} title="${s.name || s.nombre}" class="w-full flex justify-center">
-              <img src="${s.logo || s.imagen || FALLBACK_LOGO}" alt="${s.name || s.nombre}" class="adsense-banner-img" onerror="this.src=FALLBACK_LOGO">
+            <a href="${safeLink}" ${hasLink ? 'target="_blank"' : ''} title="${s.name}" class="w-full flex justify-center">
+              <img src="${s.logo || FALLBACK_LOGO}" alt="${s.name}" class="adsense-banner-img" onerror="this.src=FALLBACK_LOGO">
             </a>
           </div>
         `;
@@ -957,7 +975,7 @@
     }
 
     function renderPublicHorariosClubsGrid() {
-      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId || t.torneo_id === currentPublicCatId);
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
       const container = document.getElementById('publicHorariosClubsGrid');
       if (!container) return;
 
@@ -971,7 +989,7 @@
           <div class="w-14 h-14 rounded-full bg-emerald-950 flex items-center justify-center border border-emerald-500/40 overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.2)]">
             <img src="${team.logo || FALLBACK_LOGO}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">
           </div>
-          <span class="font-black text-white text-xs truncate w-full">${team.name || team.nombre}</span>
+          <span class="font-black text-white text-xs truncate w-full">${team.name}</span>
           <span class="text-[10px] text-emerald-400 font-black uppercase tracking-wider">Ver Horarios ➔</span>
         </div>
       `).join('');
@@ -981,40 +999,33 @@
       const team = pubData.teams.find(t => t.id === teamId);
       if (!team) return;
 
-      document.getElementById('pubModalClubTitle').textContent = `Horarios — ${team.name || team.nombre}`;
+      document.getElementById('pubModalClubTitle').textContent = `Horarios — ${team.name}`;
       const logoEl = document.getElementById('pubModalClubLogo');
       logoEl.innerHTML = `<img src="${team.logo || FALLBACK_LOGO}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
 
-      const allMatches = pubData.matches.filter(m => (m.category_id === currentPublicCatId || m.torneo_id === currentPublicCatId) && (m.home_team === teamId || m.away_team === teamId || m.equipo_local_id === teamId || m.equipo_visitante_id === teamId));
+      const allMatches = pubData.matches.filter(m => m.category_id === currentPublicCatId && (m.home_team === teamId || m.away_team === teamId));
       const teams = pubData.teams;
 
       let pendingHtml = '';
       let finishedHtml = '';
 
       allMatches.forEach(m => {
-        const homeId = m.home_team || m.equipo_local_id;
-        const awayId = m.away_team || m.equipo_visitante_id;
-        const hTeam = teams.find(t => t.id === homeId) || { name: 'Local' };
-        const aTeam = teams.find(t => t.id === awayId) || { name: 'Visitante' };
-        const infoText = [m.round_name || m.fecha_nombre, m.match_day || m.dia, m.match_time || m.hora, m.match_venue || m.cancha].filter(Boolean).join(' • ');
-
-        const isHome = homeId === teamId;
-        const homeScore = m.home_score !== undefined ? m.home_score : m.goles_local;
-        const awayScore = m.away_score !== undefined ? m.away_score : m.goles_visitante;
-        const isPlayed = m.played !== undefined ? m.played : m.finalizado;
+        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+        const infoText = [m.round_name, m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
 
         const matchBox = `
           <div class="bg-[#030704] p-3 rounded-xl border border-emerald-900/50 space-y-1.5 text-xs shadow-md">
             <div class="flex justify-between items-center font-bold text-white">
-              <span class="${isHome ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px]">${hTeam.name || hTeam.nombre}</span>
-              <span class="px-2.5 py-1 bg-black rounded-lg text-emerald-300 border border-emerald-900 shrink-0 font-black">${isPlayed ? `${homeScore} - ${awayScore}` : 'VS'}</span>
-              <span class="${!isHome ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px] text-right">${aTeam.name || aTeam.nombre}</span>
+              <span class="${m.home_team === teamId ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px]">${hTeam.name}</span>
+              <span class="px-2.5 py-1 bg-black rounded-lg text-emerald-300 border border-emerald-900 shrink-0 font-black">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</span>
+              <span class=" ${m.away_team === teamId ? 'text-emerald-400 font-black underline' : ''} truncate max-w-[110px] text-right">${aTeam.name}</span>
             </div>
             <div class="text-[9px] text-slate-400 font-medium truncate">📅 ${infoText}</div>
           </div>
         `;
 
-        if (isPlayed) {
+        if (m.played) {
           finishedHtml += matchBox;
         } else {
           pendingHtml += matchBox;
@@ -1030,73 +1041,138 @@
     function renderPublicStandings(teams, matches, cat) {
       const container = document.getElementById('publicStandingsContainer');
       
-      let rawWinPoints = cat.pts_win !== undefined ? cat.pts_win : 3;
-      const winPoints = Number(rawWinPoints) || 3;
+      let rawWinPoints = cat.pts_win !== undefined ? cat.pts_win : 
+                         (cat.win_points !== undefined ? cat.win_points : 
+                         (cat.points_win !== undefined ? cat.points_win : 
+                         (cat.points_for_win !== undefined ? cat.points_for_win : 
+                         (cat.winPoints !== undefined ? cat.winPoints : undefined))));
+                         
+      const winPoints = (rawWinPoints !== undefined && !isNaN(Number(rawWinPoints))) ? Number(rawWinPoints) : 3;
 
-      const stats = teams.map(team => {
-        let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
-        matches.filter(m => (m.played !== undefined ? m.played : m.finalizado)).forEach(m => {
-          const homeId = m.home_team || m.equipo_local_id;
-          const awayId = m.away_team || m.equipo_visitante_id;
-          const hScore = Number(m.home_score !== undefined ? m.home_score : m.goles_local) || 0;
-          const aScore = Number(m.away_score !== undefined ? m.away_score : m.goles_visitante) || 0;
+      if (cat.tournament_type === 'cup') {
+        const groupCount = cat.group_config?.count || 2;
+        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].slice(0, groupCount);
+        let groupsHtml = '';
 
-          if (homeId === team.id) {
-            played++; gf += hScore; gc += aScore;
-            if (hScore > aScore) won++; else if (hScore < aScore) lost++; else drawn++;
-          } else if (awayId === team.id) {
-            played++; gf += aScore; gc += hScore;
-            if (aScore > hScore) won++; else if (aScore < hScore) lost++; else drawn++;
-          }
+        groupLetters.forEach(l => {
+          let gName = 'Grupo ' + l;
+          let gTeams = teams.filter(t => t.group_name === gName);
+          let stats = gTeams.map(team => {
+            let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+            matches.filter(m => m.played).forEach(m => {
+              if (m.home_team === team.id) {
+                played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+                if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+              } else if (m.away_team === team.id) {
+                played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+                if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+              }
+            });
+            return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+          }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+
+          groupsHtml += `
+            <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-2.5 sm:p-4 space-y-2 shadow-xl">
+              <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/40 pb-2">Zona / ${gName}</h4>
+              <div class="overflow-x-auto scrollbar-thin">
+                <table class="w-full text-[10px] sm:text-xs min-w-[320px] border-collapse">
+                  <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
+                    <tr>
+                      <th class="p-2 text-left w-6 align-middle">#</th>
+                      <th class="p-2 text-left align-middle">Equipo</th>
+                      <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
+                      <th class="p-2 text-center w-7 align-middle">PJ</th>
+                      <th class="p-2 text-center w-7 align-middle">G</th>
+                      <th class="p-2 text-center w-7 align-middle">E</th>
+                      <th class="p-2 text-center w-7 align-middle">P</th>
+                      <th class="p-2 text-center w-8 align-middle">DG</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-emerald-900/20">
+                    ${stats.map((t, idx) => `
+                      <tr class="${idx < 2 ? 'bg-emerald-950/30 font-bold' : ''}">
+                        <td class="p-2 font-black text-emerald-400 align-middle leading-normal">${idx + 1}</td>
+                        <td class="p-2 font-bold text-white align-middle leading-normal">
+                          <div class="flex items-center gap-2 py-0.5">
+                            <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
+                            <span class="whitespace-nowrap overflow-hidden text-ellipsis">${t.name}</span>
+                          </div>
+                        </td>
+                        <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle leading-normal">${t.points}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.played}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.won}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.drawn}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.lost}</td>
+                        <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.gd}</td>
+                      </tr>
+                    `).join('') || '<tr><td colspan="8" class="text-center text-slate-400 py-3 italic">Sin equipos inscriptos</td></tr>'}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
         });
-        return { ...team, name: team.name || team.nombre, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
-      }).sort((a, b) => b.points - a.points || b.gd - a.gd);
+        container.innerHTML = groupsHtml;
+      } else {
+        const stats = teams.map(team => {
+          let played = 0, won = 0, drawn = 0, lost = 0, gf = 0, gc = 0;
+          matches.filter(m => m.played).forEach(m => {
+            if (m.home_team === team.id) {
+              played++; gf += (m.home_score || 0); gc += (m.away_score || 0);
+              if (m.home_score > m.away_score) won++; else if (m.home_score < m.away_score) lost++; else drawn++;
+            } else if (m.away_team === team.id) {
+              played++; gf += (m.away_score || 0); gc += (m.home_score || 0);
+              if (m.away_score > m.home_score) won++; else if (m.away_score < m.home_score) lost++; else drawn++;
+            }
+          });
+          return { ...team, played, won, drawn, lost, gf, gc, gd: gf - gc, points: (won * winPoints) + (drawn * 1) };
+        }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
-      container.innerHTML = `
-        <div class="overflow-x-auto scrollbar-thin">
-          <table class="w-full text-[10px] sm:text-xs min-w-[320px] border-collapse">
-            <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
-              <tr>
-                <th class="p-2 text-left w-6 align-middle">#</th>
-                <th class="p-2 text-left align-middle">Equipo</th>
-                <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
-                <th class="p-2 text-center w-7 align-middle">PJ</th>
-                <th class="p-2 text-center w-7 align-middle">G</th>
-                <th class="p-2 text-center w-7 align-middle">E</th>
-                <th class="p-2 text-center w-7 align-middle">P</th>
-                <th class="p-2 text-center w-8 align-middle">DG</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-emerald-900/20">
-              ${stats.map((t, idx) => `
-                <tr class="${idx < 4 ? 'bg-emerald-950/30 font-bold' : ''}">
-                  <td class="p-2 font-black text-emerald-400 align-middle leading-normal">${idx + 1}</td>
-                  <td class="p-2 font-bold text-white align-middle leading-normal">
-                    <div class="flex items-center gap-2 py-0.5">
-                      <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
-                      <span class="whitespace-nowrap overflow-hidden text-ellipsis">${t.name}</span>
-                    </div>
-                  </td>
-                  <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle leading-normal">${t.points}</td>
-                  <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.played}</td>
-                  <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.won}</td>
-                  <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.drawn}</td>
-                  <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.lost}</td>
-                  <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.gd}</td>
+        container.innerHTML = `
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-[10px] sm:text-xs min-w-[320px] border-collapse">
+              <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
+                <tr>
+                  <th class="p-2 text-left w-6 align-middle">#</th>
+                  <th class="p-2 text-left align-middle">Equipo</th>
+                  <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
+                  <th class="p-2 text-center w-7 align-middle">PJ</th>
+                  <th class="p-2 text-center w-7 align-middle">G</th>
+                  <th class="p-2 text-center w-7 align-middle">E</th>
+                  <th class="p-2 text-center w-7 align-middle">P</th>
+                  <th class="p-2 text-center w-8 align-middle">DG</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
+              </thead>
+              <tbody class="divide-y divide-emerald-900/20">
+                ${stats.map((t, idx) => `
+                  <tr class="${idx < 4 ? 'bg-emerald-950/30 font-bold' : ''}">
+                    <td class="p-2 font-black text-emerald-400 align-middle leading-normal">${idx + 1}</td>
+                    <td class="p-2 font-bold text-white align-middle leading-normal">
+                      <div class="flex items-center gap-2 py-0.5">
+                        <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
+                        <span class="whitespace-nowrap overflow-hidden text-ellipsis">${t.name}</span>
+                      </div>
+                    </td>
+                    <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle leading-normal">${t.points}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.played}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.won}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.drawn}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.lost}</td>
+                    <td class="p-2 text-center text-slate-300 align-middle leading-normal">${t.gd}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
     }
 
     async function captureTournamentScreenshot(elementId, filePrefix) {
       const captureArea = document.getElementById(elementId);
       try {
         const cat = pubData.categories.find(c => c.id === currentPublicCatId);
-        const catName = cat ? (cat.name || cat.nombre || 'Torneo') : 'Torneo';
-        const catNameClean = catName.replace(/[^a-zA-Z0-9]/g, '_');
+        const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
         const filename = `${filePrefix}_${catNameClean}.png`;
 
         const originalWidth = captureArea.style.width;
@@ -1125,7 +1201,7 @@
               await navigator.share({
                 files: [file],
                 title: 'KanchaPro',
-                text: `⚽ *${catName}* — Compartido desde KanchaPro 🏆`
+                text: `⚽ *${cat ? cat.name : 'Torneo'}* — Compartido desde KanchaPro 🏆`
               });
               return;
             } catch (shareErr) {
@@ -1205,8 +1281,8 @@
       evt.currentTarget.classList.add('bg-emerald-500', 'text-black', 'font-black');
       evt.currentTarget.classList.remove('text-slate-400', 'font-bold');
 
-      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId || t.torneo_id === currentPublicCatId);
-      const matches = pubData.matches.filter(m => (m.category_id === currentPublicCatId || m.torneo_id === currentPublicCatId) && !m.is_playoff);
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const matches = pubData.matches.filter(m => m.category_id === currentPublicCatId && !m.is_playoff);
       renderPublicMatches(teams, matches);
     }
 
@@ -1227,9 +1303,9 @@
       
       let filteredMatches = matches;
       if (currentFixtureFilter === 'pending') {
-        filteredMatches = matches.filter(m => !(m.played !== undefined ? m.played : m.finalizado));
+        filteredMatches = matches.filter(m => !m.played);
       } else if (currentFixtureFilter === 'finished') {
-        filteredMatches = matches.filter(m => (m.played !== undefined ? m.played : m.finalizado));
+        filteredMatches = matches.filter(m => m.played);
       }
 
       if (filteredMatches.length === 0) {
@@ -1239,7 +1315,7 @@
 
       let roundsMap = {};
       filteredMatches.forEach(m => {
-        let rName = m.round_name || m.fecha_nombre || 'Partidos';
+        let rName = m.round_name || 'Partidos';
         if (!roundsMap[rName]) roundsMap[rName] = [];
         roundsMap[rName].push(m);
       });
@@ -1253,14 +1329,13 @@
 
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       const logoUrl = cat && cat.logo ? cat.logo : FALLBACK_LOGO;
-      const catName = cat ? (cat.name || cat.nombre || 'Torneo') : 'Torneo';
-      const catNameClean = catName.replace(/[^a-zA-Z0-9]/g, '_');
+      const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
 
       container.innerHTML = sortedRoundNames.map((roundName, index) => {
-        const safeRoundId = 'round-box-' + roundName.replace(/[^a-zA-Z0-9]/g, '');
-        const roundContentId = 'round-content-' + roundName.replace(/[^a-zA-Z0-9]/g, '');
-        const roundIconId = 'round-icon-' + roundName.replace(/[^a-zA-Z0-9]/g, '');
-        const roundNameClean = roundName.replace(/[^a-zA-Z0-9]/g, '');
+        const safeRoundId = 'round-box-' + roundName.replace(/[^a-zA-Z0-9]/g, '_');
+        const roundContentId = 'round-content-' + roundName.replace(/[^a-zA-Z0-9]/g, '_');
+        const roundIconId = 'round-icon-' + roundName.replace(/[^a-zA-Z0-9]/g, '_');
+        const roundNameClean = roundName.replace(/[^a-zA-Z0-9]/g, '_');
         const isOpen = index === 0;
 
         return `
@@ -1288,31 +1363,23 @@
 
           <div id="${roundContentId}" class="p-3 sm:p-4 space-y-2.5 bg-[#030704] ${isOpen ? '' : 'hidden'}">
             ${roundsMap[roundName].map(m => {
-              const homeId = m.home_team || m.equipo_local_id;
-              const awayId = m.away_team || m.equipo_visitante_id;
-              const hTeam = teams.find(t => t.id === homeId) || { name: 'Local' };
-              const aTeam = teams.find(t => t.id === awayId) || { name: 'Visitante' };
-              const infoText = [m.match_day || m.dia, m.match_time || m.hora, m.match_venue || m.cancha].filter(Boolean).join(' • ');
-              const isPlayed = m.played !== undefined ? m.played : m.finalizado;
-              const hScore = m.home_score !== undefined ? m.home_score : m.goles_local;
-              const aScore = m.away_score !== undefined ? m.away_score : m.goles_visitante;
+              const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Local' };
+              const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Visitante' };
+              const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
               const safeMatchId = 'match-box-' + m.id;
-              const hTeamName = hTeam.name || hTeam.nombre || 'Local';
-              const aTeamName = aTeam.name || aTeam.nombre || 'Visitante';
-
               return `
                 <div id="${safeMatchId}" class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/40 space-y-2 text-xs glass-card-hover relative group shadow-md">
                   <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2 flex-1 justify-end min-w-0">
-                      <span class="font-black text-white text-right text-xs sm:text-sm leading-snug break-words">${hTeamName}</span>
+                      <span class="font-black text-white text-right text-xs sm:text-sm leading-snug break-words">${hTeam.name}</span>
                       <img src="${hTeam.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full shrink-0 align-middle border border-emerald-500/40 shadow" onerror="this.src=FALLBACK_LOGO">
                     </div>
                     <button onclick="openPublicMatchDetail('${m.id}')" class="bg-black px-3 py-1.5 rounded-xl text-emerald-400 font-black border border-emerald-900 hover:border-emerald-500 transition shadow-lg shrink-0 text-xs sm:text-sm tracking-wider">
-                      ${isPlayed ? `${hScore} - ${aScore}` : 'VS'}
+                      ${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}
                     </button>
                     <div class="flex items-center gap-2 flex-1 min-w-0">
                       <img src="${aTeam.logo || FALLBACK_LOGO}" class="w-6 h-6 object-cover rounded-full shrink-0 align-middle border border-emerald-500/40 shadow" onerror="this.src=FALLBACK_LOGO">
-                      <span class="font-black text-white text-left text-xs sm:text-sm leading-snug break-words">${aTeamName}</span>
+                      <span class="font-black text-white text-left text-xs sm:text-sm leading-snug break-words">${aTeam.name}</span>
                     </div>
                   </div>
                   ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-semibold truncate">🗓️ ${infoText}</div>` : ''}
@@ -1321,7 +1388,7 @@
                     <button onclick="openMatchFlyerModal('${m.id}')" class="no-capture-btn text-[9px] px-3 py-1.5 bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black rounded-lg transition flex items-center gap-1.5 shadow">
                       <span>📱</span> Flyer Historia
                     </button>
-                    <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeamName.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeamName.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1">
+                    <button onclick="captureScreenshot('${safeMatchId}', 'Partido_${hTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_vs_${aTeam.name.replace(/[^a-zA-Z0-9]/g, '_')}_${catNameClean}.png')" class="no-capture-btn text-[9px] px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 rounded-lg font-bold border border-emerald-500/30 transition flex items-center gap-1">
                       <span>📸</span> Partido
                     </button>
                   </div>
@@ -1340,42 +1407,36 @@
 
       const teams = pubData.teams;
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
-      const homeId = match.home_team || match.equipo_local_id;
-      const awayId = match.away_team || match.equipo_visitante_id;
-      const hTeam = teams.find(t => t.id === homeId) || { name: 'Local' };
-      const aTeam = teams.find(t => t.id === awayId) || { name: 'Visitante' };
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
 
       const randomBg = flyerBackgrounds[Math.floor(Math.random() * flyerBackgrounds.length)];
       const captureArea = document.getElementById('flyerCaptureArea');
       captureArea.style.background = randomBg;
 
-      const catName = cat ? (cat.name || cat.nombre || 'COPA PROMOCIONAL') : 'COPA PROMOCIONAL';
-      document.getElementById('flyerTournamentTitle').textContent = catName.toUpperCase();
-      document.getElementById('flyerCategoryBadge').textContent = cat ? (cat.category_name || catName).toUpperCase() : 'CATEGORÍA B';
-      document.getElementById('flyerRoundName').textContent = (match.round_name || match.fecha_nombre || 'FECHA 1').toUpperCase();
+      document.getElementById('flyerTournamentTitle').textContent = cat ? cat.name.toUpperCase() : 'COPA PROMOCIONAL';
+      document.getElementById('flyerCategoryBadge').textContent = cat ? (cat.category_name || cat.name).toUpperCase() : 'CATEGORÍA B';
+      document.getElementById('flyerRoundName').textContent = (match.round_name || 'FECHA 1').toUpperCase();
 
-      document.getElementById('flyerHomeName').textContent = hTeam.name || hTeam.nombre;
+      document.getElementById('flyerHomeName').textContent = hTeam.name;
       document.getElementById('flyerHomeLogo').src = hTeam.logo || FALLBACK_LOGO;
-      document.getElementById('flyerAwayName').textContent = aTeam.name || aTeam.nombre;
+      document.getElementById('flyerAwayName').textContent = aTeam.name;
       document.getElementById('flyerAwayLogo').src = aTeam.logo || FALLBACK_LOGO;
 
       const statsContainer = document.getElementById('flyerStatsContainer');
       const timeBox = document.getElementById('flyerDateTime');
-      const isPlayed = match.played !== undefined ? match.played : match.finalizado;
 
-      if (isPlayed) {
-        const hScore = match.home_score !== undefined ? match.home_score : match.goles_local;
-        const aScore = match.away_score !== undefined ? match.away_score : match.goles_visitante;
-        timeBox.textContent = `${hScore} - ${aScore} (FINAL)`;
+      if (match.played) {
+        timeBox.textContent = `${match.home_score} - ${match.away_score} (FINAL)`;
         
         const playerStats = match.match_details?.playerStats || {};
         let goalsHtml = '';
         
         pubData.players.forEach(p => {
           const st = playerStats[p.id];
-          if (st && st.goals > 0 && (p.team_id === homeId || p.equipo_id === homeId || p.team_id === awayId || p.equipo_id === awayId)) {
-            const teamPrefix = (p.team_id === homeId || p.equipo_id === homeId) ? (hTeam.name || hTeam.nombre) : (aTeam.name || aTeam.nombre);
-            goalsHtml += `<div class="truncate">⚽ ${p.name || p.nombre_completo} (${st.goals}) <span class="text-[8px] text-emerald-400 font-bold">[${teamPrefix}]</span></div>`;
+          if (st && st.goals > 0 && (p.team_id === hTeam.id || p.team_id === aTeam.id)) {
+            const teamPrefix = p.team_id === hTeam.id ? hTeam.name : aTeam.name;
+            goalsHtml += `<div class="truncate">⚽ ${p.name} (${st.goals}) <span class="text-[8px] text-emerald-400 font-bold">[${teamPrefix}]</span></div>`;
           }
         });
 
@@ -1386,11 +1447,11 @@
           statsContainer.classList.add('hidden');
         }
       } else {
-        timeBox.textContent = `${match.match_time || match.hora || '22:20'} HS`;
+        timeBox.textContent = `${match.match_time || '22:20'} HS`;
         statsContainer.classList.add('hidden');
       }
 
-      document.getElementById('flyerVenue').innerHTML = `<span>📍</span> <span>${(match.match_venue || match.cancha || 'CLUB DEPORTIVO MORAVA').toUpperCase()}</span>`;
+      document.getElementById('flyerVenue').innerHTML = `<span>📍</span> <span>${(match.match_venue || 'CLUB DEPORTIVO MORAVA').toUpperCase()}</span>`;
 
       openModal('flyerModalContainer');
     }
@@ -1438,19 +1499,14 @@
     function openPublicMatchDetail(matchId) {
       const match = pubData.matches.find(m => m.id === matchId);
       if (!match) return;
-      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId || t.torneo_id === currentPublicCatId);
-      const homeId = match.home_team || match.equipo_local_id;
-      const awayId = match.away_team || match.equipo_visitante_id;
-      const hTeam = teams.find(t => t.id === homeId) || { name: 'Local' };
-      const aTeam = teams.find(t => t.id === awayId) || { name: 'Visitante' };
-      const isPlayed = match.played !== undefined ? match.played : match.finalizado;
-      const hScore = match.home_score !== undefined ? match.home_score : match.goles_local;
-      const aScore = match.away_score !== undefined ? match.away_score : match.goles_visitante;
+      const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
 
-      document.getElementById('pmRoundName').textContent = match.round_name || match.fecha_nombre || 'Partido Oficial';
-      document.getElementById('pmHomeName').textContent = hTeam.name || hTeam.nombre;
-      document.getElementById('pmAwayName').textContent = aTeam.name || aTeam.nombre;
-      document.getElementById('pmScore').textContent = isPlayed ? `${hScore} - ${aScore}` : 'VS';
+      document.getElementById('pmRoundName').textContent = match.round_name || 'Partido Oficial';
+      document.getElementById('pmHomeName').textContent = hTeam.name;
+      document.getElementById('pmAwayName').textContent = aTeam.name;
+      document.getElementById('pmScore').textContent = match.played ? `${match.home_score} - ${match.away_score}` : 'VS';
 
       const details = match.match_details || {};
       const playerStats = details.playerStats || {};
@@ -1458,21 +1514,19 @@
       let hStatsHtml = '';
       let aStatsHtml = '';
 
-      const hPlayers = pubData.players.filter(p => p.team_id === homeId || p.equipo_id === homeId);
+      const hPlayers = pubData.players.filter(p => p.team_id === hTeam.id);
       hPlayers.forEach(p => {
         const st = playerStats[p.id];
-        const pName = p.name || p.nombre_completo;
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          hStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-top">${pName}</span><span class="font-black shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          hStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-top">${p.name}</span><span class="font-black shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
-      const aPlayers = pubData.players.filter(p => p.team_id === awayId || p.equipo_id === awayId);
+      const aPlayers = pubData.players.filter(p => p.team_id === aTeam.id);
       aPlayers.forEach(p => {
         const st = playerStats[p.id];
-        const pName = p.name || p.nombre_completo;
         if (st && (st.goals > 0 || st.yellows > 0 || st.blues > 0 || st.reds > 0)) {
-          aStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-top">${pName}</span><span class="font-black shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
+          aStatsHtml += `<div class="flex justify-between text-xs py-1"><span class="font-bold text-white truncate pr-1 align-top">${p.name}</span><span class="font-black shrink-0 align-top">${st.goals ? '⚽ x' + st.goals : ''} ${st.yellows ? '🟨' : ''} ${st.blues ? '🟦' : ''} ${st.reds ? '🟥' : ''}</span></div>`;
         }
       });
 
@@ -1490,24 +1544,18 @@
       }
 
       container.innerHTML = playoffMatches.map(m => {
-        const homeId = m.home_team || m.equipo_local_id;
-        const awayId = m.away_team || m.equipo_visitante_id;
-        const hTeam = teams.find(t => t.id === homeId) || { name: 'Por definir' };
-        const aTeam = teams.find(t => t.id === awayId) || { name: 'Por definir' };
-        const infoText = [m.match_day || m.dia, m.match_time || m.hora, m.match_venue || m.cancha].filter(Boolean).join(' • ');
-        const isPlayed = m.played !== undefined ? m.played : m.finalizado;
-        const hScore = m.home_score !== undefined ? m.home_score : m.goles_local;
-        const aScore = m.away_score !== undefined ? m.away_score : m.goles_visitante;
-
+        const hTeam = teams.find(t => t.id === m.home_team) || { name: 'Por definir' };
+        const aTeam = teams.find(t => t.id === m.away_team) || { name: 'Por definir' };
+        const infoText = [m.match_day, m.match_time, m.match_venue].filter(Boolean).join(' • ');
         return `
           <div class="bg-[#030704] p-4 rounded-2xl border border-emerald-900/50 flex flex-col gap-2 text-xs shadow-xl">
             <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
-              <span class="text-emerald-400 font-black uppercase text-[11px] tracking-wider">${m.round_name || m.fecha_nombre || 'Llave Eliminatoria'}</span>
+              <span class="text-emerald-400 font-black uppercase text-[11px] tracking-wider">${m.round_name || 'Llave Eliminatoria'}</span>
             </div>
             <div class="flex items-center justify-between gap-3 py-1">
-              <div class="flex-1 text-right font-black text-white text-xs sm:text-sm leading-snug break-words">${hTeam.name || hTeam.nombre}</div>
-              <div class="bg-black px-3.5 py-1.5 rounded-xl text-emerald-400 font-black border border-emerald-900 shadow-lg shrink-0 text-xs sm:text-sm">${isPlayed ? `${hScore} - ${aScore}` : 'VS'}</div>
-              <div class="flex-1 text-left font-black text-white text-xs sm:text-sm leading-snug break-words">${aTeam.name || aTeam.nombre}</div>
+              <div class="flex-1 text-right font-black text-white text-xs sm:text-sm leading-snug break-words">${hTeam.name}</div>
+              <div class="bg-black px-3.5 py-1.5 rounded-xl text-emerald-400 font-black border border-emerald-900 shadow-lg shrink-0 text-xs sm:text-sm">${m.played ? `${m.home_score} - ${m.away_score}` : 'VS'}</div>
+              <div class="flex-1 text-left font-black text-white text-xs sm:text-sm leading-snug break-words">${aTeam.name}</div>
             </div>
             ${infoText ? `<div class="text-[10px] text-slate-400 text-center font-medium truncate pt-1">🗓️ ${infoText}</div>` : ''}
           </div>
@@ -1535,22 +1583,20 @@
       }
 
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
-      const catName = cat ? (cat.name || cat.nombre || 'Torneo') : 'Torneo';
-      const catNameClean = catName.replace(/[^a-zA-Z0-9]/g, '_');
+      const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
 
       container.innerHTML = teams.map(team => {
-        const teamPlayers = players.filter(p => p.team_id === team.id || p.equipo_id === team.id);
+        const teamPlayers = players.filter(p => p.team_id === team.id);
         const safeTeamBoxId = 'team-box-' + team.id;
         const logoUrl = cat && cat.logo ? cat.logo : FALLBACK_LOGO;
-        const teamName = team.name || team.nombre || 'Equipo';
-        const teamNameClean = teamName.replace(/[^a-zA-Z0-9]/g, '_');
+        const teamNameClean = team.name.replace(/[^a-zA-Z0-9]/g, '_');
 
         return `
           <div id="${safeTeamBoxId}" class="bg-[#06120a] border border-emerald-900/50 rounded-2xl overflow-hidden shadow-xl">
             <div class="flex items-center justify-between p-3.5 bg-[#030704] border-b border-emerald-900/40 gap-3">
               <button onclick="toggleTeamAccordion('${team.id}')" class="flex items-center gap-3 min-w-0 text-left flex-1 cursor-pointer group">
                 <img src="${team.logo || FALLBACK_LOGO}" class="w-8 h-8 object-cover rounded-full border border-emerald-500/50 shadow shrink-0 align-top" onerror="this.src=FALLBACK_LOGO">
-                <span class="font-black text-white text-xs sm:text-sm tracking-wide leading-snug break-words group-hover:text-emerald-400 transition">${teamName}</span>
+                <span class="font-black text-white text-xs sm:text-sm tracking-wide leading-snug break-words group-hover:text-emerald-400 transition">${team.name}</span>
                 <span class="text-[10px] text-slate-400 font-bold shrink-0 bg-black/40 px-2 py-0.5 rounded-lg border border-emerald-900/30">${teamPlayers.length} inscriptos</span>
               </button>
               <div class="flex items-center gap-2 shrink-0">
@@ -1572,7 +1618,7 @@
                 });
                 return `
                   <div class="flex justify-between items-center bg-[#06120a] p-2.5 rounded-xl border border-emerald-900/30 text-xs gap-3 shadow-sm">
-                    <span class="font-bold text-slate-200 leading-snug break-words">👤 ${p.name || p.nombre_completo} <span class="text-[9px] text-emerald-400 uppercase font-extrabold ml-1">(${p.position || p.posicion || 'Jugador'})</span></span>
+                    <span class="font-bold text-slate-200 leading-snug break-words">👤 ${p.name} <span class="text-[9px] text-emerald-400 uppercase font-extrabold ml-1">(${p.position || 'Jugador'})</span></span>
                     <div class="flex gap-2 text-[11px] font-black shrink-0 align-top">
                       <span class="text-emerald-400">⚽ ${g}</span>
                       <span class="text-yellow-400">🟨 ${y}</span>
@@ -1606,14 +1652,14 @@
       container.innerHTML = `
         <div class="space-y-2">
           ${sorted.map((item, idx) => {
-            const t = teams.find(x => x.id === item.player.team_id || x.id === item.player.equipo_id);
+            const t = teams.find(x => x.id === item.player.team_id);
             return `
               <div class="flex justify-between items-center bg-[#06120a] p-3 rounded-2xl border border-emerald-900/50 text-xs shadow-xl gap-3">
                 <div class="flex items-center gap-3 min-w-0">
                   <span class="font-black text-emerald-400 text-sm w-6 text-center shrink-0 align-top bg-emerald-950/60 rounded-xl py-1 border border-emerald-500/40 shadow">${idx + 1}</span>
                   <div class="min-w-0">
-                    <span class="font-black text-white text-xs sm:text-sm block leading-snug break-words">${item.player.name || item.player.nombre_completo}</span>
-                    <span class="text-[10px] text-slate-400 font-bold block leading-snug break-words">${t ? (t.name || t.nombre) : ''}</span>
+                    <span class="font-black text-white text-xs sm:text-sm block leading-snug break-words">${item.player.name}</span>
+                    <span class="text-[10px] text-slate-400 font-bold block leading-snug break-words">${t ? t.name : ''}</span>
                   </div>
                 </div>
                 <span class="font-black text-emerald-400 text-sm sm:text-base shrink-0 align-top bg-black px-3 py-1.5 rounded-xl border border-emerald-900 shadow">⚽ ${item.goals}</span>
@@ -1641,24 +1687,24 @@
       const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
 
       document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.length > 0 ? yellowsSorted.map(item => {
-        const t = teams.find(x => x.id === item.player.team_id || x.id === item.player.equipo_id);
+        const t = teams.find(x => x.id === item.player.team_id);
         return `
           <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
             <div class="min-w-0">
-              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name || item.player.nombre_completo}</span>
-              <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? (t.name || t.nombre) : ''}</span>
+              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
+              <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? t.name : ''}</span>
             </div>
             <span class="font-black text-yellow-400 text-xs shrink-0 align-top bg-black px-2.5 py-1 rounded-lg border border-yellow-900/50 shadow">🟨 ${item.count}</span>
           </div>
         `;
       }).join('') : '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas amarillas registradas.</p>';
 
-      const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId || s.torneo_id === currentPublicCatId);
+      const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId);
       document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
         <div class="bg-red-950/25 border border-red-500/40 rounded-xl p-3 text-xs space-y-1 shadow-md">
-          <span class="font-black text-white text-xs block leading-snug break-words">${s.player_name || s.jugador_nombre} <span class="text-[10px] font-medium text-slate-400 break-words">(${s.team_name || s.equipo_nombre || ''})</span></span>
-          <span class="text-[10px] text-slate-200 block align-top font-semibold">Sanción vigente: <strong class="text-red-400">${s.remaining_matches ?? s.partidos_restantes ?? 1} partidos</strong></span>
-          <span class="text-[9px] text-slate-400 italic block leading-snug break-words">Motivo: ${s.reason || s.motivo || 'Sin observación'}</span>
+          <span class="font-black text-white text-xs block leading-snug break-words">${s.player_name} <span class="text-[10px] font-medium text-slate-400 break-words">(${s.team_name || ''})</span></span>
+          <span class="text-[10px] text-slate-200 block align-top font-semibold">Sanción vigente: <strong class="text-red-400">${s.remaining_matches ?? 1} partidos</strong></span>
+          <span class="text-[9px] text-slate-400 italic block leading-snug break-words">Motivo: ${s.reason || 'Sin observación'}</span>
         </div>
       `).join('') || '<p class="text-slate-400 text-xs text-center py-4 italic">No hay suspensiones vigentes en el tribunal.</p>';
     }
