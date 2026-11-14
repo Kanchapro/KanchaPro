@@ -821,18 +821,26 @@ window.addEventListener('DOMContentLoaded', async () => {
     await registrarVisita('admin');
 
     if (supabaseClient) {
-        // 1. Escuchar el evento de autenticación en tiempo real (detecta el retorno de Google)
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (session && session.user) {
-                checkUserPermissions(session);
-            }
-        });
+        // 1. Obtener la sesión actual de manera directa y segura al cargar
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        
+        if (error) {
+            console.error("Error al obtener la sesión:", error.message);
+        }
 
-        // 2. Verificación inicial de sesión guardada
-        const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
             checkUserPermissions(session);
         }
+
+        // 2. Escuchar cambios de estado posteriores de manera limpia
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session && session.user) {
+                checkUserPermissions(session);
+            } else if (event === 'SIGNED_OUT') {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('adminMainPanel').classList.add('hidden');
+            }
+        });
     }
 });
 
@@ -843,7 +851,6 @@ async function checkUserPermissions(session) {
         if (badge) badge.textContent = `👤 ${currentUserEmail}`;
         unlockAdminPanel();
     }
-    // Nota: Se eliminó el 'else { logoutAdmin(); }' para prevenir bucles de recarga infinitos.
 }
 
 async function loginWithGoogle() {
