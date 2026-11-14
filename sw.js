@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kanchapro-cache-v3';
+const CACHE_NAME = 'kanchapro-cache-v2';
 const urlsToCache = [
   './index.html',
   './manifest.json',
