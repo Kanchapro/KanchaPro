@@ -35,7 +35,15 @@ const FALLBACK_LOGO = "https://raw.githubusercontent.com/Kanchapro/KanchaPro/mai
 let supabaseClient = null;
 
 if (typeof supabase !== 'undefined') {
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // Configuración robusta con PKCE para evitar bucles de redirección OAuth
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+            flowType: 'pkce',
+            autoRefreshToken: true,
+            persistSession: true,
+            detectSessionInUrl: true
+        }
+    });
 }
 
 async function registrarVisita(tipoPagina) {
@@ -821,7 +829,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     await registrarVisita('admin');
 
     if (supabaseClient) {
-        // 1. Obtener la sesión actual de manera directa y segura al cargar
+        // Manejar de forma segura la sesión proveniente de la URL con PKCE
+        await supabaseClient.auth.getSessionFromUrl({ storeSession: true });
+
+        // 1. Obtener la sesión actual de manera directa y limpia al cargar
         const { data: { session }, error } = await supabaseClient.auth.getSession();
         
         if (error) {
@@ -829,12 +840,19 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (session && session.user) {
+            // Limpiar la URL de los tokens largos de OAuth de inmediato para evitar recargas en bucle
+            if (window.location.hash || window.location.search.includes('code=')) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
             checkUserPermissions(session);
         }
 
-        // 2. Escuchar cambios de estado posteriores de manera limpia
+        // 2. Escuchar cambios de estado posteriores
         supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session && session.user) {
+            if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && session.user) {
+                if (window.location.hash) {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
                 checkUserPermissions(session);
             } else if (event === 'SIGNED_OUT') {
                 document.getElementById('loginScreen').classList.remove('hidden');
@@ -854,24 +872,25 @@ async function checkUserPermissions(session) {
 }
 
 async function loginWithGoogle() {
-if (!supabaseClient) {
-alert("Error: Supabase no se inicializó correctamente.");
-return;
-}
-try {
-const { error } = await supabaseClient.auth.signInWithOAuth({ 
-provider: 'google', 
-options: { 
-redirectTo: window.location.origin + window.location.pathname 
-} 
-});
-if (error) {
-alert("No se pudo iniciar sesión con Google: " + error.message);
-}
-} catch (err) {
-console.error("Excepción en login:", err);
-alert("Ocurrió un error al intentar conectar con Google.");
-}
+    if (!supabaseClient) {
+        alert("Error: Supabase no se inicializó correctamente.");
+        return;
+    }
+    try {
+        const redirectUrl = window.location.origin + window.location.pathname;
+        const { error } = await supabaseClient.auth.signInWithOAuth({ 
+            provider: 'google', 
+            options: { 
+                redirectTo: redirectUrl
+            } 
+        });
+        if (error) {
+            alert("No se pudo iniciar sesión con Google: " + error.message);
+        }
+    } catch (err) {
+        console.error("Excepción en login:", err);
+        alert("Ocurrió un error al intentar conectar con Google.");
+    }
 }
 
 function unlockAdminPanel() {
