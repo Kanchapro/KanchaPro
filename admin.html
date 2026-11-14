@@ -18,23 +18,20 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
 
-    /* Estilos optimizados para impresión en PDF tipo Cronograma Oficial */
+    /* Estilos específicos para impresión de Planilla Oficial de Futsal y Fixture */
     @media print {
-      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 10px !important; }
+      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 9px !important; }
       body * { visibility: hidden; }
-      #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList * { visibility: visible; }
-      #adm-fixture { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; color: black !important; padding: 5px !important; }
-      #adminMatchesList { max-height: none !important; overflow: visible !important; position: static !important; width: 100% !important; display: block !important; }
+      #adm-fixture, #adm-fixture *, #adminMatchesList, #adminMatchesList *, #officialMatchSheetModal, #officialMatchSheetModal * { visibility: visible; }
+      
+      #officialMatchSheetModal { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; z-index: 99999; display: block !important; padding: 0 !important; }
+      #officialMatchSheetContent { border: 2px solid #000 !important; background: white !important; color: black !important; padding: 8px !important; width: 100% !important; max-width: none !important; box-shadow: none !important; }
+      
       .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\], .hide-on-share { display: none !important; }
       
-      #adminMatchesList > div { background: white !important; border: 1px solid #ccc !important; border-radius: 4px !important; margin-bottom: 8px !important; padding: 6px !important; page-break-inside: avoid; break-inside: avoid; }
-      #adminMatchesList > div h4 { color: #000 !important; font-size: 11px !important; border-bottom: 2px solid #000 !important; padding-bottom: 3px !important; margin-bottom: 4px !important; text-transform: uppercase; }
-      
-      #adminMatchesList div.print-match-row { display: flex !important; justify-content: space-between !important; align-items: center !important; border-bottom: 1px solid #eee !important; padding: 4px 2px !important; font-size: 10px !important; }
-      #adminMatchesList div.print-match-row span { color: black !important; }
-      
-      span, div { color: black !important; }
-      .text-green-400, .text-green-300, .text-emerald-400 { color: #000 !important; font-weight: bold; }
+      span, div, th, td, label { color: black !important; }
+      table { border-color: #000 !important; }
+      th, td { border: 1px solid #000 !important; }
     }
   </style>
 </head>
@@ -52,12 +49,8 @@
     async function registrarVisita(tipoPagina) {
       if (!supabaseClient) return;
       try {
-        await supabaseClient.from('visitor_stats').insert([
-          { page_type: tipoPagina }
-        ]);
-      } catch (err) {
-        console.error("Error al registrar visita:", err);
-      }
+        await supabaseClient.from('visitor_stats').insert([{ page_type: tipoPagina }]);
+      } catch (err) { console.error(err); }
     }
   </script>
 
@@ -69,7 +62,7 @@
       </div>
       <div>
         <h2 class="text-xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
-        <p class="text-xs text-slate-400 mt-1">Panel con gestión de Torneos, Escudos y Sanciones</p>
+        <p class="text-xs text-slate-400 mt-1">Panel con Planilla Oficial de Futsal</p>
       </div>
       <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-xs">
         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -326,7 +319,6 @@
         <button onclick="openSponsorModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg shrink-0">+ Nuevo Banner</button>
       </div>
 
-      <!-- Guía de medidas estándar estilo AdSense -->
       <div class="bg-[#060a08] border border-green-900/40 rounded-xl p-3 text-[11px] text-slate-300 flex flex-col sm:flex-row justify-between gap-2">
         <div>
           <span class="font-bold text-green-400 block">📐 Medidas recomendadas (Formato AdSense Pie de Página):</span>
@@ -356,6 +348,120 @@
   </main>
 
   <!-- ==================== MODALES ==================== -->
+  
+  <!-- MODAL PLANILLA OFICIAL DE JUEGO (ESTILO FUTSAL OFICIAL) -->
+  <div id="officialMatchSheetModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-2 overflow-y-auto">
+    <div class="glass-card p-4 rounded-2xl max-w-4xl w-full space-y-4 border border-green-500/30 my-auto text-xs bg-white text-black" id="officialMatchSheetContent">
+      <div class="flex justify-between items-center border-b-2 border-black pb-2 no-print">
+        <h3 class="text-sm font-black text-green-400">📋 Planilla Oficial de Partido (Futsal)</h3>
+        <div class="flex gap-2">
+          <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded font-bold text-xs">🖨️ Imprimir / Guardar PDF</button>
+          <button onclick="closeModal('officialMatchSheetModal')" class="text-slate-400 hover:text-black font-bold text-sm">✕</button>
+        </div>
+      </div>
+
+      <!-- ENCABEZADO OFICIAL -->
+      <div class="border-2 border-black p-2 space-y-2 bg-white text-black text-[10px]">
+        <div class="flex justify-between items-center border-b border-black pb-1 font-bold">
+          <div class="flex items-center gap-2">
+            <span class="border border-black px-2 py-0.5 text-[9px] font-black">FUTSAL</span>
+            <span id="omsTournamentName">TORNEO: KANCHAPRO</span>
+          </div>
+          <div>FECHA N°: <span id="omsRoundNum">1</span></div>
+          <div>JUEGO N°: <span id="omsGameNum">01</span></div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>LUGAR: <span id="omsVenue" class="font-semibold">Cancha Oficial</span></div>
+          <div>FECHA: <span id="omsDate" class="font-semibold">__ / __ / 2026</span></div>
+          <div>DIVISION: <span id="omsDivision" class="font-semibold">Libre / Principal</span></div>
+        </div>
+      </div>
+
+      <!-- EQUIPO A -->
+      <div class="border-2 border-black space-y-1 bg-white text-black">
+        <div class="bg-gray-200 px-2 py-1 font-bold flex justify-between items-center border-b border-black text-[11px]">
+          <span>EQUIPO "A": <span id="omsHomeTeamName" class="uppercase font-black">LOCAL</span></span>
+          <span class="text-[9px]">D.T: ____________ | A.T: ____________ | P.F: ____________</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-[9px] border-collapse border border-black text-center">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border border-black p-1 text-left w-48">APELLIDO Y NOMBRES</th>
+                <th class="border border-black p-1 w-6">N°</th>
+                <th class="border border-black p-1 w-24" colspan="5">FALTAS (1 2 3 4 5)</th>
+                <th class="border border-black p-1 w-16" colspan="3">TARJETAS (Am Des Ex)</th>
+                <th class="border border-black p-1 w-8">Goles</th>
+                <th class="border border-black p-1 w-16">1° Periodo</th>
+                <th class="border border-black p-1 w-16">2° Periodo</th>
+                <th class="border border-black p-1 w-12">Sup 1</th>
+                <th class="border border-black p-1 w-12">Sup 2</th>
+              </tr>
+            </thead>
+            <tbody id="omsHomePlayersTableBody">
+              <!-- Se inyecta dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+        <div class="p-1 grid grid-cols-2 gap-2 text-[9px] border-t border-black bg-gray-50">
+          <div>Faltas 1° Periodo: ( ) ( ) ( ) ( ) ( ) | 2° Periodo: ( ) ( ) ( ) ( ) ( )</div>
+          <div class="text-right font-bold">Total Goles Equipo A: [ <span id="omsHomeTotalGoals">0</span> ]</div>
+        </div>
+      </div>
+
+      <!-- EQUIPO B -->
+      <div class="border-2 border-black space-y-1 bg-white text-black">
+        <div class="bg-gray-200 px-2 py-1 font-bold flex justify-between items-center border-b border-black text-[11px]">
+          <span>EQUIPO "B": <span id="omsAwayTeamName" class="uppercase font-black">VISITANTE</span></span>
+          <span class="text-[9px]">D.T: ____________ | A.T: ____________ | P.F: ____________</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-[9px] border-collapse border border-black text-center">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border border-black p-1 text-left w-48">APELLIDO Y NOMBRES</th>
+                <th class="border border-black p-1 w-6">N°</th>
+                <th class="border border-black p-1 w-24" colspan="5">FALTAS (1 2 3 4 5)</th>
+                <th class="border border-black p-1 w-16" colspan="3">TARJETAS (Am Des Ex)</th>
+                <th class="border border-black p-1 w-8">Goles</th>
+                <th class="border border-black p-1 w-16">1° Periodo</th>
+                <th class="border border-black p-1 w-16">2° Periodo</th>
+                <th class="border border-black p-1 w-12">Sup 1</th>
+                <th class="border border-black p-1 w-12">Sup 2</th>
+              </tr>
+            </thead>
+            <tbody id="omsAwayPlayersTableBody">
+              <!-- Se inyecta dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+        <div class="p-1 grid grid-cols-2 gap-2 text-[9px] border-t border-black bg-gray-50">
+          <div>Faltas 1° Periodo: ( ) ( ) ( ) ( ) ( ) | 2° Periodo: ( ) ( ) ( ) ( ) ( )</div>
+          <div class="text-right font-bold">Total Goles Equipo B: [ <span id="omsAwayTotalGoals">0</span> ]</div>
+        </div>
+      </div>
+
+      <!-- ARBITRAJE Y RESULTADO FINAL -->
+      <div class="border-2 border-black p-2 grid grid-cols-2 gap-4 text-[9px] bg-white text-black">
+        <div class="space-y-1 border-r border-black pr-2">
+          <div class="font-bold border-b border-black pb-0.5">RESULTADO FINAL</div>
+          <div>1° Periodo: Equipo A [ &nbsp; ] - Equipo B [ &nbsp; ]</div>
+          <div>2° Periodo: Equipo A [ &nbsp; ] - Equipo B [ &nbsp; ]</div>
+          <div class="font-bold pt-1">TOTAL: EQUIPO A [ <span id="omsFinalHomeScore">0</span> ] — EQUIPO B [ <span id="omsFinalAwayScore">0</span> ]</div>
+        </div>
+        <div class="space-y-1">
+          <div class="font-bold border-b border-black pb-0.5">OFICIALES DE ARBITRAJE</div>
+          <div>Planillero: ___________________ Firma: ________</div>
+          <div>Crono: _______________________ Firma: ________</div>
+          <div>Árbitro 1°: ___________________ Firma: ________</div>
+          <div>Árbitro 2°: ___________________ Firma: ________</div>
+          <div>Con informe: SI / NO</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div id="clubHorariosModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
     <div class="glass-card p-5 rounded-2xl max-w-md w-full space-y-4 border border-green-500/30 my-auto text-xs">
       <div class="flex justify-between items-center border-b border-green-900/40 pb-2">
@@ -573,7 +679,6 @@
         <div class="flex-1 font-bold text-white truncate text-left pl-2" id="mdAwayName">Visitante</div>
       </div>
 
-      <!-- SECCIÓN ESTADO DEL PARTIDO -->
       <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex items-center justify-between">
         <div>
           <span class="font-bold text-green-300 block">¿El partido ya se jugó?</span>
@@ -702,7 +807,6 @@
     </div>
   </div>
 
-  <!-- Modal para Editar Jugador -->
   <div id="editPlayerModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-sm w-full space-y-3 border border-green-500/30 text-xs">
       <h3 class="text-sm font-bold text-green-400">Editar Jugador</h3>
@@ -728,7 +832,6 @@
     </div>
   </div>
 
-  <!-- Modal Sponsor / Banner AdSense -->
   <div id="sponsorModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
     <div class="glass-card p-5 rounded-2xl max-w-md w-full space-y-3 border border-green-500/30 text-xs">
       <h3 id="sponsorModalTitle" class="text-sm font-bold text-green-400">Configurar Banner Publicitario</h3>
@@ -755,7 +858,6 @@
         <p class="text-[10px] text-slate-400 mt-1">Usa una imagen horizontal rectangular.</p>
       </div>
 
-      <!-- Vista previa en vivo estilo AdSense -->
       <div id="sponsorBannerPreviewBox" class="hidden bg-[#060a08] p-2.5 rounded-xl border border-green-900/40 space-y-1">
         <div class="flex justify-between items-center text-[9px] text-slate-500 uppercase tracking-wider">
           <span>Vista previa (Pie de página)</span>
@@ -977,7 +1079,6 @@
       navigator.clipboard.writeText(uniqueUrl).then(() => {
         alert(`¡Enlace copiado para "${catName}"!\n\n${uniqueUrl}\n\nYa puedes pegarlo y compartirlo en WhatsApp.`);
       }).catch(err => {
-        console.error('Error al copiar:', err);
         prompt("Copia este enlace para compartir tu torneo:", uniqueUrl);
       });
     }
@@ -993,9 +1094,7 @@
       document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
       document.getElementById(`adm-${tabKey}`).classList.remove('hidden');
 
-      if (tabKey === 'horarios') {
-        renderHorariosClubsGrid();
-      }
+      if (tabKey === 'horarios') renderHorariosClubsGrid();
     }
 
     function renderActiveCategoryViews() {
@@ -1125,10 +1224,11 @@
 
                       ${infoText ? `<div class="text-[11px] text-slate-400 text-center font-medium">🗓️ ${infoText}</div>` : ''}
                       
-                      <div class="flex justify-between items-center pt-1 border-t border-green-900/30 hide-on-share">
-                        <div class="flex gap-1.5">
+                      <div class="flex flex-wrap justify-between items-center pt-1 border-t border-green-900/30 hide-on-share gap-1">
+                        <div class="flex flex-wrap gap-1.5">
                           <button onclick="openMatchModal(true, '${m.id}')" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[11px] px-2.5 py-1 rounded font-semibold">📅 Editar Info</button>
                           <button onclick="openMatchDetailModal('${m.id}')" class="bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 text-[11px] px-2.5 py-1 rounded font-semibold">⚙️ Planilla</button>
+                          <button onclick="openOfficialMatchSheetModal('${m.id}')" class="bg-purple-600/40 hover:bg-purple-600/60 text-purple-200 text-[11px] px-2.5 py-1 rounded font-bold border border-purple-500/40 flex items-center gap-1"><span>📋</span> Planilla Oficial</button>
                         </div>
                         <button onclick="deleteRecord('${m.id}')" class="text-red-400 text-xs">🗑️</button>
                       </div>
@@ -1150,6 +1250,78 @@
       renderDisciplineViews(teams);
       renderSponsorsView();
       renderModeratorsView();
+    }
+
+    /* GENERADOR DE PLANILLA OFICIAL DE FUTSAL */
+    function openOfficialMatchSheetModal(matchId) {
+      const match = dbData.matches.find(m => m.id === matchId);
+      if (!match) return;
+      const cat = dbData.categories.find(c => c.id === activeCategoryId);
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+
+      const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
+      const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
+
+      document.getElementById('omsTournamentName').textContent = `TORNEO: ${cat ? cat.name.toUpperCase() : 'KANCHAPRO'}`;
+      document.getElementById('omsRoundNum').textContent = match.round_name || 'Fecha 1';
+      document.getElementById('omsGameNum').textContent = match.id.slice(-4);
+      document.getElementById('omsVenue').textContent = match.match_venue || 'Cancha Oficial';
+      document.getElementById('omsDate').textContent = match.match_day || '__ / __ / 2026';
+      document.getElementById('omsDivision').textContent = cat ? (cat.tournament_type === 'cup' ? 'Copa / Zonas' : 'Liga') : 'Libre';
+
+      document.getElementById('omsHomeTeamName').textContent = hTeam.name;
+      document.getElementById('omsAwayTeamName').textContent = aTeam.name;
+
+      const hPlayers = dbData.players.filter(p => p.team_id === hTeam.id);
+      const aPlayers = dbData.players.filter(p => p.team_id === aTeam.id);
+
+      const details = match.match_details || {};
+      const playerStats = details.playerStats || {};
+
+      function buildSheetRows(playersList) {
+        let rowsHtml = '';
+        for (let i = 0; i < 12; i++) {
+          const p = playersList[i];
+          const pName = p ? p.name : '';
+          const pNum = p ? (i + 1) : '';
+          const st = p ? (playerStats[p.id] || {}) : {};
+          const pGoals = st.goals || '';
+          const pYellow = st.yellows ? '🟨' : '';
+          const pRed = st.reds ? '🟥' : '';
+          const pBlue = st.blues ? '🟦' : '';
+
+          rowsHtml += `
+            <tr>
+              <td class="border border-black p-1 text-left font-semibold truncate max-w-[180px]">${pName}</td>
+              <td class="border border-black p-1 text-center font-bold">${pNum}</td>
+              <td class="border border-black p-1 text-center w-4"></td>
+              <td class="border border-black p-1 text-center w-4"></td>
+              <td class="border border-black p-1 text-center w-4"></td>
+              <td class="border border-black p-1 text-center w-4"></td>
+              <td class="border border-black p-1 text-center w-4"></td>
+              <td class="border border-black p-1 text-center">${pYellow}</td>
+              <td class="border border-black p-1 text-center">${pRed}</td>
+              <td class="border border-black p-1 text-center">${pBlue}</td>
+              <td class="border border-black p-1 text-center font-bold text-green-700">${pGoals}</td>
+              <td class="border border-black p-1 text-center"></td>
+              <td class="border border-black p-1 text-center"></td>
+              <td class="border border-black p-1 text-center"></td>
+              <td class="border border-black p-1 text-center"></td>
+            </tr>
+          `;
+        }
+        return rowsHtml;
+      }
+
+      document.getElementById('omsHomePlayersTableBody').innerHTML = buildSheetRows(hPlayers);
+      document.getElementById('omsAwayPlayersTableBody').innerHTML = buildSheetRows(aPlayers);
+
+      document.getElementById('omsHomeTotalGoals').textContent = match.home_score || 0;
+      document.getElementById('omsAwayTotalGoals').textContent = match.away_score || 0;
+      document.getElementById('omsFinalHomeScore').textContent = match.home_score || 0;
+      document.getElementById('omsFinalAwayScore').textContent = match.away_score || 0;
+
+      openModal('officialMatchSheetModal');
     }
 
     function renderHorariosClubsGrid() {
@@ -1203,11 +1375,8 @@
           </div>
         `;
 
-        if (m.played) {
-          finishedHtml += matchBox;
-        } else {
-          pendingHtml += matchBox;
-        }
+        if (m.played) finishedHtml += matchBox;
+        else pendingHtml += matchBox;
       });
 
       document.getElementById('modalClubPendingList').innerHTML = pendingHtml || '<p class="text-slate-500 text-[11px]">No hay partidos pendientes.</p>';
@@ -1216,9 +1385,7 @@
       openModal('clubHorariosModal');
     }
 
-    function exportFixturePDF() {
-      window.print();
-    }
+    function exportFixturePDF() { window.print(); }
 
     function renderGroupsOverview(teams, cat) {
       const groupCount = cat.group_config?.count || 2;
@@ -1300,32 +1467,17 @@
       elementsToHide.forEach(el => el.style.display = 'none');
 
       try {
-        const canvas = await html2canvas(cardElement, {
-          backgroundColor: '#060a08',
-          scale: 2,
-          useCORS: true
-        });
-
+        const canvas = await html2canvas(cardElement, { backgroundColor: '#060a08', scale: 2, useCORS: true });
         elementsToHide.forEach(el => el.style.display = '');
 
         canvas.toBlob(async (blob) => {
           if (!blob) return;
           const file = new File([blob], `${roundName.replace(/\s+/g, '_')}_fixture.png`, { type: 'image/png' });
-          
           const portalUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
           const shareText = `⚽ ¡Fixture de la ${roundName}! Revisa los horarios, tablas y posiciones completas en KanchaPro:\n👉 ${portalUrl}?torneo=${activeCategoryId}`;
 
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({
-                title: roundName,
-                text: shareText,
-                files: [file]
-              });
-              return;
-            } catch (err) {
-              if (err.name !== 'AbortError') console.error(err);
-            }
+            try { await navigator.share({ title: roundName, text: shareText, files: [file] }); return; } catch (err) {}
           }
 
           const link = document.createElement('a');
@@ -1336,7 +1488,6 @@
         }, 'image/png');
       } catch (err) {
         elementsToHide.forEach(el => el.style.display = '');
-        console.error(err);
         alert("Hubo un error al generar la imagen de la fecha.");
       }
     }
@@ -1349,12 +1500,7 @@
       buttonsToHide.forEach(b => b.style.display = 'none');
 
       try {
-        const canvas = await html2canvas(cardElement, {
-          backgroundColor: '#060a08',
-          scale: 2,
-          useCORS: true
-        });
-
+        const canvas = await html2canvas(cardElement, { backgroundColor: '#060a08', scale: 2, useCORS: true });
         buttonsToHide.forEach(b => b.style.display = '');
 
         canvas.toBlob(async (blob) => {
@@ -1364,16 +1510,7 @@
           const shareText = `⚽ ¡${titleName.replace(/_/g, ' ')}! Revisa toda la información actualizada en KanchaPro:\n👉 ${portalUrl}?torneo=${activeCategoryId}`;
 
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({
-                title: titleName,
-                text: shareText,
-                files: [file]
-              });
-              return;
-            } catch (err) {
-              if (err.name !== 'AbortError') console.error(err);
-            }
+            try { await navigator.share({ title: titleName, text: shareText, files: [file] }); return; } catch (err) {}
           }
 
           const link = document.createElement('a');
@@ -1384,7 +1521,6 @@
         }, 'image/png');
       } catch (err) {
         buttonsToHide.forEach(b => b.style.display = '');
-        console.error(err);
         alert("Hubo un error al generar la imagen.");
       }
     }
@@ -1414,12 +1550,7 @@
                 let g = 0, y = 0, r = 0, b = 0;
                 dbData.matches.forEach(m => {
                   const st = m.match_details?.playerStats?.[p.id];
-                  if (m.played && st) { 
-                    g += (st.goals || 0); 
-                    y += (st.yellows || 0); 
-                    r += (st.reds || 0); 
-                    b += (st.blues || 0); 
-                  }
+                  if (m.played && st) { g += (st.goals || 0); y += (st.yellows || 0); r += (st.reds || 0); b += (st.blues || 0); }
                 });
                 return `
                   <div onclick="openPlayerStatsModal('${p.id}')" class="p-2 rounded-lg bg-[#0b0f0d] border border-green-900/20 flex justify-between items-center cursor-pointer hover:border-green-500/50 transition">
@@ -1475,15 +1606,8 @@
 
       if (!name) return alert("Ingresa el nombre del jugador.");
 
-      const { error } = await supabaseClient.from('torneos_data').update({ 
-        name, 
-        position 
-      }).eq('id', id);
-
-      if (error) {
-        alert("Error al actualizar jugador: " + error.message);
-        return;
-      }
+      const { error } = await supabaseClient.from('torneos_data').update({ name, position }).eq('id', id);
+      if (error) { alert("Error: " + error.message); return; }
 
       closeModal('editPlayerModal');
       await loadAdminData();
@@ -1498,12 +1622,7 @@
       let g = 0, y = 0, r = 0, b = 0;
       dbData.matches.forEach(m => {
         const st = m.match_details?.playerStats?.[playerId];
-        if (m.played && st) { 
-          g += (st.goals || 0); 
-          y += (st.yellows || 0); 
-          r += (st.reds || 0); 
-          b += (st.blues || 0); 
-        }
+        if (m.played && st) { g += (st.goals || 0); y += (st.yellows || 0); r += (st.reds || 0); b += (st.blues || 0); }
       });
 
       document.getElementById('statPlayerName').textContent = `${player.name} (${player.position || 'Jugador'})`;
@@ -1518,24 +1637,16 @@
 
     function renderStandingsView(teams, matches, cat) {
       const container = document.getElementById('adminStandingsContainer');
-      
-      const ptsWin = cat.pts_win !== undefined ? cat.pts_win : (cat.win_points !== undefined ? cat.win_points : 3);
-      const ptsDraw = cat.pts_draw !== undefined ? cat.pts_draw : (cat.points_draw !== undefined ? cat.points_draw : 1);
-      
+      const ptsWin = cat.pts_win !== undefined ? cat.pts_win : 3;
+      const ptsDraw = cat.pts_draw !== undefined ? cat.pts_draw : 1;
       const criteria = cat.tie_breaker || 'gd';
 
       function sortStats(statsList) {
         return statsList.sort((a, b) => {
           if (b.points !== a.points) return b.points - a.points;
-          if (criteria === 'gd') {
-            if (b.gd !== a.gd) return b.gd - a.gd;
-            return b.gf - a.gf;
-          } else if (criteria === 'wins') {
-            if (b.won !== a.won) return b.won - a.won;
-            return b.gd - a.gd;
-          } else {
-            return b.gd - a.gd;
-          }
+          if (criteria === 'gd') { if (b.gd !== a.gd) return b.gd - a.gd; return b.gf - a.gf; }
+          else if (criteria === 'wins') { if (b.won !== a.won) return b.won - a.won; return b.gd - a.gd; }
+          else { return b.gd - a.gd; }
         });
       }
 
@@ -1638,8 +1749,7 @@
         return { name: p.name, teamName: t ? t.name : 'Sin equipo', goals: totalGoals };
       }).filter(item => item.goals > 0).sort((a, b) => b.goals - a.goals);
 
-      const scorersContainer = document.getElementById('adminTopScorersContainer');
-      scorersContainer.innerHTML = `
+      document.getElementById('adminTopScorersContainer').innerHTML = `
         <table class="w-full text-xs">
           <thead class="bg-[#0b0f0d] text-slate-400 text-[10px] uppercase">
             <tr>
@@ -1729,80 +1839,38 @@
         if (totalB > 0) blueMap[p.id] = { player: p, count: totalB };
       });
 
-      const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
-      const redsSorted = Object.values(redMap).sort((a,b) => b.count - a.count);
-      const bluesSorted = Object.values(blueMap).sort((a,b) => b.count - a.count);
+      document.getElementById('adminYellowCardsList').innerHTML = Object.values(yellowMap).map(item => `
+        <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
+          <div><span class="font-bold text-white block">${item.player.name}</span></div>
+          <span class="font-black text-yellow-400 text-sm">🟨 ${item.count}</span>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin amarillas</p>';
 
-      document.getElementById('adminYellowCardsList').innerHTML = yellowsSorted.map(item => {
-        const t = teams.find(x => x.id === item.player.team_id);
-        return `
-          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
-            <div>
-              <span class="font-bold text-white block">${item.player.name}</span>
-              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
-            </div>
-            <span class="font-black text-yellow-400 text-sm">🟨 ${item.count}</span>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin amarillas</p>';
+      document.getElementById('adminRedCardsList').innerHTML = Object.values(redMap).map(item => `
+        <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
+          <div><span class="font-bold text-white block">${item.player.name}</span></div>
+          <span class="font-black text-red-400 text-sm">🟥 ${item.count}</span>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin rojas</p>';
 
-      document.getElementById('adminRedCardsList').innerHTML = redsSorted.map(item => {
-        const t = teams.find(x => x.id === item.player.team_id);
-        return `
-          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
-            <div>
-              <span class="font-bold text-white block">${item.player.name}</span>
-              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
-            </div>
-            <span class="font-black text-red-400 text-sm">🟥 ${item.count}</span>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin rojas</p>';
-
-      document.getElementById('adminBlueCardsList').innerHTML = bluesSorted.map(item => {
-        const t = teams.find(x => x.id === item.player.team_id);
-        return `
-          <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
-            <div>
-              <span class="font-bold text-white block">${item.player.name}</span>
-              <span class="text-[10px] text-slate-400">${t ? t.name : ''}</span>
-            </div>
-            <span class="font-black text-blue-400 text-sm">🟦 ${item.count}</span>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin azules</p>';
+      document.getElementById('adminBlueCardsList').innerHTML = Object.values(blueMap).map(item => `
+        <div class="flex justify-between items-center bg-[#060a08] p-2.5 rounded-lg border border-green-900/20 text-xs">
+          <div><span class="font-bold text-white block">${item.player.name}</span></div>
+          <span class="font-black text-blue-400 text-sm">🟦 ${item.count}</span>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs text-center py-2">Sin azules</p>';
 
       const suspensions = dbData.suspensions.filter(s => s.category_id === activeCategoryId);
-      const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
-      let uniqueRounds = [...new Set(matches.map(m => m.round_name || 'Fecha'))];
-
-      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => {
-        const rem = s.remaining_matches ?? 1;
-        let missedRoundsText = "";
-        if (uniqueRounds.length > 0) {
-          let totalRoundsCount = uniqueRounds.length;
-          let startIndex = Math.max(0, totalRoundsCount - rem);
-          let affectedRounds = uniqueRounds.slice(startIndex, startIndex + rem);
-          if (affectedRounds.length > 0) {
-            missedRoundsText = `No puede jugar: ${affectedRounds.join(', ')}`;
-          } else {
-            missedRoundsText = `${rem} ${rem === 1 ? 'fecha pendiente' : 'fechas pendientes'}`;
-          }
-        } else {
-          missedRoundsText = `${rem} ${rem === 1 ? 'fecha pendiente' : 'fechas pendientes'}`;
-        }
-
-        return `
-          <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
-            <div>
-              <span class="font-bold text-white">${s.player_name} (${s.team_name || ''})</span>
-              <span class="text-[11px] text-yellow-300 font-bold block mt-0.5">🚫 ${missedRoundsText}</span>
-              <span class="text-[10px] text-slate-400 block">Motivo: ${s.reason || 'Sin observación'}</span>
-            </div>
-            <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
+      document.getElementById('adminSuspensionsList').innerHTML = suspensions.map(s => `
+        <div class="bg-red-950/20 border border-red-500/30 rounded-xl p-2.5 flex justify-between items-center text-xs">
+          <div>
+            <span class="font-bold text-white">${s.player_name} (${s.team_name || ''})</span>
+            <span class="text-[11px] text-yellow-300 font-bold block mt-0.5">🚫 ${s.remaining_matches || 1} fechas pendientes</span>
+            <span class="text-[10px] text-slate-400 block">Motivo: ${s.reason || 'Sin observación'}</span>
           </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
+          <button onclick="deleteRecord('${s.id}')" class="bg-red-500/20 text-red-300 px-2.5 py-1 rounded text-[11px]">Levantar</button>
+        </div>
+      `).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones activas.</p>';
     }
 
     function previewSponsorBanner(event) {
@@ -1823,33 +1891,24 @@
 
       container.innerHTML = sponsors.map(s => {
         const isActive = s.is_active !== false;
-        const sizeLabel = s.banner_size || 'responsive';
         return `
           <div class="bg-[#0b0f0d] p-3 rounded-xl border ${isActive ? 'border-green-500/40' : 'border-slate-800 opacity-60'} space-y-2">
             <div class="flex justify-between items-center text-xs">
               <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ${isActive ? 'bg-green-600/30 text-green-300 border border-green-500/40' : 'bg-slate-800 text-slate-400'}">
-                  ${isActive ? '● Activo' : '○ Pausado'}
-                </span>
+                <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ${isActive ? 'bg-green-600/30 text-green-300' : 'bg-slate-800 text-slate-400'}">${isActive ? '● Activo' : '○ Pausado'}</span>
                 <span class="font-bold text-white">${s.name}</span>
-                <span class="text-[10px] text-slate-400 hidden sm:inline">(${sizeLabel})</span>
               </div>
               <div class="flex gap-1.5">
-                <button onclick="openSponsorModal(true, '${s.id}')" class="bg-blue-600/30 text-blue-300 px-2.5 py-1 rounded text-[11px] font-semibold">✏️ Editar</button>
-                <button onclick="deleteRecord('${s.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️</button>
+                <button onclick="openSponsorModal(true, '${s.id}')" class="bg-blue-600/30 text-blue-300 px-2.5 py-1 rounded text-[11px]">✏️</button>
+                <button onclick="deleteRecord('${s.id}')" class="bg-red-600/30 text-red-300 px-2.5 py-1 rounded text-[11px]">🗑️</button>
               </div>
             </div>
-
-            <!-- Simulación del bloque AdSense -->
             <div class="relative w-full max-w-[728px] mx-auto h-[80px] sm:h-[90px] bg-[#060a08] border border-slate-800 rounded-lg overflow-hidden flex items-center justify-center">
-              <span class="absolute top-1 right-1.5 bg-black/75 text-[8px] text-slate-400 px-1.5 py-0.5 rounded border border-slate-700 uppercase tracking-wider z-10">Sponsor</span>
               <img src="${s.logo || FALLBACK_LOGO}" class="w-full h-full object-contain" onerror="this.src='${FALLBACK_LOGO}'">
             </div>
-
-            ${s.link ? `<div class="text-[10px] text-blue-400 truncate">🔗 Destino: <a href="${s.link}" target="_blank" class="underline">${s.link}</a></div>` : '<div class="text-[10px] text-slate-500">Sin enlace de destino</div>'}
           </div>
         `;
-      }).join('') || '<p class="text-slate-500 text-xs text-center py-4">No hay banners publicitarios configurados para este torneo.</p>';
+      }).join('') || '<p class="text-slate-500 text-xs text-center py-4">No hay banners publicitarios configurados.</p>';
     }
 
     function openSponsorModal(isEdit, sponsorId) {
@@ -1866,12 +1925,7 @@
         document.getElementById('modalSponsorLink').value = sp.link || '';
         document.getElementById('modalSponsorActive').checked = sp.is_active !== false;
         document.getElementById('modalSponsorFile').value = '';
-        if (sp.logo) {
-          previewImg.src = sp.logo;
-          previewBox.classList.remove('hidden');
-        } else {
-          previewBox.classList.add('hidden');
-        }
+        if (sp.logo) { previewImg.src = sp.logo; previewBox.classList.remove('hidden'); } else { previewBox.classList.add('hidden'); }
       } else {
         document.getElementById('sponsorModalTitle').textContent = 'Nuevo Banner Publicitario';
         document.getElementById('modalSponsorId').value = '';
@@ -1893,66 +1947,38 @@
       const is_active = document.getElementById('modalSponsorActive').checked;
       const fileInput = document.getElementById('modalSponsorFile');
 
-      if (!name) return alert("Ingresa el nombre del comercio o anunciante.");
-
-      let logoUrl = '';
-      if (id) {
-        const existing = dbData.sponsors.find(s => s.id === id);
-        logoUrl = existing ? (existing.logo || '') : '';
-      }
+      if (!name) return alert("Ingresa el nombre del anunciante.");
+      let logoUrl = id ? (dbData.sponsors.find(s => s.id === id)?.logo || '') : '';
 
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `banner_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+        const fileName = `banner_${Date.now()}.${file.name.split('.').pop()}`;
         const { error } = await supabaseClient.storage.from('escudos').upload(fileName, file);
-        if (error) {
-          alert("Error al subir el banner: " + error.message);
-          return;
-        }
-        const { data: publicURLData } = supabaseClient.storage.from('escudos').getPublicUrl(fileName);
-        logoUrl = publicURLData.publicUrl;
+        if (error) { alert("Error: " + error.message); return; }
+        logoUrl = supabaseClient.storage.from('escudos').getPublicUrl(fileName).data.publicUrl;
       }
 
-      if (!logoUrl && !id) return alert("Por favor selecciona una imagen para el banner.");
-
       if (id) {
-        await supabaseClient.from('torneos_data').update({
-          name,
-          logo: logoUrl || logoUrl,
-          link,
-          banner_size,
-          is_active
-        }).eq('id', id);
+        await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, link, banner_size, is_active }).eq('id', id);
       } else {
         await supabaseClient.from('torneos_data').insert([{
-          id: 'sponsor_' + Date.now(),
-          type: 'sponsor',
-          category_id: activeCategoryId,
-          name,
-          logo: logoUrl,
-          link,
-          banner_size,
-          is_active
+          id: 'sponsor_' + Date.now(), type: 'sponsor', category_id: activeCategoryId, name, logo: logoUrl, link, banner_size, is_active
         }]);
       }
 
       closeModal('sponsorModal');
       await loadAdminData();
-      alert("¡Banner publicitario guardado con éxito!");
+      alert("¡Banner guardado con éxito!");
     }
 
     function renderModeratorsView() {
       const mods = dbData.moderators.filter(m => m.category_id === activeCategoryId);
-      const container = document.getElementById('adminModeratorsList');
-      if (!container) return;
-
-      container.innerHTML = mods.map(m => `
+      document.getElementById('adminModeratorsList').innerHTML = mods.map(m => `
         <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/30 flex justify-between items-center text-xs">
           <span class="text-white font-semibold">📧 ${m.owner_email}</span>
-          <button onclick="deleteRecord('${m.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️ Eliminar</button>
+          <button onclick="deleteRecord('${m.id}')" class="bg-red-600/30 text-red-300 px-2 py-1 rounded text-[11px]">🗑️</button>
         </div>
-      `).join('') || '<p class="text-slate-500 text-xs">No hay moderadores adicionales en este torneo.</p>';
+      `).join('') || '<p class="text-slate-500 text-xs">No hay moderadores adicionales.</p>';
     }
 
     function openModeratorModal() {
@@ -1963,24 +1989,11 @@
 
     async function saveModeratorFromModal() {
       const email = document.getElementById('modalModEmail').value.trim();
-      if (!email) return alert("Ingresa un correo válido.");
-
-      const newMod = {
-        id: 'mod_' + Date.now(),
-        type: 'moderator',
-        category_id: activeCategoryId,
-        owner_email: email
-      };
-
-      const { error } = await supabaseClient.from('torneos_data').insert([newMod]);
-      if (error) {
-        alert("Error al guardar moderador: " + error.message);
-        return;
-      }
-
+      if (!email) return alert("Ingresa un correo.");
+      await supabaseClient.from('torneos_data').insert([{ id: 'mod_' + Date.now(), type: 'moderator', category_id: activeCategoryId, owner_email: email }]);
       closeModal('moderatorModal');
       await loadAdminData();
-      alert("¡Moderador agregado con éxito!");
+      alert("¡Moderador agregado!");
     }
 
     async function saveMatchDetail() {
@@ -2007,22 +2020,16 @@
         const blues = parseInt(bInput.value) || 0;
 
         playerStats[p.id] = { goals, yellows, reds, blues };
-
         if (p.team_id === match.home_team) totalHomeGoals += goals;
         if (p.team_id === match.away_team) totalAwayGoals += goals;
       }
 
-      const { error: matchError } = await supabaseClient.from('torneos_data').update({
+      await supabaseClient.from('torneos_data').update({
         home_score: isPlayed ? totalHomeGoals : 0,
         away_score: isPlayed ? totalAwayGoals : 0,
         played: isPlayed,
         match_details: { playerStats }
       }).eq('id', matchId);
-
-      if (matchError) {
-        alert("Error al guardar planilla: " + matchError.message);
-        return;
-      }
 
       closeModal('matchDetailModal');
       await loadAdminData();
@@ -2035,19 +2042,16 @@
       if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
       
       const existingLeagueMatches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff);
-      
       let playedMatchesToKeep = existingLeagueMatches.filter(m => m.played);
 
       if (existingLeagueMatches.length > 0) {
         let msg = playedMatchesToKeep.length > 0 
-          ? `Ya existen partidos cargados. Hay ${playedMatchesToKeep.length} partido(s) ya JUGADO(S) (ej. Fecha 1) que se mantendrán intactos. Los partidos pendientes se reestructurarán con los nuevos equipos. ¿Deseas continuar?`
+          ? `Ya existen partidos cargados. Hay ${playedMatchesToKeep.length} partido(s) ya JUGADO(S) que se mantendrán intactos. ¿Deseas continuar?`
           : "Ya existe un fixture generado. ¿Deseas rearmarlo con los equipos actuales?";
         if (!confirm(msg)) return;
 
         for (let m of existingLeagueMatches) {
-          if (!m.played) {
-            await supabaseClient.from('torneos_data').delete().eq('id', m.id);
-          }
+          if (!m.played) await supabaseClient.from('torneos_data').delete().eq('id', m.id);
         }
       }
 
@@ -2055,208 +2059,57 @@
       let timestamp = Date.now();
       let counter = 0;
 
-      if (cat.tournament_type === 'cup') {
-        const groupCount = cat.group_config?.count || 2;
-        const groupLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].slice(0, groupCount);
+      let list = [...teams];
+      if (list.length % 2 !== 0) list.push({ id: 'BYE', name: 'LIBRE' });
 
-        let unassignedTeams = teams.filter(t => !t.group_name);
-        if (unassignedTeams.length > 0) {
-          for (let i = 0; i < teams.length; i++) {
-            let assignedGroup = 'Grupo ' + groupLetters[i % groupCount];
-            if (!teams[i].group_name) {
-              teams[i].group_name = assignedGroup;
-              await supabaseClient.from('torneos_data').update({ group_name: assignedGroup }).eq('id', teams[i].id);
-            }
+      const numTeams = list.length;
+      const totalRounds = numTeams - 1;
+      const matchesPerRound = numTeams / 2;
+      let fixtureRounds = [];
+
+      for (let round = 0; round < totalRounds; round++) {
+        let roundMatches = [];
+        for (let i = 0; i < matchesPerRound; i++) {
+          let home = list[i];
+          let away = list[numTeams - 1 - i];
+          if (home.id !== 'BYE' && away.id !== 'BYE') {
+            if (round % 2 === 1 && i === 0) roundMatches.push({ home: away, away: home });
+            else roundMatches.push({ home: home, away: away });
           }
         }
+        fixtureRounds.push(roundMatches);
+        let temp = list.pop();
+        list.splice(1, 0, temp);
+      }
 
-        let groupFixtures = {};
-        let maxRounds = 0;
-
-        for (let l of groupLetters) {
-          let gName = 'Grupo ' + l;
-          let gTeams = teams.filter(t => t.group_name === gName);
-          if (gTeams.length < 2) continue;
-
-          let list = [...gTeams];
-          if (list.length % 2 !== 0) list.push({ id: 'BYE', name: 'LIBRE' });
-
-          const numTeams = list.length;
-          const totalRounds = numTeams - 1;
-          const matchesPerRound = numTeams / 2;
-          let fixtureRounds = [];
-
-          for (let round = 0; round < totalRounds; round++) {
-            let roundMatches = [];
-            for (let i = 0; i < matchesPerRound; i++) {
-              let home = list[i];
-              let away = list[numTeams - 1 - i];
-              if (home.id !== 'BYE' && away.id !== 'BYE') {
-                if (round % 2 === 1 && i === 0) roundMatches.push({ home: away, away: home });
-                else roundMatches.push({ home: home, away: away });
-              }
-            }
-            fixtureRounds.push(roundMatches);
-            let temp = list.pop();
-            list.splice(1, 0, temp);
-          }
-
-          groupFixtures[gName] = fixtureRounds;
-          if (fixtureRounds.length > maxRounds) maxRounds = fixtureRounds.length;
+      for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
+        let roundNumber = rIndex + 1;
+        for (let m of fixtureRounds[rIndex]) {
+          counter++;
+          await supabaseClient.from('torneos_data').insert([{
+            id: `match_${timestamp}_${counter}`, type: 'match', category_id: activeCategoryId,
+            home_team: m.home.id, away_team: m.away.id, home_score: 0, away_score: 0, played: false, is_playoff: false,
+            round_name: `Fecha ${roundNumber}`, match_day: '', match_time: '', match_venue: ''
+          }]);
         }
+      }
 
-        for (let l of groupLetters) {
-          let gName = 'Grupo ' + l;
-          let fixtureRounds = groupFixtures[gName];
-          if (!fixtureRounds) continue;
-
-          for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-            let roundNumber = rIndex + 1;
-            let matchesInRound = fixtureRounds[rIndex];
-            for (let m of matchesInRound) {
-              counter++;
-              await supabaseClient.from('torneos_data').insert([{
-                id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
-                type: 'match',
-                category_id: activeCategoryId,
-                home_team: m.home.id,
-                away_team: m.away.id,
-                home_score: 0,
-                away_score: 0,
-                played: false,
-                is_playoff: false,
-                round_name: `${gName} - Fecha ${roundNumber}`,
-                match_day: '', match_time: '', match_venue: ''
-              }]);
-            }
-          }
-        }
-
-        if (groupCount >= 2 && groupLetters.length >= 2) {
-          let groupATeams = teams.filter(t => t.group_name === 'Grupo A');
-          let groupBTeams = teams.filter(t => t.group_name === 'Grupo B');
-          if (groupATeams.length > 0 && groupBTeams.length > 0) {
-            let interzonalRound = maxRounds + 1;
-            let minPairs = Math.min(groupATeams.length, groupBTeams.length);
-            for (let i = 0; i < minPairs; i++) {
-              counter++;
-              await supabaseClient.from('torneos_data').insert([{
-                id: `match_${timestamp}_inter_${counter}_${Math.floor(Math.random()*1000)}`,
-                type: 'match',
-                category_id: activeCategoryId,
-                home_team: groupATeams[i].id,
-                away_team: groupBTeams[i].id,
-                home_score: 0,
-                away_score: 0,
-                played: false,
-                is_playoff: false,
-                round_name: `Fecha ${interzonalRound} (Interzonal A vs B)`,
-                match_day: '', match_time: '', match_venue: ''
-              }]);
-            }
-          }
-        }
-
-        if (isHomeAway) {
-          for (let l of groupLetters) {
-            let gName = 'Grupo ' + l;
-            let fixtureRounds = groupFixtures[gName];
-            if (!fixtureRounds) continue;
-
-            for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-              let roundNumber = maxRounds + 1 + rIndex + 1;
-              let matchesInRound = fixtureRounds[rIndex];
-              for (let m of matchesInRound) {
-                counter++;
-                await supabaseClient.from('torneos_data').insert([{
-                  id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
-                  type: 'match',
-                  category_id: activeCategoryId,
-                  home_team: m.away.id,
-                  away_team: m.home.id,
-                  home_score: 0,
-                  away_score: 0,
-                  played: false,
-                  is_playoff: false,
-                  round_name: `${gName} - Fecha ${roundNumber} (Vuelta)`,
-                  match_day: '', match_time: '', match_venue: ''
-                }]);
-              }
-            }
-          }
-        }
-
-      } else {
-        let list = [...teams];
-        if (list.length % 2 !== 0) list.push({ id: 'BYE', name: 'LIBRE' });
-
-        const numTeams = list.length;
-        const totalRounds = numTeams - 1;
-        const matchesPerRound = numTeams / 2;
-        let fixtureRounds = [];
-
-        for (let round = 0; round < totalRounds; round++) {
-          let roundMatches = [];
-          for (let i = 0; i < matchesPerRound; i++) {
-            let home = list[i];
-            let away = list[numTeams - 1 - i];
-            if (home.id !== 'BYE' && away.id !== 'BYE') {
-              if (round % 2 === 1 && i === 0) roundMatches.push({ home: away, away: home });
-              else roundMatches.push({ home: home, away: away });
-            }
-          }
-          fixtureRounds.push(roundMatches);
-          let temp = list.pop();
-          list.splice(1, 0, temp);
-        }
-
+      if (isHomeAway) {
         for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-          let roundNumber = rIndex + 1;
-          let matchesInRound = fixtureRounds[rIndex];
-          for (let m of matchesInRound) {
+          let roundNumber = fixtureRounds.length + rIndex + 1;
+          for (let m of fixtureRounds[rIndex]) {
             counter++;
             await supabaseClient.from('torneos_data').insert([{
-              id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
-              type: 'match',
-              category_id: activeCategoryId,
-              home_team: m.home.id,
-              away_team: m.away.id,
-              home_score: 0,
-              away_score: 0,
-              played: false,
-              is_playoff: false,
-              round_name: `Fecha ${roundNumber}`,
-              match_day: '', match_time: '', match_venue: ''
+              id: `match_${timestamp}_v_${counter}`, type: 'match', category_id: activeCategoryId,
+              home_team: m.away.id, away_team: m.home.id, home_score: 0, away_score: 0, played: false, is_playoff: false,
+              round_name: `Fecha ${roundNumber} (Vuelta)`, match_day: '', match_time: '', match_venue: ''
             }]);
-          }
-        }
-
-        if (isHomeAway) {
-          for (let rIndex = 0; rIndex < fixtureRounds.length; rIndex++) {
-            let roundNumber = fixtureRounds.length + rIndex + 1;
-            let matchesInRound = fixtureRounds[rIndex];
-            for (let m of matchesInRound) {
-              counter++;
-              await supabaseClient.from('torneos_data').insert([{
-                id: `match_${timestamp}_${counter}_${Math.floor(Math.random()*1000)}`,
-                type: 'match',
-                category_id: activeCategoryId,
-                home_team: m.away.id,
-                away_team: m.home.id,
-                home_score: 0,
-                away_score: 0,
-                played: false,
-                is_playoff: false,
-                round_name: `Fecha ${roundNumber} (Vuelta)`,
-                match_day: '', match_time: '', match_venue: ''
-              }]);
-            }
           }
         }
       }
 
       await loadAdminData();
-      alert("¡Fixture actualizado con éxito! Se incorporaron los nuevos equipos manteniendo los resultados de los partidos ya jugados.");
+      alert("¡Fixture actualizado con éxito!");
     }
 
     function openMatchModal(isEdit = false, matchId = null) {
@@ -2264,16 +2117,7 @@
       if (teams.length < 2) return alert("Se necesitan al menos 2 equipos.");
       
       const cat = dbData.categories.find(c => c.id === activeCategoryId);
-      const interzonalContainer = document.getElementById('interzonalToggleContainer');
-      const awayGroupContainer = document.getElementById('awayGroupSelectContainer');
-
-      if (cat.tournament_type === 'cup') {
-        interzonalContainer.classList.remove('hidden');
-      } else {
-        interzonalContainer.classList.add('hidden');
-        awayGroupContainer.classList.add('hidden');
-      }
-
+      document.getElementById('interzonalToggleContainer').classList.toggle('hidden', cat.tournament_type !== 'cup');
       document.getElementById('modalIsInterzonal').checked = false;
       populateMatchTeamSelectors(teams, false);
 
@@ -2282,10 +2126,8 @@
         const m = dbData.matches.find(x => x.id === matchId);
         document.getElementById('modalMatchEditId').value = m.id;
         document.getElementById('modalMatchRound').value = m.round_name || 'Fecha 1';
-        
         document.getElementById('modalMatchHome').value = m.home_team;
         document.getElementById('modalMatchAway').value = m.away_team;
-
         document.getElementById('modalMatchDay').value = m.match_day || '';
         document.getElementById('modalMatchTime').value = m.match_time || '';
         document.getElementById('modalMatchVenue').value = m.match_venue || '';
@@ -2313,34 +2155,25 @@
       } else {
         awayGroupContainer.classList.remove('hidden');
         const groups = [...new Set(teams.map(t => t.group_name).filter(Boolean))];
-        
         homeSelect.innerHTML = teams.map(t => `<option value="${t.id}">${t.name} (${t.group_name})</option>`).join('');
-        
-        const awayGroupSelect = document.getElementById('modalAwayGroup');
-        awayGroupSelect.innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('');
-        
+        document.getElementById('modalAwayGroup').innerHTML = groups.map(g => `<option value="${g}">${g}</option>`).join('');
         updateAwayTeamOptions();
       }
     }
 
     function toggleInterzonalOptions(isInterzonal) {
-      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      populateMatchTeamSelectors(teams, isInterzonal);
+      populateMatchTeamSelectors(dbData.teams.filter(t => t.category_id === activeCategoryId), isInterzonal);
     }
 
     function updateAwayTeamOptions() {
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       const selectedAwayGroup = document.getElementById('modalAwayGroup').value;
-      const awaySelect = document.getElementById('modalMatchAway');
-
-      const filteredAwayTeams = teams.filter(t => t.group_name === selectedAwayGroup);
-      awaySelect.innerHTML = filteredAwayTeams.map(t => `<option value="${t.id}">${t.name} (${t.group_name})</option>`).join('') || '<option value="">Sin equipos en este grupo</option>';
+      document.getElementById('modalMatchAway').innerHTML = teams.filter(t => t.group_name === selectedAwayGroup).map(t => `<option value="${t.id}">${t.name}</option>`).join('');
     }
 
     async function saveMatchFromModal() {
       const editId = document.getElementById('modalMatchEditId').value;
       let round_name = document.getElementById('modalMatchRound').value.trim() || 'Fecha 1';
-      const isInterzonal = document.getElementById('modalIsInterzonal').checked;
       const home_team = document.getElementById('modalMatchHome').value;
       const away_team = document.getElementById('modalMatchAway').value;
       const match_day = document.getElementById('modalMatchDay').value;
@@ -2348,31 +2181,15 @@
       const match_venue = document.getElementById('modalMatchVenue').value;
 
       if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
-      if (isInterzonal && !round_name.toLowerCase().includes('interzonal')) {
-        round_name += ' (Interzonal)';
-      }
 
       if (editId) {
-        await supabaseClient.from('torneos_data').update({
-          round_name, home_team, away_team, match_day, match_time, match_venue
-        }).eq('id', editId);
+        await supabaseClient.from('torneos_data').update({ round_name, home_team, away_team, match_day, match_time, match_venue }).eq('id', editId);
       } else {
-        const newMatch = {
-          id: 'match_' + Date.now() + '_' + Math.floor(Math.random()*1000),
-          type: 'match',
-          category_id: activeCategoryId,
-          home_team,
-          away_team,
-          home_score: 0,
-          away_score: 0,
-          played: false,
-          is_playoff: false,
-          round_name,
-          match_day,
-          match_time,
-          match_venue
-        };
-        await supabaseClient.from('torneos_data').insert([newMatch]);
+        await supabaseClient.from('torneos_data').insert([{
+          id: 'match_' + Date.now(), type: 'match', category_id: activeCategoryId,
+          home_team, away_team, home_score: 0, away_score: 0, played: false, is_playoff: false,
+          round_name, match_day, match_time, match_venue
+        }]);
       }
 
       closeModal('matchModal');
@@ -2386,8 +2203,6 @@
       const optionsHtml = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
       document.getElementById('modalPlayoffHome').innerHTML = optionsHtml;
       document.getElementById('modalPlayoffAway').innerHTML = optionsHtml;
-      document.getElementById('modalPlayoffHomeAway').checked = false;
-      document.getElementById('modalPlayoffRound').value = 'Semifinal';
       openModal('playoffMatchModal');
     }
 
@@ -2398,49 +2213,28 @@
       const away_team = document.getElementById('modalPlayoffAway').value;
       const isHomeAway = document.getElementById('modalPlayoffHomeAway').checked;
 
-      if (home_team === away_team) return alert("El equipo local y visitante no pueden ser el mismo.");
+      if (home_team === away_team) return alert("Los equipos no pueden ser el mismo.");
 
       const timestamp = Date.now();
       const cupPrefix = cup_type === 'gold' ? 'Oro' : 'Plata';
-      const matchesToInsert = [
-        {
-          id: 'play_' + timestamp + '_1',
-          type: 'match',
-          category_id: activeCategoryId,
-          is_playoff: true,
-          cup_type,
-          round_name: isHomeAway ? `${cupPrefix} - ${round_name} (Ida)` : `${cupPrefix} - ${round_name}`,
-          home_team,
-          away_team,
-          home_score: 0,
-          away_score: 0,
-          played: false
-        }
-      ];
+
+      await supabaseClient.from('torneos_data').insert([{
+        id: 'play_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type,
+        round_name: isHomeAway ? `${cupPrefix} - ${round_name} (Ida)` : `${cupPrefix} - ${round_name}`,
+        home_team, away_team, home_score: 0, away_score: 0, played: false
+      }]);
 
       if (isHomeAway) {
-        matchesToInsert.push({
-          id: 'play_' + timestamp + '_2',
-          type: 'match',
-          category_id: activeCategoryId,
-          is_playoff: true,
-          cup_type,
+        await supabaseClient.from('torneos_data').insert([{
+          id: 'play_' + timestamp + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type,
           round_name: `${cupPrefix} - ${round_name} (Vuelta)`,
-          home_team: away_team,
-          away_team: home_team,
-          home_score: 0,
-          away_score: 0,
-          played: false
-        });
-      }
-
-      for (let m of matchesToInsert) {
-        await supabaseClient.from('torneos_data').insert([m]);
+          home_team: away_team, away_team: home_team, home_score: 0, away_score: 0, played: false
+        }]);
       }
 
       closeModal('playoffMatchModal');
       await loadAdminData();
-      alert(`¡Llave(s) de ${cupPrefix} creada(s) con éxito!`);
+      alert("¡Llave creada con éxito!");
     }
 
     async function generatePlayoffBrackets(cupType) {
@@ -2449,11 +2243,6 @@
 
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       const goldCount = cat.playoff_config?.count || 4;
-      
-      if (teams.length < goldCount * 2 && teams.length < goldCount) {
-        return alert(`Se necesitan suficientes equipos para repartir entre Copa de Oro y Copa de Plata.`);
-      }
-
       const matches = dbData.matches.filter(m => m.category_id === activeCategoryId && !m.is_playoff && m.played);
       const ptsWin = cat.pts_win ?? 3;
       const ptsDraw = cat.pts_draw ?? 1;
@@ -2473,61 +2262,33 @@
       }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
       const oldPlayoffs = dbData.matches.filter(m => m.category_id === activeCategoryId && m.is_playoff && (m.cup_type === cupType || (!m.cup_type && cupType === 'gold')));
-      for (let op of oldPlayoffs) {
-        await supabaseClient.from('torneos_data').delete().eq('id', op.id);
-      }
+      for (let op of oldPlayoffs) await supabaseClient.from('torneos_data').delete().eq('id', op.id);
 
-      let newBrackets = [];
       const timestamp = Date.now();
-
       if (cupType === 'gold') {
         const topTeams = stats.slice(0, goldCount);
-        if (topTeams.length === 4) {
-          newBrackets.push(
+        if (topTeams.length >= 4) {
+          await supabaseClient.from('torneos_data').insert([
             { id: 'play_g_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Semifinal 1', home_team: topTeams[0]?.id, away_team: topTeams[3]?.id, home_score: 0, away_score: 0, played: false },
             { id: 'play_g_' + timestamp + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Semifinal 2', home_team: topTeams[1]?.id, away_team: topTeams[2]?.id, home_score: 0, away_score: 0, played: false },
             { id: 'play_g_' + timestamp + '_3', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Gran Final', home_team: null, away_team: null, home_score: 0, away_score: 0, played: false }
-          );
-        } else if (topTeams.length === 2) {
-          newBrackets.push(
-            { id: 'play_g_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'gold', round_name: 'Oro - Gran Final', home_team: topTeams[0]?.id, away_team: topTeams[1]?.id, home_score: 0, away_score: 0, played: false }
-          );
-        } else {
-          return alert("Configura una cantidad válida de clasificados en las opciones del torneo (2 o 4).");
+          ]);
         }
-      } else if (cupType === 'silver') {
+      } else {
         const remainingTeams = stats.slice(goldCount);
-        if (remainingTeams.length < 2) {
-          return alert("No hay suficientes equipos restantes para armar la Copa de Plata.");
-        }
-        if (remainingTeams.length >= 4) {
-          newBrackets.push(
-            { id: 'play_s_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Semifinal 1', home_team: remainingTeams[0]?.id, away_team: remainingTeams[3]?.id, home_score: 0, away_score: 0, played: false },
-            { id: 'play_s_' + timestamp + '_2', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Semifinal 2', home_team: remainingTeams[1]?.id, away_team: remainingTeams[2]?.id, home_score: 0, away_score: 0, played: false },
-            { id: 'play_s_' + timestamp + '_3', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Gran Final', home_team: null, away_team: null, home_score: 0, away_score: 0, played: false }
-          );
-        } else {
-          newBrackets.push(
+        if (remainingTeams.length >= 2) {
+          await supabaseClient.from('torneos_data').insert([
             { id: 'play_s_' + timestamp + '_1', type: 'match', category_id: activeCategoryId, is_playoff: true, cup_type: 'silver', round_name: 'Plata - Gran Final', home_team: remainingTeams[0]?.id, away_team: remainingTeams[1]?.id, home_score: 0, away_score: 0, played: false }
-          );
+          ]);
         }
       }
 
-      for (let nb of newBrackets) {
-        await supabaseClient.from('torneos_data').insert([nb]);
-      }
-
-      alert(`¡Llaves de Copa de ${cupType === 'gold' ? 'Oro' : 'Plata'} generadas con éxito!`);
       await loadAdminData();
+      alert(`¡Copa de ${cupType === 'gold' ? 'Oro' : 'Plata'} generada!`);
     }
 
-    function togglePlayoffOptions(isChecked) {
-      document.getElementById('playoffOptionsContainer').style.display = isChecked ? 'block' : 'none';
-    }
-
-    function toggleTournamentFormatOptions(formatVal) {
-      document.getElementById('groupFormatOptionsContainer').style.display = (formatVal === 'cup') ? 'block' : 'none';
-    }
+    function togglePlayoffOptions(isChecked) { document.getElementById('playoffOptionsContainer').style.display = isChecked ? 'block' : 'none'; }
+    function toggleTournamentFormatOptions(formatVal) { document.getElementById('groupFormatOptionsContainer').style.display = (formatVal === 'cup') ? 'block' : 'none'; }
 
     function openCategoryModal(isEdit) {
       document.getElementById('catModalTitle').textContent = isEdit ? 'Editar Torneo' : 'Crear Torneo';
@@ -2541,37 +2302,14 @@
         document.getElementById('ptsDraw').value = cat.pts_draw ?? 1;
         document.getElementById('ptsLost').value = cat.pts_lost ?? 0;
         document.getElementById('tieBreakerCriteria').value = cat.tie_breaker || 'gd';
-        
-        document.getElementById('modalCatFile').value = '';
-        
-        const tType = cat.tournament_type || 'league';
-        document.getElementById('modalCatType').value = tType;
-        toggleTournamentFormatOptions(tType);
-
-        if (cat.group_config) {
-          document.getElementById('modalGroupCount').value = cat.group_config.count || 2;
-        }
-
+        document.getElementById('modalCatType').value = cat.tournament_type || 'league';
+        toggleTournamentFormatOptions(cat.tournament_type || 'league');
         document.getElementById('modalCatMaxTeams').value = cat.max_teams || 8;
-        
-        const hasP = cat.has_playoffs || false;
-        document.getElementById('modalHasPlayoffs').checked = hasP;
-        document.getElementById('playoffOptionsContainer').style.display = hasP ? 'block' : 'none';
-        if (cat.playoff_config) {
-          document.getElementById('modalPlayoffCount').value = cat.playoff_config.count || 4;
-        }
+        document.getElementById('modalHasPlayoffs').checked = cat.has_playoffs || false;
+        document.getElementById('playoffOptionsContainer').style.display = cat.has_playoffs ? 'block' : 'none';
       } else {
         document.getElementById('modalCatId').value = '';
         document.getElementById('modalCatName').value = '';
-        document.getElementById('modalCatColor').value = '#16a34a';
-        document.getElementById('modalCardRules').value = 'standard';
-        document.getElementById('ptsWin').value = 3;
-        document.getElementById('ptsDraw').value = 1;
-        document.getElementById('ptsLost').value = 0;
-        document.getElementById('tieBreakerCriteria').value = 'gd';
-        document.getElementById('modalCatFile').value = '';
-        document.getElementById('modalCatType').value = 'league';
-        toggleTournamentFormatOptions('league');
         document.getElementById('modalHasPlayoffs').checked = false;
         document.getElementById('playoffOptionsContainer').style.display = 'none';
       }
@@ -2587,73 +2325,39 @@
       const pts_draw = parseInt(document.getElementById('ptsDraw').value) || 1;
       const pts_lost = parseInt(document.getElementById('ptsLost').value) || 0;
       const tie_breaker = document.getElementById('tieBreakerCriteria').value;
-
       const tournament_type = document.getElementById('modalCatType').value;
       const max_teams = parseInt(document.getElementById('modalCatMaxTeams').value) || 8;
       const fileInput = document.getElementById('modalCatFile');
-      
       const group_config = tournament_type === 'cup' ? { count: parseInt(document.getElementById('modalGroupCount').value) || 2 } : null;
       const has_playoffs = document.getElementById('modalHasPlayoffs').checked;
       const playoff_config = has_playoffs ? { count: parseInt(document.getElementById('modalPlayoffCount').value) || 4 } : null;
 
-      if (!name) return alert("Ingresa un nombre para el torneo.");
+      if (!name) return alert("Ingresa un nombre.");
 
-      let logoUrl = '';
-      if (id) {
-        const existingCat = dbData.categories.find(c => c.id === id);
-        logoUrl = existingCat ? (existingCat.logo || '') : '';
-      }
-
+      let logoUrl = id ? (dbData.categories.find(c => c.id === id)?.logo || '') : '';
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `cat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+        const fileName = `cat_${Date.now()}.${file.name.split('.').pop()}`;
         const { error } = await supabaseClient.storage.from('escudos').upload(fileName, file);
-        if (error) {
-          alert("Error al subir el logo: " + error.message);
-          return;
-        }
-        const { data: publicURLData } = supabaseClient.storage.from('escudos').getPublicUrl(fileName);
-        logoUrl = publicURLData.publicUrl;
+        if (error) { alert("Error: " + error.message); return; }
+        logoUrl = supabaseClient.storage.from('escudos').getPublicUrl(fileName).data.publicUrl;
       }
 
       if (id) {
-        const { error } = await supabaseClient.from('torneos_data').update({ 
-          name, logo: logoUrl, theme_color, card_rules, pts_win, pts_draw, pts_lost, tie_breaker, tournament_type, max_teams, group_config, has_playoffs, playoff_config 
-        }).eq('id', id);
-        if (error) { alert("Error al actualizar: " + error.message); return; }
+        await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, theme_color, card_rules, pts_win, pts_draw, pts_lost, tie_breaker, tournament_type, max_teams, group_config, has_playoffs, playoff_config }).eq('id', id);
       } else {
-        const newCat = { 
-          id: 'cat_' + Date.now(), 
-          type: 'category', 
-          name, 
-          logo: logoUrl,
-          theme_color,
-          card_rules,
-          pts_win,
-          pts_draw,
-          pts_lost,
-          tie_breaker,
-          tournament_type, 
-          max_teams, 
-          group_config,
-          has_playoffs, 
-          playoff_config, 
-          fixture_type: tournament_type,
-          owner_email: currentUserEmail 
-        };
-        const { error } = await supabaseClient.from('torneos_data').insert([newCat]);
-        if (error) { alert("Error al crear en Supabase: " + error.message); return; }
+        await supabaseClient.from('torneos_data').insert([{
+          id: 'cat_' + Date.now(), type: 'category', name, logo: logoUrl, theme_color, card_rules, pts_win, pts_draw, pts_lost, tie_breaker, tournament_type, max_teams, group_config, has_playoffs, playoff_config, owner_email: currentUserEmail
+        }]);
       }
-      
+
       closeModal('categoryModal');
       await loadAdminData();
-      alert("¡Torneo guardado con éxito!");
+      alert("¡Torneo guardado!");
     }
 
     async function deleteActiveCategory() {
-      if (!activeCategoryId) return;
-      if (!confirm("¿Eliminar torneo?")) return;
+      if (!activeCategoryId || !confirm("¿Eliminar torneo?")) return;
       await supabaseClient.from('torneos_data').delete().eq('id', activeCategoryId);
       activeCategoryId = null;
       await loadAdminData();
@@ -2667,13 +2371,11 @@
         document.getElementById('modalTeamId').value = team.id;
         document.getElementById('modalTeamName').value = team.name;
         document.getElementById('modalTeamInstagram').value = team.instagram || '';
-        document.getElementById('modalTeamFile').value = '';
       } else {
         document.getElementById('teamModalTitle').textContent = 'Registrar Equipo';
         document.getElementById('modalTeamId').value = '';
         document.getElementById('modalTeamName').value = '';
         document.getElementById('modalTeamInstagram').value = '';
-        document.getElementById('modalTeamFile').value = '';
       }
       openModal('teamModal');
     }
@@ -2684,55 +2386,28 @@
       const instagram = document.getElementById('modalTeamInstagram').value.trim();
       const fileInput = document.getElementById('modalTeamFile');
       
-      if (!activeCategoryId) {
-        alert("Error: No hay ningún torneo seleccionado actualmente. Selecciona o crea uno arriba.");
-        return;
-      }
-      if (!name) return alert("Ingresa el nombre del equipo.");
-
-      let logoUrl = '';
-      if (id) {
-        const existingTeam = dbData.teams.find(t => t.id === id);
-        logoUrl = existingTeam ? (existingTeam.logo || '') : '';
-      }
+      if (!name) return alert("Ingresa el nombre.");
+      let logoUrl = id ? (dbData.teams.find(t => t.id === id)?.logo || '') : '';
 
       if (fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
+        const fileName = `team_${Date.now()}.${file.name.split('.').pop()}`;
         const { error } = await supabaseClient.storage.from('escudos').upload(fileName, file);
-        if (error) {
-          alert("Error al subir la imagen: " + error.message);
-          return;
-        }
-        const { data: publicURLData } = supabaseClient.storage.from('escudos').getPublicUrl(fileName);
-        logoUrl = publicURLData.publicUrl;
+        if (error) { alert("Error: " + error.message); return; }
+        logoUrl = supabaseClient.storage.from('escudos').getPublicUrl(fileName).data.publicUrl;
       }
 
       if (id) {
-        const { error } = await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, instagram }).eq('id', id);
-        if (error) { alert("Error al actualizar: " + error.message); return; }
+        await supabaseClient.from('torneos_data').update({ name, logo: logoUrl, instagram }).eq('id', id);
       } else {
-        const { error } = await supabaseClient.from('torneos_data').insert([{
-          id: 'team_' + Date.now(), 
-          type: 'team', 
-          name, 
-          logo: logoUrl, 
-          instagram,
-          category_id: activeCategoryId, 
-          group_name: ''
+        await supabaseClient.from('torneos_data').insert([{
+          id: 'team_' + Date.now(), type: 'team', name, logo: logoUrl, instagram, category_id: activeCategoryId, group_name: ''
         }]);
-        if (error) { alert("Error al guardar en Supabase: " + error.message); return; }
       }
 
       closeModal('teamModal');
       await loadAdminData();
-      
-      const globalSelect = document.getElementById('globalCategorySelect');
-      if (globalSelect) globalSelect.value = activeCategoryId;
-      renderActiveCategoryViews();
-      
-      alert("¡Equipo guardado y sincronizado con éxito!");
+      alert("¡Equipo guardado!");
     }
 
     function openPlayerModal() {
@@ -2740,7 +2415,6 @@
       if (teams.length === 0) return alert("Registra equipos primero.");
       document.getElementById('modalPlayerTeam').innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
       document.getElementById('modalPlayerName').value = '';
-      document.getElementById('modalPlayerPosition').value = 'Jugador';
       openModal('playerModal');
     }
 
@@ -2748,107 +2422,68 @@
       const team_id = document.getElementById('modalPlayerTeam').value;
       const name = document.getElementById('modalPlayerName').value.trim();
       const position = document.getElementById('modalPlayerPosition').value;
-      if (!name) return alert("Ingresa el nombre del jugador.");
+      if (!name) return alert("Ingresa el nombre.");
 
-      const newPlayer = {
-        id: 'player_' + Date.now(), 
-        type: 'player', 
-        name, 
-        position,
-        team_id, 
-        category_id: activeCategoryId
-      };
-
-      const { error } = await supabaseClient.from('torneos_data').insert([newPlayer]);
-      if (error) {
-        alert("Error al guardar jugador: " + error.message);
-        return;
-      }
+      await supabaseClient.from('torneos_data').insert([{
+        id: 'player_' + Date.now(), type: 'player', name, position, team_id, category_id: activeCategoryId
+      }]);
 
       closeModal('playerModal');
       await loadAdminData();
-      alert("¡Jugador agregado con éxito!");
+      alert("¡Jugador agregado!");
     }
 
     function openMatchDetailModal(matchId) {
-      const match = dbData.matches.filter(m => m.id === matchId)[0];
+      const match = dbData.matches.find(m => m.id === matchId);
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
-      
       const hTeam = teams.find(t => t.id === match.home_team) || { name: 'Local' };
       const aTeam = teams.find(t => t.id === match.away_team) || { name: 'Visitante' };
 
       document.getElementById('modalMatchId').value = match.id;
       document.getElementById('mdHomeName').textContent = hTeam.name;
       document.getElementById('mdAwayName').textContent = aTeam.name;
-
       document.getElementById('modalMatchPlayedStatus').value = match.played ? 'true' : 'false';
 
       const details = match.match_details || {};
       const playerStats = details.playerStats || {};
 
-      const hPlayers = dbData.players.filter(p => p.team_id === hTeam.id);
-      document.getElementById('labelHomeTeamTitle').textContent = `Plantel Local (${hTeam.name})`;
-      document.getElementById('homeTeamStatsList').innerHTML = hPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0, blues: 0 };
-        return `
-          <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
-            <div>
-              <span class="font-semibold text-white block truncate w-24">${p.name}</span>
-              <span class="text-[9px] text-emerald-400 font-bold">${p.position || 'Jugador'}</span>
+      function renderTeamStatsList(teamId, containerId) {
+        const players = dbData.players.filter(p => p.team_id === teamId);
+        document.getElementById(containerId).innerHTML = players.map(p => {
+          const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0, blues: 0 };
+          return `
+            <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
+              <div>
+                <span class="font-semibold text-white block truncate w-24">${p.name}</span>
+                <span class="text-[9px] text-emerald-400 font-bold">${p.position || 'Jugador'}</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-center">
+                <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-green-400"></div>
+                <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
+                <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-red-400"></div>
+                <div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-blue-400"></div>
+              </div>
             </div>
-            <div class="flex items-center gap-1.5 text-center">
-              <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-green-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-red-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-blue-400"></div>
-            </div>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores en este equipo.</p>';
+          `;
+        }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores.</p>';
+      }
 
-      const aPlayers = dbData.players.filter(p => p.team_id === aTeam.id);
-      document.getElementById('labelAwayTeamTitle').textContent = `Plantel Visitante (${aTeam.name})`;
-      document.getElementById('awayTeamStatsList').innerHTML = aPlayers.map(p => {
-        const stats = playerStats[p.id] || { goals: 0, yellows: 0, reds: 0, blues: 0 };
-        return `
-          <div class="bg-[#0b0f0d] p-2 rounded-lg border border-green-900/30 flex items-center justify-between gap-1">
-            <div>
-              <span class="font-semibold text-white block truncate w-24">${p.name}</span>
-              <span class="text-[9px] text-emerald-400 font-bold">${p.position || 'Jugador'}</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-center">
-              <div><span class="text-[8px] text-slate-400 block">Goles</span><input type="number" id="p_g_${p.id}" value="${stats.goals || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-green-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟨 Am.</span><input type="number" id="p_y_${p.id}" value="${stats.yellows || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-yellow-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟥 Roja</span><input type="number" id="p_r_${p.id}" value="${stats.reds || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-red-400"></div>
-              <div><span class="text-[8px] text-slate-400 block">🟦 Azul</span><input type="number" id="p_b_${p.id}" value="${stats.blues || 0}" class="w-8 bg-black text-center border border-green-900 rounded text-blue-400"></div>
-            </div>
-          </div>
-        `;
-      }).join('') || '<p class="text-slate-500 text-[11px]">Sin jugadores en este equipo.</p>';
-
+      renderTeamStatsList(hTeam.id, 'homeTeamStatsList');
+      renderTeamStatsList(aTeam.id, 'awayTeamStatsList');
       openModal('matchDetailModal');
     }
 
     function openSuspensionModal() {
       const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
       if (teams.length === 0) return alert("Registra equipos primero.");
-      
       document.getElementById('modalSuspTeam').innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
       updateSuspensionPlayerOptions(teams[0].id);
-
-      document.getElementById('modalSuspMatches').value = '1';
-      document.getElementById('modalSuspReason').value = '';
       openModal('suspensionModal');
     }
 
     function updateSuspensionPlayerOptions(teamId) {
       const players = dbData.players.filter(p => p.team_id === teamId);
-      const playerSelect = document.getElementById('modalSuspPlayer');
-      if (players.length === 0) {
-        playerSelect.innerHTML = '<option value="">Sin jugadores en este equipo</option>';
-        return;
-      }
-      playerSelect.innerHTML = players.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+      document.getElementById('modalSuspPlayer').innerHTML = players.map(p => `<option value="${p.id}">${p.name}</option>`).join('') || '<option value="">Sin jugadores</option>';
     }
 
     async function saveSuspensionFromModal() {
@@ -2857,29 +2492,18 @@
       const remaining_matches = parseInt(document.getElementById('modalSuspMatches').value) || 1;
       const reason = document.getElementById('modalSuspReason').value;
 
-      if (!playerId) return alert("Selecciona un jugador válido.");
-
+      if (!playerId) return alert("Selecciona un jugador.");
       const team = dbData.teams.find(t => t.id === teamId);
       const player = dbData.players.find(p => p.id === playerId);
 
-      const { error } = await supabaseClient.from('torneos_data').insert([{
-        id: 'susp_' + Date.now(),
-        type: 'suspension',
-        category_id: activeCategoryId,
-        player_name: player ? player.name : 'Jugador',
-        team_name: team ? team.name : '',
-        remaining_matches,
-        reason
+      await supabaseClient.from('torneos_data').insert([{
+        id: 'susp_' + Date.now(), type: 'suspension', category_id: activeCategoryId,
+        player_name: player.name, team_name: team ? team.name : '', remaining_matches, reason
       }]);
-
-      if (error) {
-        alert("Error al guardar sanción: " + error.message);
-        return;
-      }
 
       closeModal('suspensionModal');
       await loadAdminData();
-      alert("¡Sanción guardada con éxito!");
+      alert("¡Sanción guardada!");
     }
 
     async function deleteRecord(id) {
