@@ -18,20 +18,50 @@
     .scrollbar-thin::-webkit-scrollbar-track { background: #0b0f0d; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #166534; border-radius: 2px; }
 
-    /* Estilos estrictos para impresión de Planilla Oficial de Futsal idéntica a la física */
+    /* Estilos estrictos para impresión de Planilla Oficial en hoja A4 exacta */
     @media print {
-      body, html { background: white !important; color: black !important; height: auto !important; overflow: visible !important; font-size: 5px !important; }
+      @page {
+        size: A4;
+        margin: 6mm;
+      }
+      body, html {
+        background: white !important;
+        color: black !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
       body * { visibility: hidden; }
       #officialMatchSheetModal, #officialMatchSheetModal * { visibility: visible; }
       
-      #officialMatchSheetModal { position: absolute; left: 0; top: 0; width: 100% !important; background: white !important; z-index: 99999; display: block !important; padding: 0 !important; }
-      #officialMatchSheetContent { border: 2px solid #000 !important; background: white !important; color: black !important; padding: 1px !important; width: 100% !important; max-width: none !important; box-shadow: none !important; }
+      #officialMatchSheetModal {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: white !important;
+        z-index: 99999 !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #officialMatchSheetContent {
+        border: 2px solid #000 !important;
+        background: white !important;
+        color: black !important;
+        padding: 4px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-shadow: none !important;
+        font-size: 6.5px !important;
+        transform: scale(1);
+      }
       
       .no-print, button, header, .flex.flex-col.gap-3.bg-\[\#0b0f0d\], .hide-on-share { display: none !important; }
       
       span, div, th, td, label { color: black !important; }
-      table { border-color: #000 !important; border-collapse: collapse !important; width: 100% !important; }
-      th, td { border: 1px solid #000 !important; padding: 0.5px !important; }
+      table { border-color: #000 !important; border-collapse: collapse !important; width: 100% !important; table-layout: fixed !important; }
+      th, td { border: 1px solid #000 !important; padding: 1px 2px !important; height: 13px !important; overflow: hidden; }
     }
   </style>
 </head>
@@ -62,7 +92,7 @@
       </div>
       <div>
         <h2 class="text-xl font-black text-white">Kancha<span class="text-green-400">Pro</span> Admin</h2>
-        <p class="text-xs text-slate-400 mt-1">Planilla Futsal Oficial (Con Informe e Uniformidad)</p>
+        <p class="text-xs text-slate-400 mt-1">Planilla Futsal Oficial (A4 Perfecta & Celdas Uniformes)</p>
       </div>
       <button onclick="loginWithGoogle()" class="w-full bg-[#0b0f0d] hover:bg-green-950/40 text-white font-semibold py-3 px-4 rounded-xl border border-green-500/30 transition flex items-center justify-center gap-3 shadow-lg text-xs">
         <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
@@ -337,11 +367,11 @@
 
   <!-- ==================== MODALES ==================== -->
   
-  <!-- MODAL PLANILLA OFICIAL DE JUEGO (20 JUGADORES + NÚMEROS VACÍOS UNIFORMES + INFORME ÁRBITRO) -->
+  <!-- MODAL PLANILLA OFICIAL DE JUEGO (ADAPTADA A A4 Y CELDAS ESTRICTAMENTE UNIFORMES) -->
   <div id="officialMatchSheetModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 hidden p-2 overflow-y-auto">
-    <div class="glass-card p-3 rounded-2xl max-w-4xl w-full space-y-2 border border-green-500/30 my-auto text-[7px] bg-white text-black" id="officialMatchSheetContent">
-      <div class="flex justify-between items-center border-b-2 border-black pb-1.5 no-print">
-        <h3 class="text-sm font-black text-green-400">📋 Planilla Oficial de Futsal (Con Informe y Celdas Uniformes)</h3>
+    <div class="glass-card p-2 rounded-xl max-w-4xl w-full space-y-1 border border-green-500/30 my-auto text-[6.5px] bg-white text-black" id="officialMatchSheetContent">
+      <div class="flex justify-between items-center border-b-2 border-black pb-1 no-print">
+        <h3 class="text-sm font-black text-green-400">📋 Planilla Oficial de Futsal (A4 Exacta & Celdas Uniformes)</h3>
         <div class="flex gap-2">
           <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded font-bold text-xs">🖨️ Imprimir / Guardar PDF</button>
           <button onclick="closeModal('officialMatchSheetModal')" class="text-slate-400 hover:text-black font-bold text-sm">✕</button>
@@ -349,10 +379,10 @@
       </div>
 
       <!-- ENCABEZADO OFICIAL -->
-      <div class="border-2 border-black p-1 space-y-0.5 bg-white text-black text-[8px]">
+      <div class="border-2 border-black p-1 space-y-0.5 bg-white text-black text-[7.5px]">
         <div class="flex justify-between items-center border-b border-black pb-0.5 font-bold">
           <div class="flex items-center gap-2">
-            <span class="border border-black px-1 py-0.5 text-[7px] font-black">FUTSAL</span>
+            <span class="border border-black px-1 py-0.5 text-[6.5px] font-black">FUTSAL</span>
             <span id="omsTournamentName">TORNEO: KANCHAPRO</span>
           </div>
           <div>FECHA N°: <span id="omsRoundNum">1</span></div>
@@ -365,164 +395,138 @@
         </div>
       </div>
 
-      <!-- EQUIPO A (20 FILAS - CELDAS UNIFORMES Y NÚMEROS VACÍOS) -->
-      <div class="border-2 border-black space-y-1 bg-white text-black">
-        <div class="bg-gray-200 px-2 py-0.5 font-bold flex justify-between items-center border-b border-black text-[9px]">
+      <!-- EQUIPO A (20 FILAS - ALTURA Y ANCHO ESTRICTAMENTE UNIFORMES) -->
+      <div class="border-2 border-black space-y-0.5 bg-white text-black">
+        <div class="bg-gray-200 px-1.5 py-0.5 font-bold flex justify-between items-center border-b border-black text-[8.5px]">
           <span>EQUIPO "A": <span id="omsHomeTeamName" class="uppercase font-black">LOCAL</span></span>
-          <span class="text-[7px]">D.T: ____________ | A.T: ____________ | P.F: ____________</span>
+          <span class="text-[6.5px]">D.T: ____________ | A.T: ____________ | P.F: ____________</span>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-[7px] border-collapse border border-black text-center" style="table-layout: fixed;">
+          <table class="w-full text-[6.5px] border-collapse border border-black text-center" style="table-layout: fixed;">
             <thead>
               <tr class="bg-gray-100">
-                <th class="border border-black p-0.5 text-left w-[32%]">APELLIDO Y NOMBRES</th>
-                <th class="border border-black p-0.5 w-[5%]">N°</th>
-                <th class="border border-black p-0.5 w-[14%]" colspan="5">FALTAS (1 2 3 4 5)</th>
-                <th class="border border-black p-0.5 w-[8%]" colspan="3">TARJETAS (Am Des Ex)</th>
-                <th class="border border-black p-0.5 w-[16%]" colspan="2">Goles: Juego / Supletorios (1° y 2° Periodo)</th>
-                <th class="border border-black p-0.5 w-[8%]" colspan="2">Extras (1° 2°)</th>
-                <th class="border border-black p-0.5 w-[9%] font-black">Goles (Total)</th>
+                <th class="border border-black p-0.5 text-left w-[32%] h-3">APELLIDO Y NOMBRES</th>
+                <th class="border border-black p-0.5 w-[5%] h-3">N°</th>
+                <th class="border border-black p-0.5 w-[14%] h-3" colspan="5">FALTAS (1 2 3 4 5)</th>
+                <th class="border border-black p-0.5 w-[8%] h-3" colspan="3">TARJETAS</th>
+                <th class="border border-black p-0.5 w-[16%] h-3" colspan="2">Goles Periodos</th>
+                <th class="border border-black p-0.5 w-[8%] h-3" colspan="2">Extras</th>
+                <th class="border border-black p-0.5 w-[9%] h-3 font-black">Total</th>
               </tr>
             </thead>
             <tbody id="omsHomePlayersTableBody"></tbody>
           </table>
         </div>
-        <!-- BLOQUE INFERIOR EQUIPO A (24 Goles) -->
-        <div class="border-t border-black p-1 space-y-0.5 bg-gray-50 text-[7px]">
+        <!-- BLOQUE INFERIOR EQUIPO A -->
+        <div class="border-t border-black p-1 space-y-0.5 bg-gray-50 text-[6.5px]">
           <div class="grid grid-cols-2 gap-1 border-b border-black pb-0.5">
             <div><b>Faltas equipo:</b> 1° Per: ( ) ( ) ( ) ( ) ( ) | Tiempos: ( ) ( )<br>2° Per: ( ) ( ) ( ) ( ) ( ) | Tiempos: ( ) ( )</div>
             <div class="text-right font-bold text-black flex items-center justify-end gap-2">
               <span>Total Goles A:</span>
-              <span class="border border-black px-2 py-0.5 bg-white text-[9px] font-black" id="omsHomeTotalGoals"></span>
+              <span class="border border-black px-2 py-0.5 bg-white text-[8.5px] font-black" id="omsHomeTotalGoals"></span>
             </div>
           </div>
           <div>
-            <span class="font-bold">Gol n°: (n° autor) minutos'segundos" (24 casilleros):</span>
-            <div class="grid grid-cols-6 sm:grid-cols-8 gap-0.5 text-[6px] mt-0.5 text-center">
-              <span class="border border-black p-0.5">1:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">2:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">3:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">4:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">5:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">6:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">7:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">8:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">9:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">10:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">11:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">12:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">13:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">14:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">15:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">16:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">17:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">18:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">19:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">20:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">21:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">22:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">23:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">24:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 pt-0.5">
-            <span class="font-bold">Definición tiros penales:</span>
-            <div class="flex gap-1">
-              <span class="border border-black px-1.5 py-0.5">1 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">2 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">3 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">4 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">5 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">6 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">7 ( )</span>
+            <span class="font-bold">Gol n° (Autor y Minuto - 24 casilleros):</span>
+            <div class="grid grid-cols-8 gap-0.5 text-[5.5px] mt-0.5 text-center">
+              <span class="border border-black p-0.5">1:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">2:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">3:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">4:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">5:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">6:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">7:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">8:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">9:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">10:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">11:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">12:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">13:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">14:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">15:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">16:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">17:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">18:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">19:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">20:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">21:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">22:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">23:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">24:( )&nbsp;&nbsp;'</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- EQUIPO B (20 FILAS - CELDAS UNIFORMES Y NÚMEROS VACÍOS) -->
-      <div class="border-2 border-black space-y-1 bg-white text-black">
-        <div class="bg-gray-200 px-2 py-0.5 font-bold flex justify-between items-center border-b border-black text-[9px]">
+      <!-- EQUIPO B (20 FILAS - ALTURA Y ANCHO ESTRICTAMENTE UNIFORMES) -->
+      <div class="border-2 border-black space-y-0.5 bg-white text-black">
+        <div class="bg-gray-200 px-1.5 py-0.5 font-bold flex justify-between items-center border-b border-black text-[8.5px]">
           <span>EQUIPO "B": <span id="omsAwayTeamName" class="uppercase font-black">VISITANTE</span></span>
-          <span class="text-[7px]">D.T: ____________ | A.T: ____________ | P.F: ____________</span>
+          <span class="text-[6.5px]">D.T: ____________ | A.T: ____________ | P.F: ____________</span>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-[7px] border-collapse border border-black text-center" style="table-layout: fixed;">
+          <table class="w-full text-[6.5px] border-collapse border border-black text-center" style="table-layout: fixed;">
             <thead>
               <tr class="bg-gray-100">
-                <th class="border border-black p-0.5 text-left w-[32%]">APELLIDO Y NOMBRES</th>
-                <th class="border border-black p-0.5 w-[5%]">N°</th>
-                <th class="border border-black p-0.5 w-[14%]" colspan="5">FALTAS (1 2 3 4 5)</th>
-                <th class="border border-black p-0.5 w-[8%]" colspan="3">TARJETAS (Am Des Ex)</th>
-                <th class="border border-black p-0.5 w-[16%]" colspan="2">Goles: Juego / Supletorios (1° y 2° Periodo)</th>
-                <th class="border border-black p-0.5 w-[8%]" colspan="2">Extras (1° 2°)</th>
-                <th class="border border-black p-0.5 w-[9%] font-black">Goles (Total)</th>
+                <th class="border border-black p-0.5 text-left w-[32%] h-3">APELLIDO Y NOMBRES</th>
+                <th class="border border-black p-0.5 w-[5%] h-3">N°</th>
+                <th class="border border-black p-0.5 w-[14%] h-3" colspan="5">FALTAS (1 2 3 4 5)</th>
+                <th class="border border-black p-0.5 w-[8%] h-3" colspan="3">TARJETAS</th>
+                <th class="border border-black p-0.5 w-[16%] h-3" colspan="2">Goles Periodos</th>
+                <th class="border border-black p-0.5 w-[8%] h-3" colspan="2">Extras</th>
+                <th class="border border-black p-0.5 w-[9%] h-3 font-black">Total</th>
               </tr>
             </thead>
             <tbody id="omsAwayPlayersTableBody"></tbody>
           </table>
         </div>
-        <!-- BLOQUE INFERIOR EQUIPO B (24 Goles) -->
-        <div class="border-t border-black p-1 space-y-0.5 bg-gray-50 text-[7px]">
+        <!-- BLOQUE INFERIOR EQUIPO B -->
+        <div class="border-t border-black p-1 space-y-0.5 bg-gray-50 text-[6.5px]">
           <div class="grid grid-cols-2 gap-1 border-b border-black pb-0.5">
             <div><b>Faltas equipo:</b> 1° Per: ( ) ( ) ( ) ( ) ( ) | Tiempos: ( ) ( )<br>2° Per: ( ) ( ) ( ) ( ) ( ) | Tiempos: ( ) ( )</div>
             <div class="text-right font-bold text-black flex items-center justify-end gap-2">
               <span>Total Goles B:</span>
-              <span class="border border-black px-2 py-0.5 bg-white text-[9px] font-black" id="omsAwayTotalGoals"></span>
+              <span class="border border-black px-2 py-0.5 bg-white text-[8.5px] font-black" id="omsAwayTotalGoals"></span>
             </div>
           </div>
           <div>
-            <span class="font-bold">Gol n°: (n° autor) minutos'segundos" (24 casilleros):</span>
-            <div class="grid grid-cols-6 sm:grid-cols-8 gap-0.5 text-[6px] mt-0.5 text-center">
-              <span class="border border-black p-0.5">1:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">2:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">3:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">4:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">5:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">6:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">7:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">8:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">9:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">10:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">11:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">12:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">13:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">14:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">15:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">16:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">17:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">18:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">19:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">20:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">21:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">22:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">23:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-              <span class="border border-black p-0.5">24:( )&nbsp;&nbsp;'&nbsp;&nbsp;"</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 pt-0.5">
-            <span class="font-bold">Definición tiros penales:</span>
-            <div class="flex gap-1">
-              <span class="border border-black px-1.5 py-0.5">1 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">2 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">3 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">4 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">5 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">6 ( )</span>
-              <span class="border border-black px-1.5 py-0.5">7 ( )</span>
+            <span class="font-bold">Gol n° (Autor y Minuto - 24 casilleros):</span>
+            <div class="grid grid-cols-8 gap-0.5 text-[5.5px] mt-0.5 text-center">
+              <span class="border border-black p-0.5">1:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">2:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">3:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">4:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">5:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">6:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">7:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">8:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">9:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">10:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">11:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">12:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">13:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">14:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">15:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">16:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">17:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">18:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">19:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">20:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">21:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">22:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">23:( )&nbsp;&nbsp;'</span>
+              <span class="border border-black p-0.5">24:( )&nbsp;&nbsp;'</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- SECCIÓN FINAL DE RESULTADOS Y ARBITRAJE -->
-      <div class="border-2 border-black p-1 grid grid-cols-2 gap-2 text-[7px] bg-white text-black">
+      <!-- SECCIÓN FINAL Y ARBITRAJE -->
+      <div class="border-2 border-black p-1 grid grid-cols-2 gap-2 text-[6.5px] bg-white text-black">
         <div class="space-y-0.5 border-r border-black pr-2">
           <div class="font-bold border-b border-black pb-0.5">RESULTADOS Y HORARIOS</div>
           <div>1° Periodo: "A" [ &nbsp;&nbsp;&nbsp; ] - "B" [ &nbsp;&nbsp;&nbsp; ] | Hora com.: _______ final: _______</div>
           <div>2° Periodo: "A" [ &nbsp;&nbsp;&nbsp; ] - "B" [ &nbsp;&nbsp;&nbsp; ] | Hora com.: _______ final: _______</div>
-          <div>1° Per. Extra: "A" [ &nbsp; ] - "B" [ &nbsp; ] | Hora com.: ______ final: ______</div>
-          <div>2° Per. Extra: "A" [ &nbsp; ] - "B" [ &nbsp; ] | Hora com.: ______ final: ______</div>
         </div>
         <div class="space-y-0.5">
           <div class="font-bold border-b border-black pb-0.5 flex justify-between">
@@ -530,28 +534,19 @@
             <span>Con informe: SI / NO</span>
           </div>
           <div>Planillero: _________________________ Firma: ________</div>
-          <div>Cronometrista: _____________________ Firma: ________</div>
           <div>Árbitro 1°: __________________________ Firma: ________</div>
-          <div>Árbitro 2°: __________________________ Firma: ________</div>
         </div>
       </div>
 
-      <!-- SECCIÓN NUEVA: INFORME DE ÁRBITROS O PLANILLEROS -->
-      <div class="border-2 border-black p-1 space-y-1 bg-white text-black text-[7px]">
+      <!-- INFORME DE ÁRBITROS / PLANILLERO -->
+      <div class="border-2 border-black p-1 space-y-0.5 bg-white text-black text-[6.5px]">
         <div class="font-black border-b border-black pb-0.5 flex justify-between items-center">
-          <span>INFORME DE ÁRBITROS / PLANILLERO (Incidentes, expulsiones, amonestaciones técnicas o novedades)</span>
+          <span>INFORME DE ÁRBITROS / PLANILLERO (Incidentes, expulsiones o novedades)</span>
           <span>CON INFORME: [ &nbsp; ] SÍ &nbsp;&nbsp; [ &nbsp; ] NO</span>
         </div>
-        <div class="h-10 border border-black p-1 text-slate-500 italic">
-          Escriba aquí los detalles del informe o observaciones adicionales del encuentro...
+        <div class="h-6 border border-black p-0.5 text-slate-400 italic">
+          Escriba aquí los detalles del informe o observaciones adicionales...
         </div>
-      </div>
-
-      <!-- RESULTADO FINAL -->
-      <div class="border-2 border-black p-1 bg-gray-100 flex justify-between items-center font-black text-[9px]">
-        <span>RESULTADO FINAL:</span>
-        <span>EQUIPO "A": [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]</span>
-        <span>EQUIPO "B": [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]</span>
       </div>
 
     </div>
@@ -1152,7 +1147,7 @@
       renderModeratorsView();
     }
 
-    /* PLANILLA OFICIAL DE FUTSAL CON CELDAS UNIFORMES Y NÚMEROS VACÍOS */
+    /* PLANILLA OFICIAL A4 CON CELDAS ESTRICTAMENTE UNIFORMES Y ALTURA FIJA */
     function openOfficialMatchSheetModal(matchId) {
       const match = dbData.matches.find(m => m.id === matchId);
       if (!match) return;
@@ -1182,18 +1177,22 @@
           const pName = p ? p.name : '';
 
           rowsHtml += `
-            <tr>
-              <td class="border border-black p-0.5 text-left font-semibold truncate max-w-[130px] h-3.5">${pName}</td>
-              <td class="border border-black p-0.5 text-center font-bold"></td>
-              <td class="border border-black p-0.5 text-center w-2"></td><td class="border border-black p-0.5 text-center w-2"></td><td class="border border-black p-0.5 text-center w-2"></td><td class="border border-black p-0.5 text-center w-2"></td><td class="border border-black p-0.5 text-center w-2"></td>
-              <td class="border border-black p-0.5 text-center w-2.5"></td>
-              <td class="border border-black p-0.5 text-center w-2.5"></td>
-              <td class="border border-black p-0.5 text-center w-2.5"></td>
-              <td class="border border-black p-0.5 text-center"></td>
-              <td class="border border-black p-0.5 text-center"></td>
-              <td class="border border-black p-0.5 text-center w-3"></td>
-              <td class="border border-black p-0.5 text-center w-3"></td>
-              <td class="border border-black p-0.5 text-center font-bold"></td>
+            <tr style="height: 14px !important;">
+              <td class="border border-black p-0.5 text-left font-semibold truncate max-w-[120px]" style="height: 14px !important; white-space: nowrap;">${pName}</td>
+              <td class="border border-black p-0.5 text-center font-bold" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center" style="height: 14px !important;"></td>
+              <td class="border border-black p-0.5 text-center font-bold" style="height: 14px !important;"></td>
             </tr>
           `;
         }
