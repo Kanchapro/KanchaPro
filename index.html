@@ -703,7 +703,7 @@
       if (!supabaseClient) return;
       try {
         const [catsRes, teamsRes, playersRes, matchesRes, suspensionsRes, sponsorsRes] = await Promise.all([
-          supabaseClient.from('torneos').select('*'),
+          supabaseClient.from('torneos_data').select('*'), // <-- Cambiado de 'torneos' a 'torneos_data'
           supabaseClient.from('equipos').select('*'),
           supabaseClient.from('jugadores').select('*'),
           supabaseClient.from('partidos').select('*'),
