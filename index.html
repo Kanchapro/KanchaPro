@@ -702,30 +702,23 @@
     async function loadPublicData() {
       if (!supabaseClient) return;
       try {
-        const [
-          { data: cats, error: errCats },
-          { data: teams, error: errTeams },
-          { data: players, error: errPlayers },
-          { data: matches, error: errMatches },
-          { data: suspensions, error: errSusp },
-          { data: sponsors, error: errSpons }
-        ] = await Promise.all([
+        const [catsRes, teamsRes, playersRes, matchesRes, suspensionsRes, sponsorsRes] = await Promise.all([
           supabaseClient.from('torneos').select('*'),
           supabaseClient.from('equipos').select('*'),
           supabaseClient.from('jugadores').select('*'),
           supabaseClient.from('partidos').select('*'),
-          supabaseClient.from('sanciones').select('*').catch(() => ({ data: [] })),
-          supabaseClient.from('sponsors').select('*').catch(() => ({ data: [] }))
+          supabaseClient.from('sanciones').select('*').then(r => r, e => ({ data: [], error: e })),
+          supabaseClient.from('sponsors').select('*').then(r => r, e => ({ data: [], error: e }))
         ]);
 
-        if (errCats) throw errCats;
+        if (catsRes.error) throw catsRes.error;
 
-        pubData.categories = cats || [];
-        pubData.teams = teams || [];
-        pubData.players = players || [];
-        pubData.matches = matches || [];
-        pubData.suspensions = suspensions || [];
-        pubData.sponsors = sponsors || [];
+        pubData.categories = catsRes.data || [];
+        pubData.teams = teamsRes.data || [];
+        pubData.players = playersRes.data || [];
+        pubData.matches = matchesRes.data || [];
+        pubData.suspensions = suspensionsRes.data || [];
+        pubData.sponsors = sponsorsRes.data || [];
 
         const urlParams = new URLSearchParams(window.location.search);
         const requestedTorneoId = urlParams.get('torneo');
