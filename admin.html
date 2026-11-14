@@ -818,25 +818,32 @@ function closeModal(modalId) { document.getElementById(modalId).classList.add('h
 function toggleAccordion(id) { document.getElementById(id).classList.toggle('hidden'); }
 
 window.addEventListener('DOMContentLoaded', async () => {
-await registrarVisita('admin');
+    await registrarVisita('admin');
 
-if (supabaseClient) {
-const { data: { session } } = await supabaseClient.auth.getSession();
-if (session) {
-checkUserPermissions(session);
-}
-}
+    if (supabaseClient) {
+        // 1. Escuchar el evento de autenticación en tiempo real (detecta el retorno de Google)
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session && session.user) {
+                checkUserPermissions(session);
+            }
+        });
+
+        // 2. Verificación inicial de sesión guardada
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+            checkUserPermissions(session);
+        }
+    }
 });
 
 async function checkUserPermissions(session) {
-if (session && session.user && session.user.email) {
-currentUserEmail = session.user.email;
-const badge = document.getElementById('userEmailBadge');
-if (badge) badge.textContent = `👤 ${currentUserEmail}`;
-unlockAdminPanel();
-} else {
-logoutAdmin();
-}
+    if (session && session.user && session.user.email) {
+        currentUserEmail = session.user.email;
+        const badge = document.getElementById('userEmailBadge');
+        if (badge) badge.textContent = `👤 ${currentUserEmail}`;
+        unlockAdminPanel();
+    }
+    // Nota: Se eliminó el 'else { logoutAdmin(); }' para prevenir bucles de recarga infinitos.
 }
 
 async function loginWithGoogle() {
