@@ -1586,14 +1586,87 @@
       const sponsors = dbData.sponsors.filter(s => s.category_id === activeCategoryId);
       document.getElementById('adminSponsorsList').innerHTML = sponsors.map(s => `
         <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex justify-between items-center text-xs">
-          <span class="text-white font-bold">${s.name}</span>
-          <button onclick="deleteRecord('${s.id}')" class="bg-red-600/35 text-red-300 px-2 py-1 rounded">🗑️</button>
+          <div class="flex items-center gap-2">
+            ${s.sponsor_data?.image_url ? `<img src="${s.sponsor_data.image_url}" class="w-8 h-8 object-cover rounded border border-green-500/30">` : '🖼️'}
+            <div>
+              <span class="text-white font-bold block">${s.name}</span>
+              <span class="text-[10px] text-slate-400">${s.sponsor_data?.size || 'responsive'}</span>
+            </div>
+          </div>
+          <button onclick="deleteRecord('${s.id}')" class="bg-red-600/35 text-red-300 px-2 py-1 rounded text-xs">🗑️</button>
         </div>
-      `).join('') || '<p class="text-slate-500 text-xs">Sin banners.</p>';
+      `).join('') || '<p class="text-slate-500 text-xs">Sin banners publicitarios.</p>';
     }
 
-    function openSponsorModal(isEdit, id) { openModal('sponsorModal'); }
-    async function saveSponsorFromModal() { closeModal('sponsorModal'); await loadAdminData(); }
+    function openSponsorModal(isEdit, id) {
+      if (!activeCategoryId) return alert("Selecciona un torneo primero.");
+      if (isEdit && id) {
+        const sponsor = dbData.sponsors.find(s => s.id === id);
+        if (!sponsor) return;
+        document.getElementById('modalSponsorId').value = sponsor.id;
+        document.getElementById('modalSponsorName').value = sponsor.name || '';
+        document.getElementById('modalSponsorSize').value = sponsor.sponsor_data?.size || 'responsive';
+        document.getElementById('modalSponsorLink').value = sponsor.sponsor_data?.link || '';
+      } else {
+        document.getElementById('modalSponsorId').value = '';
+        document.getElementById('modalSponsorName').value = '';
+        document.getElementById('modalSponsorSize').value = 'responsive';
+        document.getElementById('modalSponsorFile').value = '';
+        document.getElementById('modalSponsorLink').value = '';
+      }
+      openModal('sponsorModal');
+    }
+
+    async function saveSponsorFromModal() {
+      const id = document.getElementById('modalSponsorId').value;
+      const name = document.getElementById('modalSponsorName').value.trim();
+      const size = document.getElementById('modalSponsorSize').value;
+      const link = document.getElementById('modalSponsorLink').value.trim();
+      const fileInput = document.getElementById('modalSponsorFile');
+
+      if (!name) return alert("Ingresa el nombre del anunciante.");
+
+      let imageUrl = "";
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          imageUrl = e.target.result;
+          await persistSponsorData(id, name, size, link, imageUrl);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        if (id) {
+          const existing = dbData.sponsors.find(s => s.id === id);
+          imageUrl = existing ? existing.sponsor_data?.image_url : "";
+        }
+        await persistSponsorData(id, name, size, link, imageUrl);
+      }
+    }
+
+    async function persistSponsorData(id, name, size, link, imageUrl) {
+      if (!activeCategoryId) return alert("Selecciona un torneo activo primero.");
+      
+      if (id) {
+        await supabaseClient.from('torneos_data').update({
+          name,
+          sponsor_data: { size, link, image_url: imageUrl }
+        }).eq('id', id);
+      } else {
+        const newId = 'sponsor_' + Date.now();
+        await supabaseClient.from('torneos_data').insert([{
+          id: newId,
+          type: 'sponsor',
+          category_id: activeCategoryId,
+          name,
+          sponsor_data: { size, link, image_url: imageUrl }
+        }]);
+      }
+
+      closeModal('sponsorModal');
+      await loadAdminData();
+      alert("¡Banner publicitario guardado con éxito!");
+    }
 
     function renderModeratorsView() {
       const mods = dbData.moderators.filter(m => m.category_id === activeCategoryId);
