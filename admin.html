@@ -166,14 +166,19 @@
       <div id="adminGroupsContainer" class="space-y-3 pt-2"></div>
     </div>
 
-    <!-- Tab 2: Planteles -->
+    <!-- Tab 2: Planteles (Actualizada con Botón de Carga Masiva) -->
     <div id="adm-players" class="admin-tab-content glass-card rounded-xl p-4 space-y-4 hidden">
       <div class="flex justify-between items-center">
         <div>
           <h3 class="text-sm font-bold text-green-300">Planteles por Equipo</h3>
-          <p class="text-[10px] text-slate-400">Haz clic en un equipo para ver sus jugadores y en un jugador para ver sus estadísticas</p>
+          <p class="text-[10px] text-slate-400">Haz clic en un equipo para ver sus jugadores o usa la carga rápida en caja</p>
         </div>
-        <button onclick="openPlayerModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Jugador</button>
+        <div class="flex gap-2">
+          <button onclick="openBatchPlayerModal()" class="bg-blue-600/40 hover:bg-blue-600/60 text-blue-200 border border-blue-500/40 text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1">
+            <span>📥</span> Carga Masiva (Lista)
+          </button>
+          <button onclick="openPlayerModal()" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg">+ Jugador</button>
+        </div>
       </div>
       <div id="adminRostersContainer" class="space-y-3 max-h-[450px] overflow-y-auto scrollbar-thin pr-1"></div>
     </div>
@@ -832,6 +837,27 @@
       <div class="flex justify-end gap-2 pt-2">
         <button onclick="closeModal('playerModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
         <button onclick="savePlayerFromModal()" class="btn-green px-3 py-1.5 text-white rounded-lg font-bold">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CARGA MASIVA DE JUGADORES (NUEVO) -->
+  <div id="batchPlayerModal" class="fixed inset-0 bg-black/85 flex items-center justify-center z-50 hidden p-4">
+    <div class="glass-card p-5 rounded-2xl max-w-md w-full space-y-3 border border-green-500/30 text-xs">
+      <h3 class="text-sm font-bold text-green-400">📥 Carga Masiva de Plantel</h3>
+      <p class="text-[10px] text-slate-400">Pega o escribe los nombres de los jugadores (uno abajo de otro por línea).</p>
+      <div><label class="block text-[11px] text-slate-300 mb-1">Seleccionar Equipo:</label><select id="modalBatchPlayerTeam" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs"></select></div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Nombres de Jugadores (Uno por línea):</label>
+        <textarea id="modalBatchPlayerNames" rows="8" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg p-2.5 text-white text-xs scrollbar-thin" placeholder="Juan Pérez&#10;Carlos Gómez&#10;Lucas Martínez"></textarea>
+      </div>
+      <div>
+        <label class="block text-[11px] text-slate-300 mb-1">Segunda forma de carga (Separados por coma o punto y coma):</label>
+        <input type="text" id="modalBatchPlayerComma" class="w-full bg-[#0b0f0d] border border-green-900 rounded-lg px-3 py-2 text-white text-xs" placeholder="Ej: Juan Pérez, Carlos Gómez, Lucas Martínez">
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('batchPlayerModal')" class="px-3 py-1.5 bg-slate-800 text-slate-300 rounded-lg">Cancelar</button>
+        <button onclick="saveBatchPlayersFromModal()" class="btn-green px-4 py-1.5 text-white rounded-lg font-bold">Guardar Todos</button>
       </div>
     </div>
   </div>
@@ -1582,7 +1608,6 @@
       `).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones.</p>';
     }
 
-    /* RENDERIZADO DE SPONSORS USANDO COLUMNAS PLANAS */
     function renderSponsorsView() {
       const sponsors = dbData.sponsors.filter(s => s.category_id === activeCategoryId);
       document.getElementById('adminSponsorsList').innerHTML = sponsors.map(s => {
@@ -1652,7 +1677,6 @@
       }
     }
 
-    /* PERSISTENCIA CON COLUMNAS PLANAS */
     async function persistSponsorData(id, name, size, link, imageUrl) {
       if (!activeCategoryId) return alert("Selecciona un torneo activo primero.");
       
@@ -1667,18 +1691,11 @@
 
       if (id) {
         const { error } = await supabaseClient.from('torneos_data').update(payload).eq('id', id);
-        if (error) {
-          console.error("Error al actualizar sponsor:", error);
-          return alert("Error al actualizar el banner: " + error.message);
-        }
+        if (error) return alert("Error al actualizar el banner: " + error.message);
       } else {
-        const newId = 'sponsor_' + Date.now();
-        payload.id = newId;
+        payload.id = 'sponsor_' + Date.now();
         const { error } = await supabaseClient.from('torneos_data').insert([payload]);
-        if (error) {
-          console.error("Error al insertar sponsor:", error);
-          return alert("Error al guardar el banner: " + error.message);
-        }
+        if (error) return alert("Error al guardar el banner: " + error.message);
       }
 
       closeModal('sponsorModal');
@@ -1911,6 +1928,66 @@
       }]);
       closeModal('playerModal');
       await loadAdminData();
+    }
+
+    /* FUNCIONES NUEVAS PARA CARGA MASIVA (UNO ABAJO DE OTRO Y SEGUNDA FORMA) */
+    function openBatchPlayerModal() {
+      const teams = dbData.teams.filter(t => t.category_id === activeCategoryId);
+      if (teams.length === 0) return alert("Registra equipos primero.");
+      document.getElementById('modalBatchPlayerTeam').innerHTML = teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+      document.getElementById('modalBatchPlayerNames').value = '';
+      document.getElementById('modalBatchPlayerComma').value = '';
+      openModal('batchPlayerModal');
+    }
+
+    async function saveBatchPlayersFromModal() {
+      const team_id = document.getElementById('modalBatchPlayerTeam').value;
+      const textBlock = document.getElementById('modalBatchPlayerNames').value;
+      const textComma = document.getElementById('modalBatchPlayerComma').value;
+
+      let playerNames = [];
+
+      // Forma 1: Línea por línea (uno abajo del otro)
+      if (textBlock.trim()) {
+        const lines = textBlock.split('\n');
+        lines.forEach(l => {
+          let clean = l.trim();
+          if (clean) playerNames.push(clean);
+        });
+      }
+
+      // Forma 2: Separados por comas o punto y coma
+      if (textComma.trim()) {
+        const parts = textComma.split(/[,;]+/);
+        parts.forEach(p => {
+          let clean = p.trim();
+          if (clean) playerNames.push(clean);
+        });
+      }
+
+      if (playerNames.length === 0) {
+        return alert("Ingresa al menos un nombre de jugador en la caja de texto o en la segunda forma.");
+      }
+
+      let timestamp = Date.now();
+      let recordsToInsert = playerNames.map((name, idx) => ({
+        id: `player_${timestamp}_${idx}`,
+        type: 'player',
+        name: name,
+        position: 'Jugador',
+        team_id: team_id,
+        category_id: activeCategoryId
+      }));
+
+      const { error } = await supabaseClient.from('torneos_data').insert(recordsToInsert);
+      if (error) {
+        console.error("Error al guardar lote:", error);
+        return alert("Error al guardar los jugadores: " + error.message);
+      }
+
+      closeModal('batchPlayerModal');
+      await loadAdminData();
+      alert(`¡Se agregaron ${playerNames.length} jugadores con éxito al plantel!`);
     }
 
     function openMatchDetailModal(matchId) {
