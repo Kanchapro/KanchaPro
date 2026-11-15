@@ -753,42 +753,38 @@
       const extractedTextarea = document.getElementById('ocrExtractedNames');
 
       statusArea.classList.remove('hidden');
-      statusText.textContent = "Leyendo archivo de imagen...";
+      statusText.textContent = "Cargando imagen...";
 
-      // Convertir a Data URL para evitar restricciones de lectura en móviles
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        const imageDataUrl = e.target.result;
+      // Usar URL temporal directa para evitar bloqueos de lectura en celulares y apps TWA
+      const imageObjectUrl = URL.createObjectURL(file);
+
+      try {
         statusText.textContent = "Procesando imagen con Tesseract OCR...";
 
-        try {
-          const { data: { text } } = await Tesseract.recognize(imageDataUrl, 'spa', {
-            logger: m => {
-              if (m.status === 'recognizing text') {
-                statusText.textContent = `Reconociendo texto: ${Math.round(m.progress * 100)}%`;
-              }
+        const { data: { text } } = await Tesseract.recognize(imageObjectUrl, 'spa', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              statusText.textContent = `Reconociendo texto: ${Math.round(m.progress * 100)}%`;
             }
-          });
+          }
+        });
 
-          statusArea.classList.add('hidden');
-
-          const lines = text.split('\n')
-            .map(l => l.trim())
-            .filter(l => l.length > 2 && !l.toLowerCase().includes('apellidos') && !l.toLowerCase().includes('d.t.') && !l.toLowerCase().includes('faltas'));
-
-          extractedTextarea.value = lines.join('\n');
-          alert("¡Texto extraído con éxito! Revisa la lista y haz clic en Guardar.");
-        } catch (err) {
-          console.error(err);
-          statusArea.classList.add('hidden');
-          alert("Error al procesar la imagen: " + (err.message || err));
-        }
-      };
-      reader.onerror = function() {
+        // Limpiar memoria
+        URL.revokeObjectURL(imageObjectUrl);
         statusArea.classList.add('hidden');
-        alert("No se pudo leer el archivo de imagen seleccionado.");
-      };
-      reader.readAsDataURL(file);
+
+        const lines = text.split('\n')
+          .map(l => l.trim())
+          .filter(l => l.length > 2 && !l.toLowerCase().includes('apellidos') && !l.toLowerCase().includes('d.t.') && !l.toLowerCase().includes('faltas'));
+
+        extractedTextarea.value = lines.join('\n');
+        alert("¡Texto extraído con éxito! Revisa la lista y haz clic en Guardar.");
+      } catch (err) {
+        URL.revokeObjectURL(imageObjectUrl);
+        console.error(err);
+        statusArea.classList.add('hidden');
+        alert("Error al procesar la imagen: " + (err.message || err));
+      }
     }
 
     async function saveOcrExtractedPlayers() {
