@@ -1650,6 +1650,7 @@
       if (id) {
         await supabaseClient.from('torneos_data').update({
           name,
+          category_id: activeCategoryId,
           sponsor_data: { size, link, image_url: imageUrl }
         }).eq('id', id);
       } else {
