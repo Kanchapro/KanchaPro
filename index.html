@@ -44,6 +44,7 @@
         radial-gradient(circle at 100% 100%, rgba(5, 46, 22, 0.4) 0%, transparent 40%);
       background-attachment: fixed;
       -webkit-tap-highlight-color: transparent;
+      padding-bottom: 90px; /* Margen inferior para que el banner fijo no tape el contenido */
     }
     .glass-card {
       background: rgba(6, 15, 10, 0.85);
@@ -93,51 +94,12 @@
       background-size: 200% 100%;
       animation: shimmer 1.5s infinite;
     }
-
-    /* ESTILOS TIPO GOOGLE ADSENSE PARA SPONSORS LOCALES */
-    .adsense-sponsor-container {
-      background: rgba(6, 15, 10, 0.95);
-      border: 1px solid rgba(16, 185, 129, 0.25);
-      border-radius: 12px;
-      padding: 8px 12px;
-      margin: 10px auto;
-      max-width: 728px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      transition: all 0.2s ease;
-    }
-    .adsense-sponsor-container:hover {
-      border-color: rgba(16, 185, 129, 0.5);
-      box-shadow: 0 12px 35px rgba(16, 185, 129, 0.15);
-    }
-    .adsense-badge {
-      font-size: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #94a3b8;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 1px 6px;
-      border-radius: 4px;
-      align-self: flex-end;
-      margin-bottom: 4px;
-      font-weight: 700;
-    }
-    .adsense-banner-img {
-      width: 100%;
-      max-height: 90px;
-      object-fit: contain;
-      border-radius: 8px;
-      background: #030704;
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-black">
 
   <!-- CONTENEDOR DE TOASTS FLOTANTES -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toastContainer" class="fixed bottom-16 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
@@ -469,16 +431,8 @@
 
   </main>
 
-  <!-- FOOTER DE ÉLITE CON SECCIÓN DE ANUNCIOS TIPO ADSENSE -->
-  <footer class="bg-[#030704] border-t border-emerald-950/80 py-6 px-4 text-slate-400 text-[11px] mt-auto max-w-5xl w-full mx-auto space-y-5">
-    
-    <!-- BLOQUE DE PUBLICIDADES TIPO ADSENSE -->
-    <div id="publicSponsorsContainer" class="space-y-2 border-b border-emerald-900/40 pb-5 text-center">
-      <div id="publicSponsorsGrid" class="space-y-3">
-        <!-- Se llena dinámicamente con estilo de anuncios profesionales -->
-      </div>
-    </div>
-
+  <!-- FOOTER DE ÉLITE -->
+  <footer class="bg-[#030704] border-t border-emerald-950/80 py-6 px-4 text-slate-400 text-[11px] max-w-5xl w-full mx-auto space-y-5">
     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-emerald-900/30 pb-4">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -499,6 +453,29 @@
       </div>
     </div>
   </footer>
+
+  <!-- ==================== BANNER PUBLICITARIO FIJO INFERIOR (ANCHO ANCHOR AD) ==================== -->
+  <div id="stickySponsorBanner" class="fixed bottom-0 left-0 right-0 z-50 hidden bg-[#030704]/95 backdrop-blur-md border-t border-emerald-500/30 shadow-[0_-4px_25px_rgba(0,0,0,0.9)] transition-transform duration-300">
+    <div class="max-w-4xl mx-auto relative flex flex-col items-center justify-center py-1.5 px-3">
+      
+      <!-- Barra superior con etiqueta "Publicidad" y botón de minimizar -->
+      <div class="w-full flex justify-between items-center mb-1 px-1">
+        <span class="text-[9px] uppercase tracking-widest text-slate-400 font-semibold flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+          Publicidad • Sponsor Oficial
+        </span>
+        <button onclick="toggleSponsorBanner()" id="sponsorToggleBtn" class="text-[10px] text-slate-400 hover:text-white bg-black/50 px-2 py-0.5 rounded border border-slate-700/60 transition">
+          ▼ Ocultar
+        </button>
+      </div>
+
+      <!-- Contenedor donde se inyecta la imagen/enlace del sponsor -->
+      <div id="stickySponsorContent" class="w-full flex justify-center items-center overflow-hidden transition-all duration-300">
+        <!-- Dinámico -->
+      </div>
+
+    </div>
+  </div>
 
   <!-- MODAL: GENERADOR DE FLYERS / HISTORIAS -->
   <div id="flyerModalContainer" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 hidden p-3 overflow-y-auto backdrop-blur-xl">
@@ -686,6 +663,8 @@
     let pubData = { categories: [], teams: [], players: [], matches: [], suspensions: [], sponsors: [] };
     let currentPublicCatId = null;
     let currentFixtureFilter = 'all';
+    let sponsorRotationInterval = null;
+    let isSponsorMinimized = false;
     const STORAGE_FAV_KEY = 'kanchapro_favorite_tournament';
 
     const flyerBackgrounds = [
@@ -791,7 +770,7 @@
           headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
           document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
           document.getElementById('headerInstagramBtn').classList.add('hidden');
-          renderPublicSponsors(); 
+          renderStickySponsor([]); 
         }
       }
     }
@@ -942,36 +921,87 @@
       renderPublicTeamsAndRosters(teams, players, cat.sport_type === 'futsal');
       renderPublicScorers(players, teams);
       renderPublicDiscipline(players, teams, teamIds);
-      renderPublicSponsors();
+      
+      // Renderizar el banner fijo inferior con los sponsors de este torneo
+      const activeSponsors = pubData.sponsors.filter(s => s.category_id === currentPublicCatId);
+      renderStickySponsor(activeSponsors);
     }
 
-    // RENDERIZADO PROFESIONAL ESTILO GOOGLE ADSENSE
-    function renderPublicSponsors() {
-      const grid = document.getElementById('publicSponsorsGrid');
-      const container = document.getElementById('publicSponsorsContainer');
-      if (!grid || !container) return;
+    /* RENDERIZADO DEL BANNER FIJO INFERIOR (ESTILO GOOGLE ADSENSE ANCHOR AD) */
+    function renderStickySponsor(sponsorsList) {
+      const bannerContainer = document.getElementById('stickySponsorBanner');
+      const contentContainer = document.getElementById('stickySponsorContent');
+      
+      if (!bannerContainer || !contentContainer) return;
 
-      const sponsors = pubData.sponsors.filter(s => s.category_id === currentPublicCatId);
+      if (sponsorRotationInterval) {
+        clearInterval(sponsorRotationInterval);
+        sponsorRotationInterval = null;
+      }
 
-      if (sponsors.length === 0) {
-        container.style.display = 'none';
+      const validSponsors = (sponsorsList || []).filter(s => s.logo || s.sponsor_data?.image_url);
+
+      if (validSponsors.length === 0) {
+        bannerContainer.classList.add('hidden');
+        document.body.style.paddingBottom = '0px';
         return;
       }
 
-      container.style.display = 'block';
-      grid.innerHTML = sponsors.map(s => {
-        const safeLink = s.link ? (s.link.startsWith('http') ? s.link : `https://${s.link}`) : '#';
-        const hasLink = s.link && s.link.trim() !== '';
+      let currentIndex = 0;
 
-        return `
-          <div class="adsense-sponsor-container">
-            <span class="adsense-badge">Anuncio Patrocinado</span>
-            <a href="${safeLink}" ${hasLink ? 'target="_blank"' : ''} title="${s.name}" class="w-full flex justify-center">
-              <img src="${s.logo || FALLBACK_LOGO}" alt="${s.name}" class="adsense-banner-img" onerror="this.src=FALLBACK_LOGO">
-            </a>
-          </div>
-        `;
-      }).join('');
+      function showSponsorAtIndex(idx) {
+        const s = validSponsors[idx];
+        const imgUrl = s.logo || s.sponsor_data?.image_url;
+        const link = s.link || s.sponsor_link || s.sponsor_data?.link || '#';
+        const size = s.sponsor_size || s.sponsor_data?.size || 'responsive';
+
+        let sizeClasses = 'w-full max-h-[60px] sm:max-h-[80px] object-contain'; 
+        if (size === '728x90') {
+          sizeClasses = 'w-full max-w-[728px] h-[55px] sm:h-[80px] object-fill';
+        } else if (size === '320x100') {
+          sizeClasses = 'w-[320px] h-[60px] sm:h-[80px] object-fill';
+        }
+
+        const imgHtml = `<img src="${imgUrl}" alt="${s.name}" class="${sizeClasses} rounded shadow mx-auto block">`;
+
+        if (link && link !== '#' && link.trim() !== '') {
+          const validUrl = link.startsWith('http') ? link : 'https://' + link;
+          contentContainer.innerHTML = `<a href="${validUrl}" target="_blank" rel="noopener noreferrer" class="w-full flex justify-center">${imgHtml}</a>`;
+        } else {
+          contentContainer.innerHTML = imgHtml;
+        }
+
+        if (!isSponsorMinimized) {
+          document.body.style.paddingBottom = '105px';
+        }
+      }
+
+      bannerContainer.classList.remove('hidden');
+      showSponsorAtIndex(currentIndex);
+
+      if (validSponsors.length > 1) {
+        sponsorRotationInterval = setInterval(() => {
+          currentIndex = (currentIndex + 1) % validSponsors.length;
+          showSponsorAtIndex(currentIndex);
+        }, 10000);
+      }
+    }
+
+    function toggleSponsorBanner() {
+      const content = document.getElementById('stickySponsorContent');
+      const btn = document.getElementById('sponsorToggleBtn');
+      if (!content || !btn) return;
+
+      isSponsorMinimized = !isSponsorMinimized;
+      if (isSponsorMinimized) {
+        content.classList.add('hidden');
+        btn.textContent = '▲ Mostrar';
+        document.body.style.paddingBottom = '35px';
+      } else {
+        content.classList.remove('hidden');
+        btn.textContent = '▼ Ocultar';
+        document.body.style.paddingBottom = '105px';
+      }
     }
 
     function renderPublicHorariosClubsGrid() {
