@@ -454,7 +454,7 @@
     </div>
   </footer>
 
-  <!-- ==================== BANNER PUBLICITARIO FIJO INFERIOR (ANCHO ANCHOR AD) ==================== -->
+  <!-- ==================== BANNER PUBLICITARIO FIJO INFERIOR (ESTILO GOOGLE ADSENSE ANCHOR AD) ==================== -->
   <div id="stickySponsorBanner" class="fixed bottom-0 left-0 right-0 z-50 hidden bg-[#030704]/95 backdrop-blur-md border-t border-emerald-500/30 shadow-[0_-4px_25px_rgba(0,0,0,0.9)] transition-transform duration-300">
     <div class="max-w-4xl mx-auto relative flex flex-col items-center justify-center py-1.5 px-3">
       
@@ -922,12 +922,16 @@
       renderPublicScorers(players, teams);
       renderPublicDiscipline(players, teams, teamIds);
       
-      // Renderizar el banner fijo inferior con los sponsors de este torneo
-      const activeSponsors = pubData.sponsors.filter(s => s.category_id === currentPublicCatId);
-      renderStickySponsor(activeSponsors);
+      // Renderizar el banner fijo inferior con los sponsors de este torneo de forma segura
+      try {
+        const activeSponsors = pubData.sponsors.filter(s => s.category_id === currentPublicCatId);
+        renderStickySponsor(activeSponsors);
+      } catch (e) {
+        console.error("Error al renderizar banner fijo de sponsors:", e);
+      }
     }
 
-    /* RENDERIZADO DEL BANNER FIJO INFERIOR (ESTILO GOOGLE ADSENSE ANCHOR AD) */
+    /* RENDERIZADO SEGURO DEL BANNER FIJO INFERIOR (ESTILO GOOGLE ADSENSE ANCHOR AD) */
     function renderStickySponsor(sponsorsList) {
       const bannerContainer = document.getElementById('stickySponsorBanner');
       const contentContainer = document.getElementById('stickySponsorContent');
@@ -962,7 +966,7 @@
           sizeClasses = 'w-[320px] h-[60px] sm:h-[80px] object-fill';
         }
 
-        const imgHtml = `<img src="${imgUrl}" alt="${s.name}" class="${sizeClasses} rounded shadow mx-auto block">`;
+        const imgHtml = `<img src="${imgUrl}" alt="${s.name || 'Sponsor'}" class="${sizeClasses} rounded shadow mx-auto block" onerror="this.src=FALLBACK_LOGO">`;
 
         if (link && link !== '#' && link.trim() !== '') {
           const validUrl = link.startsWith('http') ? link : 'https://' + link;
