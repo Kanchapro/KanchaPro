@@ -344,7 +344,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div>
           <h3 class="text-sm font-bold text-green-300">Publicidad / Banner Sponsor (Pie de Página)</h3>
-          <p class="text-[10px] text-slate-400">Configura banners publicitarios estilo AdSense para el pie de página de este torneo.</p>
+          <p class="text-[10px] text-slate-400">Configura banners publicitarios para el pie de página de este torneo.</p>
         </div>
         <button onclick="openSponsorModal(false)" class="btn-green text-white text-xs font-bold px-3 py-2 rounded-lg shrink-0">+ Nuevo Banner</button>
       </div>
@@ -1582,20 +1582,28 @@
       `).join('') || '<p class="text-slate-500 text-xs">Sin suspensiones.</p>';
     }
 
+    /* RENDERIZADO DE SPONSORS USANDO COLUMNAS PLANAS */
     function renderSponsorsView() {
       const sponsors = dbData.sponsors.filter(s => s.category_id === activeCategoryId);
-      document.getElementById('adminSponsorsList').innerHTML = sponsors.map(s => `
-        <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex justify-between items-center text-xs">
-          <div class="flex items-center gap-2">
-            ${s.sponsor_data?.image_url ? `<img src="${s.sponsor_data.image_url}" class="w-8 h-8 object-cover rounded border border-green-500/30">` : '🖼️'}
-            <div>
-              <span class="text-white font-bold block">${s.name}</span>
-              <span class="text-[10px] text-slate-400">${s.sponsor_data?.size || 'responsive'}</span>
+      document.getElementById('adminSponsorsList').innerHTML = sponsors.map(s => {
+        const imgUrl = s.logo || s.sponsor_data?.image_url;
+        const size = s.sponsor_size || s.sponsor_data?.size || 'responsive';
+        return `
+          <div class="bg-[#0b0f0d] p-3 rounded-xl border border-green-900/40 flex justify-between items-center text-xs">
+            <div class="flex items-center gap-2.5">
+              ${imgUrl ? `<img src="${imgUrl}" class="w-10 h-10 object-cover rounded border border-green-500/30">` : '<div class="w-10 h-10 bg-green-950 flex items-center justify-center rounded">🖼️</div>'}
+              <div>
+                <span class="text-white font-bold block">${s.name}</span>
+                <span class="text-[10px] text-slate-400 uppercase">Formato: ${size}</span>
+              </div>
+            </div>
+            <div class="flex gap-1.5">
+              <button onclick="openSponsorModal(true, '${s.id}')" class="bg-blue-600/35 text-blue-300 px-2 py-1 rounded text-xs">✏️</button>
+              <button onclick="deleteRecord('${s.id}')" class="bg-red-600/35 text-red-300 px-2 py-1 rounded text-xs">🗑️</button>
             </div>
           </div>
-          <button onclick="deleteRecord('${s.id}')" class="bg-red-600/35 text-red-300 px-2 py-1 rounded text-xs">🗑️</button>
-        </div>
-      `).join('') || '<p class="text-slate-500 text-xs">Sin banners publicitarios.</p>';
+        `;
+      }).join('') || '<p class="text-slate-500 text-xs">Sin banners publicitarios configurados.</p>';
     }
 
     function openSponsorModal(isEdit, id) {
@@ -1605,8 +1613,8 @@
         if (!sponsor) return;
         document.getElementById('modalSponsorId').value = sponsor.id;
         document.getElementById('modalSponsorName').value = sponsor.name || '';
-        document.getElementById('modalSponsorSize').value = sponsor.sponsor_data?.size || 'responsive';
-        document.getElementById('modalSponsorLink').value = sponsor.sponsor_data?.link || '';
+        document.getElementById('modalSponsorSize').value = sponsor.sponsor_size || sponsor.sponsor_data?.size || 'responsive';
+        document.getElementById('modalSponsorLink').value = sponsor.sponsor_link || sponsor.sponsor_data?.link || '';
       } else {
         document.getElementById('modalSponsorId').value = '';
         document.getElementById('modalSponsorName').value = '';
@@ -1638,30 +1646,39 @@
       } else {
         if (id) {
           const existing = dbData.sponsors.find(s => s.id === id);
-          imageUrl = existing ? existing.sponsor_data?.image_url : "";
+          imageUrl = existing ? (existing.logo || existing.sponsor_data?.image_url) : "";
         }
         await persistSponsorData(id, name, size, link, imageUrl);
       }
     }
 
+    /* PERSISTENCIA CON COLUMNAS PLANAS */
     async function persistSponsorData(id, name, size, link, imageUrl) {
       if (!activeCategoryId) return alert("Selecciona un torneo activo primero.");
       
+      const payload = {
+        type: 'sponsor',
+        category_id: activeCategoryId,
+        name: name,
+        sponsor_size: size,
+        sponsor_link: link,
+        logo: imageUrl
+      };
+
       if (id) {
-        await supabaseClient.from('torneos_data').update({
-          name,
-          category_id: activeCategoryId,
-          sponsor_data: { size, link, image_url: imageUrl }
-        }).eq('id', id);
+        const { error } = await supabaseClient.from('torneos_data').update(payload).eq('id', id);
+        if (error) {
+          console.error("Error al actualizar sponsor:", error);
+          return alert("Error al actualizar el banner: " + error.message);
+        }
       } else {
         const newId = 'sponsor_' + Date.now();
-        await supabaseClient.from('torneos_data').insert([{
-          id: newId,
-          type: 'sponsor',
-          category_id: activeCategoryId,
-          name,
-          sponsor_data: { size, link, image_url: imageUrl }
-        }]);
+        payload.id = newId;
+        const { error } = await supabaseClient.from('torneos_data').insert([payload]);
+        if (error) {
+          console.error("Error al insertar sponsor:", error);
+          return alert("Error al guardar el banner: " + error.message);
+        }
       }
 
       closeModal('sponsorModal');
