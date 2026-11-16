@@ -773,6 +773,14 @@
 
         if (requestedTorneoId && pubData.categories.some(c => c.id === requestedTorneoId)) {
           currentPublicCatId = requestedTorneoId;
+        } else {
+          // INTEGRACIÓN CORREGIDA: Si entra en frío, revisa favorito o toma el primer torneo disponible
+          const savedFav = localStorage.getItem(STORAGE_FAV_KEY);
+          if (savedFav && pubData.categories.some(c => c.id === savedFav)) {
+            currentPublicCatId = savedFav;
+          } else if (pubData.categories.length > 0) {
+            currentPublicCatId = pubData.categories[0].id;
+          }
         }
 
         populatePublicCategorySelect();
