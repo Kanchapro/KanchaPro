@@ -1857,6 +1857,7 @@
       } else {
         document.getElementById('modalCatId').value = '';
         document.getElementById('modalCatName').value = '';
+        document.getElementById('modalCatFile').value = '';
       }
       openModal('categoryModal');
     }
@@ -1864,12 +1865,35 @@
     async function saveCategoryFromModal() {
       const id = document.getElementById('modalCatId').value;
       const name = document.getElementById('modalCatName').value.trim();
+      const fileInput = document.getElementById('modalCatFile');
       if (!name) return alert("Ingresa un nombre.");
+
+      let logoUrl = "";
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          logoUrl = e.target.result;
+          await persistCategoryData(id, name, logoUrl);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        if (id) {
+          const existing = dbData.categories.find(c => c.id === id);
+          logoUrl = existing ? existing.logo : "";
+        }
+        await persistCategoryData(id, name, logoUrl);
+      }
+    }
+
+    async function persistCategoryData(id, name, logoUrl) {
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name }).eq('id', id);
+        const updateData = { name };
+        if (logoUrl) updateData.logo = logoUrl;
+        await supabaseClient.from('torneos_data').update(updateData).eq('id', id);
       } else {
         await supabaseClient.from('torneos_data').insert([{
-          id: 'cat_' + Date.now(), type: 'category', name, owner_email: currentUserEmail
+          id: 'cat_' + Date.now(), type: 'category', name, logo: logoUrl, owner_email: currentUserEmail
         }]);
       }
       closeModal('categoryModal');
@@ -1889,9 +1913,13 @@
         const team = dbData.teams.find(t => t.id === teamId);
         document.getElementById('modalTeamId').value = team.id;
         document.getElementById('modalTeamName').value = team.name;
+        document.getElementById('modalTeamFile').value = '';
+        document.getElementById('modalTeamInstagram').value = team.instagram || '';
       } else {
         document.getElementById('modalTeamId').value = '';
         document.getElementById('modalTeamName').value = '';
+        document.getElementById('modalTeamFile').value = '';
+        document.getElementById('modalTeamInstagram').value = '';
       }
       openModal('teamModal');
     }
@@ -1899,12 +1927,36 @@
     async function saveTeamFromModal() {
       const id = document.getElementById('modalTeamId').value;
       const name = document.getElementById('modalTeamName').value.trim();
+      const instagram = document.getElementById('modalTeamInstagram').value.trim();
+      const fileInput = document.getElementById('modalTeamFile');
       if (!name) return alert("Ingresa el nombre.");
+
+      let logoUrl = "";
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+          logoUrl = e.target.result;
+          await persistTeamData(id, name, instagram, logoUrl);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        if (id) {
+          const existing = dbData.teams.find(t => t.id === id);
+          logoUrl = existing ? existing.logo : "";
+        }
+        await persistTeamData(id, name, instagram, logoUrl);
+      }
+    }
+
+    async function persistTeamData(id, name, instagram, logoUrl) {
       if (id) {
-        await supabaseClient.from('torneos_data').update({ name }).eq('id', id);
+        const updateData = { name, instagram };
+        if (logoUrl) updateData.logo = logoUrl;
+        await supabaseClient.from('torneos_data').update(updateData).eq('id', id);
       } else {
         await supabaseClient.from('torneos_data').insert([{
-          id: 'team_' + Date.now(), type: 'team', name, category_id: activeCategoryId, group_name: ''
+          id: 'team_' + Date.now(), type: 'team', name, instagram, logo: logoUrl, category_id: activeCategoryId, group_name: ''
         }]);
       }
       closeModal('teamModal');
