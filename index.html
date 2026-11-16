@@ -408,30 +408,69 @@
         </div>
       </div>
 
+      <!-- SECCIÓN DE TARJETAS (AMARILLAS, AZULES Y ROJAS CON BOTÓN INDIVIDUAL) -->
       <div id="pub-cards" class="public-tab-content glass-card rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl hidden">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 class="text-xs sm:text-sm font-black text-yellow-400 tracking-wider flex items-center gap-2 uppercase">
-            <span class="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse shrink-0 shadow-[0_0_10px_#facc15]"></span> Acumulado de Tarjetas Amarillas
+            <span class="w-2.5 h-2.5 bg-yellow-400 rounded-full animate-pulse shrink-0 shadow-[0_0_10px_#facc15]"></span> Acumulado General de Tarjetas
           </h3>
           <button onclick="captureTournamentScreenshot('captureAreaCards', 'Control_Tarjetas')" class="btn-theme text-black font-black text-[11px] px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-xl bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 w-full sm:w-auto justify-center">
-            📸 Compartir / Enviar a WhatsApp
+            📸 Compartir Reporte General
           </button>
         </div>
-        <div id="captureAreaCards" class="space-y-4 bg-[#030704] p-4 sm:p-5 rounded-2xl border border-emerald-900/60 shadow-2xl relative">
+        
+        <div id="captureAreaCards" class="space-y-6 bg-[#030704] p-4 sm:p-5 rounded-2xl border border-emerald-900/60 shadow-2xl relative">
           <div class="flex items-start justify-between border-b border-emerald-900/50 pb-3.5 mb-3 gap-3">
             <div class="flex items-start gap-3 min-w-0 flex-1">
               <div id="captureLogoCards" class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/50 flex items-center justify-center overflow-hidden shrink-0 mt-0.5 shadow">
                 <img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">
               </div>
               <div class="min-w-0 flex-1 space-y-0.5">
-                <h4 class="text-xs sm:text-sm font-black text-yellow-400 uppercase tracking-wider leading-tight">Acumulado de Tarjetas Amarillas</h4>
+                <h4 class="text-xs sm:text-sm font-black text-yellow-400 uppercase tracking-wider leading-tight">Control de Tarjetas y Amonestaciones</h4>
                 <span id="captureSubtitleCards" class="text-[10px] text-slate-300 font-bold uppercase block leading-tight whitespace-normal break-words">KanchaPro — Portal Oficial</span>
               </div>
             </div>
           </div>
+
+          <!-- 🟨 TARJETAS AMARILLAS -->
           <div class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/50 space-y-3 shadow-inner">
-            <div id="pubYellowCardsList" class="space-y-2 max-h-[500px] overflow-y-auto scrollbar-thin pr-1"></div>
+            <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+              <h4 class="font-black text-yellow-400 text-xs flex items-center gap-2 uppercase tracking-wider">🟨 Acumulado de Tarjetas Amarillas</h4>
+              <button onclick="captureScreenshot('yellowCardsSection', 'Tarjetas_Amarillas.png')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 rounded-lg font-bold border border-yellow-500/30 transition flex items-center gap-1">
+                <span>📸</span> Compartir Amarillas
+              </button>
+            </div>
+            <div id="yellowCardsSection" class="space-y-2">
+              <div id="pubYellowCardsList" class="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin pr-1"></div>
+            </div>
           </div>
+
+          <!-- 🟦 TARJETAS AZULES -->
+          <div class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/50 space-y-3 shadow-inner">
+            <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+              <h4 class="font-black text-blue-400 text-xs flex items-center gap-2 uppercase tracking-wider">🟦 Acumulado de Tarjetas Azules</h4>
+              <button onclick="captureScreenshot('blueCardsSection', 'Tarjetas_Azules.png')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg font-bold border border-blue-500/30 transition flex items-center gap-1">
+                <span>📸</span> Compartir Azules
+              </button>
+            </div>
+            <div id="blueCardsSection" class="space-y-2">
+              <div id="pubBlueCardsList" class="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin pr-1"></div>
+            </div>
+          </div>
+
+          <!-- 🟥 TARJETAS ROJAS -->
+          <div class="bg-[#06120a] p-3.5 rounded-xl border border-emerald-900/50 space-y-3 shadow-inner">
+            <div class="flex items-center justify-between border-b border-emerald-900/40 pb-2">
+              <h4 class="font-black text-red-400 text-xs flex items-center gap-2 uppercase tracking-wider">🟥 Acumulado de Tarjetas Rojas</h4>
+              <button onclick="captureScreenshot('redCardsSection', 'Tarjetas_Rojas.png')" class="no-capture-btn text-[9px] px-2.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg font-bold border border-red-500/30 transition flex items-center gap-1">
+                <span>📸</span> Compartir Rojas
+              </button>
+            </div>
+            <div id="redCardsSection" class="space-y-2">
+              <div id="pubRedCardsList" class="space-y-2 max-h-[300px] overflow-y-auto scrollbar-thin pr-1"></div>
+            </div>
+          </div>
+
           <div class="text-right pt-3 border-t border-emerald-900/40 flex justify-between items-center">
             <span class="text-[9px] text-slate-500 font-bold tracking-widest uppercase">Control Disciplinario</span>
             <span class="text-[9px] text-emerald-500 font-black tracking-widest uppercase">KANCHAPRO.COM</span>
@@ -1692,20 +1731,29 @@
 
     function renderPublicDiscipline(players, teams, teamIds) {
       let yellowMap = {};
+      let blueMap = {};
+      let redMap = {};
 
       players.forEach(p => {
-        let totalY = 0;
+        let totalY = 0, totalB = 0, totalR = 0;
         pubData.matches.forEach(m => {
           const st = m.match_details?.playerStats?.[p.id];
           if (st) {
             totalY += (st.yellows || 0);
+            totalB += (st.blues || 0);
+            totalR += (st.reds || 0);
           }
         });
         if (totalY > 0) yellowMap[p.id] = { player: p, count: totalY };
+        if (totalB > 0) blueMap[p.id] = { player: p, count: totalB };
+        if (totalR > 0) redMap[p.id] = { player: p, count: totalR };
       });
 
       const yellowsSorted = Object.values(yellowMap).sort((a,b) => b.count - a.count);
+      const bluesSorted = Object.values(blueMap).sort((a,b) => b.count - a.count);
+      const redsSorted = Object.values(redMap).sort((a,b) => b.count - a.count);
 
+      // Renderizar Tarjetas Amarillas
       document.getElementById('pubYellowCardsList').innerHTML = yellowsSorted.length > 0 ? yellowsSorted.map(item => {
         const t = teams.find(x => x.id === item.player.team_id);
         return `
@@ -1718,6 +1766,34 @@
           </div>
         `;
       }).join('') : '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas amarillas registradas.</p>';
+
+      // Renderizar Tarjetas Azules
+      document.getElementById('pubBlueCardsList').innerHTML = bluesSorted.length > 0 ? bluesSorted.map(item => {
+        const t = teams.find(x => x.id === item.player.team_id);
+        return `
+          <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
+            <div class="min-w-0">
+              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
+              <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? t.name : ''}</span>
+            </div>
+            <span class="font-black text-blue-400 text-xs shrink-0 align-top bg-black px-2.5 py-1 rounded-lg border border-blue-900/50 shadow">🟦 ${item.count}</span>
+          </div>
+        `;
+      }).join('') : '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas azules registradas.</p>';
+
+      // Renderizar Tarjetas Rojas
+      document.getElementById('pubRedCardsList').innerHTML = redsSorted.length > 0 ? redsSorted.map(item => {
+        const t = teams.find(x => x.id === item.player.team_id);
+        return `
+          <div class="flex justify-between items-center bg-[#030704] p-2.5 rounded-xl border border-emerald-900/40 text-xs gap-3 shadow-md">
+            <div class="min-w-0">
+              <span class="font-black text-white text-xs block leading-snug break-words">${item.player.name}</span>
+              <span class="text-[10px] text-slate-400 font-medium block leading-snug break-words">${t ? t.name : ''}</span>
+            </div>
+            <span class="font-black text-red-400 text-xs shrink-0 align-top bg-black px-2.5 py-1 rounded-lg border border-red-900/50 shadow">🟥 ${item.count}</span>
+          </div>
+        `;
+      }).join('') : '<p class="text-slate-400 text-xs text-center py-4 italic">Sin tarjetas rojas registradas.</p>';
 
       const suspensions = pubData.suspensions.filter(s => s.category_id === currentPublicCatId);
       document.getElementById('pubSuspensionsList').innerHTML = suspensions.map(s => `
