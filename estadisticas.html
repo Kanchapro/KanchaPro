@@ -81,31 +81,36 @@
         </div>
       </div>
       <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <span id="liveIndicator" class="text-[10px] bg-green-950/80 text-green-400 px-2.5 py-1 rounded-full border border-green-500/30 font-bold flex items-center gap-1.5 animate-pulse-subtle">🟢 En vivo</span>
         <button onclick="loadStats()" class="text-xs bg-emerald-600/20 text-emerald-300 px-3 py-2 rounded-xl border border-emerald-500/30 hover:bg-emerald-600/30 transition font-bold flex items-center gap-1.5">🔄 Actualizar</button>
         <a href="admin.html" class="text-xs bg-emerald-600/20 text-emerald-300 px-3 py-2 rounded-xl border border-emerald-500/30 font-bold hover:bg-emerald-600/30 transition shadow-sm">← Admin</a>
         <button onclick="logout()" class="text-xs bg-red-950/40 text-red-300 px-3 py-2 rounded-xl border border-red-500/30 font-bold hover:bg-red-900/50 transition shadow-sm">Salir</button>
       </div>
     </header>
 
-    <!-- TRÁFICO PRINCIPAL DE PÁGINAS -->
+    <!-- TRÁFICO PRINCIPAL DE PÁGINAS Y ACCIONES -->
     <div class="space-y-3">
-      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">🌐 Visitas por Tipo de Pantalla</h3>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">🌐 Visitas y Acciones de Interacción</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div class="glass-card p-4 rounded-xl space-y-1 border border-green-500/30 text-center">
-          <span class="text-[10px] text-slate-400 font-bold uppercase block">Portal Público (Index)</span>
-          <div id="indexVisitsCount" class="text-2xl sm:text-3xl font-black text-green-400 animate-pulse-subtle">...</div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase block">Portal (Index)</span>
+          <div id="indexVisitsCount" class="text-2xl sm:text-3xl font-black text-green-400">...</div>
         </div>
         <div class="glass-card p-4 rounded-xl space-y-1 border border-blue-500/30 text-center">
           <span class="text-[10px] text-slate-400 font-bold uppercase block">Panel Admin</span>
-          <div id="adminVisitsCount" class="text-2xl sm:text-3xl font-black text-blue-400 animate-pulse-subtle">...</div>
+          <div id="adminVisitsCount" class="text-2xl sm:text-3xl font-black text-blue-400">...</div>
         </div>
         <div class="glass-card p-4 rounded-xl space-y-1 border border-purple-500/30 text-center">
-          <span class="text-[10px] text-slate-400 font-bold uppercase block">Vistas a Torneos</span>
-          <div id="tournamentVisitsCount" class="text-2xl sm:text-3xl font-black text-purple-400 animate-pulse-subtle">...</div>
+          <span class="text-[10px] text-slate-400 font-bold uppercase block">Vistas Torneos</span>
+          <div id="tournamentVisitsCount" class="text-2xl sm:text-3xl font-black text-purple-400">...</div>
         </div>
-        <div class="glass-card p-4 rounded-xl space-y-1 border border-yellow-500/30 text-center">
+        <div class="glass-card p-4 rounded-xl space-y-1 border border-amber-500/30 text-center">
+          <span class="text-[10px] text-slate-400 font-bold uppercase block">📤 Clics Compartir</span>
+          <div id="totalSharesCount" class="text-2xl sm:text-3xl font-black text-amber-400">...</div>
+        </div>
+        <div class="glass-card p-4 rounded-xl space-y-1 border border-yellow-500/30 text-center col-span-2 sm:col-span-1">
           <span class="text-[10px] text-slate-400 font-bold uppercase block">Total Registrado</span>
-          <div id="totalVisitsCount" class="text-2xl sm:text-3xl font-black text-yellow-400 animate-pulse-subtle">...</div>
+          <div id="totalVisitsCount" class="text-2xl sm:text-3xl font-black text-yellow-400">...</div>
         </div>
       </div>
     </div>
@@ -119,7 +124,7 @@
           <span class="text-[10px] text-slate-400 italic">Dispositivos de acceso</span>
         </div>
         <div id="deviceStatsContainer" class="text-xs text-slate-300 space-y-2">
-          <p class="text-xs text-slate-500 italic">Calculando métricas de dispositivos...</p>
+          <p class="text-xs text-slate-500 italic">Calculando métricas...</p>
         </div>
       </div>
 
@@ -171,7 +176,7 @@
       </div>
     </div>
 
-    <!-- RESUMEN TÉCNICO DE TORNEOS (COMPACTO Y SECUNDARIO) -->
+    <!-- RESUMEN TÉCNICO DE TORNEOS -->
     <div class="glass-card p-4 rounded-2xl space-y-2 border border-slate-800 opacity-80 hover:opacity-100 transition">
       <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">📊 Resumen General del Sistema (Datos Internos)</span>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
@@ -225,11 +230,23 @@
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('statsMainContent').classList.remove('hidden');
       loadStats();
+      setupRealtimeListener();
     }
 
     function logout() {
       sessionStorage.removeItem('kancha_stats_auth');
       location.reload();
+    }
+
+    // Configurar tiempo real para auto-actualización sin recargar
+    function setupRealtimeListener() {
+      if (!supabaseClient) return;
+      supabaseClient
+        .channel('public:visitor_stats')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'visitor_stats' }, payload => {
+          loadStats();
+        })
+        .subscribe();
     }
 
     async function loadStats() {
@@ -248,7 +265,6 @@
         const players = allData ? allData.filter(x => x.type === 'player') : [];
         const matches = allData ? allData.filter(x => x.type === 'match') : [];
 
-        // Datos Internos Compactos
         document.getElementById('statTotalCategories').textContent = categories.length;
         document.getElementById('statTotalTeams').textContent = teams.length;
         document.getElementById('statTotalPlayers').textContent = players.length;
@@ -259,11 +275,11 @@
         });
         document.getElementById('statTotalGoals').textContent = totalGoals;
 
-        // --- PROCESAMIENTO DE ANALÍTICA DE TRÁFICO ---
         let indexVisits = 0;
         let adminVisits = 0;
         let tournamentVisits = 0;
-        let totalVisits = statsData ? statsData.length : 0;
+        let shareClicks = 0;
+        let totalVisits = 0;
 
         let deviceCounts = { mobile: 0, desktop: 0, tablet: 0, other: 0 };
         let sectionCounts = {};
@@ -274,6 +290,14 @@
         if (statsData) {
           statsData.forEach(row => {
             let sec = row.page_type || 'index';
+            
+            // Contabilizar si es un evento de compartir
+            if (sec === 'share' || row.is_share) {
+              shareClicks++;
+              return; 
+            }
+
+            totalVisits++;
             if (sec === 'index') indexVisits++;
             else if (sec === 'admin') adminVisits++;
             else if (row.category_id) tournamentVisits++;
@@ -299,9 +323,9 @@
         document.getElementById('indexVisitsCount').textContent = indexVisits;
         document.getElementById('adminVisitsCount').textContent = adminVisits;
         document.getElementById('tournamentVisitsCount').textContent = tournamentVisits;
+        document.getElementById('totalSharesCount').textContent = shareClicks;
         document.getElementById('totalVisitsCount').textContent = totalVisits;
 
-        // Dispositivos
         const totalDevs = Math.max(1, totalVisits);
         document.getElementById('deviceStatsContainer').innerHTML = `
           <div class="flex justify-between bg-[#050806] p-3 rounded-xl border border-green-900/40 items-center">
@@ -319,7 +343,6 @@
           </div>` : ''}
         `;
 
-        // Secciones
         const sortedSections = Object.entries(sectionCounts).sort((a, b) => b[1] - a[1]);
         document.getElementById('sectionsStatsContainer').innerHTML = sortedSections.length === 0 
           ? '<p class="text-xs text-slate-500 italic">Sin registros de navegación.</p>' 
@@ -330,7 +353,6 @@
             </div>
           `).join('');
 
-        // Franja Horaria
         document.getElementById('hourlyStatsContainer').innerHTML = Object.entries(hourlyCounts).map(([range, count]) => `
           <div class="flex justify-between bg-[#050806] p-2.5 rounded-xl border border-green-900/40 items-center text-xs">
             <span>🌆 ${range}</span> 
@@ -338,7 +360,6 @@
           </div>
         `).join('');
 
-        // Categorías / Torneos & Regiones
         categories.forEach(cat => {
           let region = cat.region || cat.zone || 'Presidencia Roque Sáenz Peña y Zona';
           if (!regionStats[region]) regionStats[region] = { visits: 0, tournaments: 0 };
@@ -356,7 +377,6 @@
           });
         }
 
-        // Tabla Regiones
         document.getElementById('regionsStatsContainer').innerHTML = Object.keys(regionStats).length === 0
           ? '<p class="text-xs text-slate-500 italic">Sin datos regionales.</p>'
           : `
@@ -382,7 +402,6 @@
             </div>
           `;
 
-        // Ranking Torneos
         const sortedTournaments = Object.values(tournamentCounts).sort((a, b) => b.count - a.count);
         document.getElementById('tournamentsStatsContainer').innerHTML = sortedTournaments.length === 0
           ? '<p class="text-xs text-slate-500 italic">No hay torneos registrados.</p>'
