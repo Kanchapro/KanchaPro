@@ -144,6 +144,7 @@
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <script>
+    // URL base corregida (sin /rest/v1/)
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
     const FALLBACK_LOGO = "https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png";
@@ -187,7 +188,6 @@
       }
     }
 
-    // --- FUNCIÓN INTEGRADA PARA REGISTRAR CLICS DE COMPARTIR ---
     async function trackShareEvent() {
       if (!supabaseClient) return;
       try {
@@ -224,7 +224,6 @@
           <span class="group-hover:rotate-45 transition-transform duration-300">⚙️</span> 
           <span class="text-[10px] hidden sm:inline font-extrabold tracking-wide">Administración</span>
         </a>
-        <!-- BOTÓN ACTUALIZADO CON TRACKING DE COMPARTIR -->
         <button onclick="trackShareEvent(); shareTournamentWhatsApp();" class="text-[11px] px-3 py-1.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-black font-black rounded-xl transition flex items-center gap-1.5 shadow-[0_4px_15px_rgba(16,185,129,0.3)]" title="Compartir en WhatsApp">
           <span>💬</span> <span class="text-[10px] hidden sm:inline">Compartir</span>
         </button>
@@ -740,23 +739,36 @@
     }
 
     async function loadPublicData() {
-      if (!supabaseClient) return;
+      if (!supabaseClient) {
+        showToast("Error de conexión con Supabase", "error");
+        return;
+      }
       try {
         const { data: allData, error } = await supabaseClient.from('torneos_data').select('*');
         if (error) throw error;
 
         const rows = allData || [];
+        console.log("Datos obtenidos de Supabase:", rows);
 
-        pubData.categories = rows.filter(r => r.type === 'category' || r.type === 'torneo' || r.type === 'categoria' || r.type === 'tournament' || !r.type);
-        pubData.teams = rows.filter(r => r.type === 'team');
-        pubData.players = rows.filter(r => r.type === 'player');
-        pubData.matches = rows.filter(r => r.type === 'match');
-        pubData.suspensions = rows.filter(r => r.type === 'suspension');
-        pubData.sponsors = rows.filter(r => r.type === 'sponsor');
+        // CORRECCIÓN: Filtro flexible para asegurar que capture categorías/torneos sin importar variaciones en el campo 'type'
+        pubData.categories = rows.filter(r => {
+          const t = (r.type || '').toLowerCase();
+          return t === 'category' || t === 'torneo' || t === 'categoria' || t === 'tournament' || t === '' || !r.type;
+        });
 
+        // Si por alguna razón el filtro estricto deja fuera elementos, respaldamos tomando todo lo que no sea team/player/match/suspension/sponsor
         if (pubData.categories.length === 0 && rows.length > 0) {
-          pubData.categories = rows;
+          pubData.categories = rows.filter(r => !['team', 'player', 'match', 'suspension', 'sponsor'].includes((r.type || '').toLowerCase()));
         }
+        if (pubData.categories.length === 0) {
+          pubData.categories = rows; // Fallback total para mostrar algo si la tabla solo tiene torneos
+        }
+
+        pubData.teams = rows.filter(r => (r.type || '').toLowerCase() === 'team');
+        pubData.players = rows.filter(r => (r.type || '').toLowerCase() === 'player');
+        pubData.matches = rows.filter(r => (r.type || '').toLowerCase() === 'match');
+        pubData.suspensions = rows.filter(r => (r.type || '').toLowerCase() === 'suspension');
+        pubData.sponsors = rows.filter(r => (r.type || '').toLowerCase() === 'sponsor');
 
         const urlParams = new URLSearchParams(window.location.search);
         const requestedTorneoId = urlParams.get('torneo');
@@ -768,7 +780,7 @@
         populatePublicCategorySelect();
       } catch (err) { 
         console.error("Error detallado de Supabase:", err); 
-        showToast("Error: " + (err.message || JSON.stringify(err)), "error");
+        showToast("Error al cargar datos: " + (err.message || JSON.stringify(err)), "error");
       }
     }
 
@@ -782,7 +794,7 @@
       }
       
       select.innerHTML = '<option value="" disabled selected>-- Seleccionar torneo oficial --</option>' + 
-        catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name}</option>`).join('');
+        catsToUse.map(c => `<option value="${c.id}">🏆 ${c.name || c.nombre || 'Torneo sin nombre'}</option>`).join('');
       
       renderFavoritesSection();
 
@@ -836,7 +848,7 @@
           <div class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-sm text-emerald-400 font-black shrink-0 shadow">⭐</div>
           <div class="min-w-0 flex-1">
             <span class="text-[9px] text-yellow-400 font-extrabold uppercase tracking-widest block">Torneo Favorito Guardado</span>
-            <span class="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 truncate block">${favCat.name}</span>
+            <span class="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 truncate block">${favCat.name || favCat.nombre}</span>
           </div>
         </button>
       `;
@@ -845,7 +857,7 @@
     function filterTournaments(query) {
       const q = query.toLowerCase().trim();
       if (!q) { populatePublicCategorySelect(pubData.categories); return; }
-      const filtered = pubData.categories.filter(c => c.name.toLowerCase().includes(q));
+      const filtered = pubData.categories.filter(c => (c.name || c.nombre || '').toLowerCase().includes(q));
       populatePublicCategorySelect(filtered);
     }
 
@@ -927,13 +939,14 @@
       }
 
       const logoHtml = cat.logo ? `<img src="${cat.logo}" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">` : `<img src="${FALLBACK_LOGO}" class="w-full h-full object-cover">`;
+      const catName = cat.name || cat.nombre || 'Torneo';
       
       document.getElementById('headerTournamentLogo').innerHTML = logoHtml;
-      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${cat.name}</span>`;
+      document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span> <span class="text-[9px] text-emerald-400 block font-bold truncate tracking-wider">${catName}</span>`;
 
       const currentUrl = window.location.href;
-      document.getElementById('metaOgTitle').setAttribute('content', `${cat.name} — KanchaPro`);
-      document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${cat.name}.`);
+      document.getElementById('metaOgTitle').setAttribute('content', `${catName} — KanchaPro`);
+      document.getElementById('metaOgDesc').setAttribute('content', `Seguí el fixture, la tabla de posiciones y las estadísticas oficiales de ${catName}.`);
       if (cat.logo) {
         document.getElementById('metaOgImage').setAttribute('content', cat.logo);
       }
@@ -946,7 +959,7 @@
 
       ['captureSubtitleStandings', 'captureSubtitlePlayoffs', 'captureSubtitleScorers', 'captureSubtitleCards', 'captureSubtitleDiscipline'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.textContent = `${cat.name} — Portal Oficial`;
+        if (el) el.textContent = `${catName} — Portal Oficial`;
       });
 
       const teams = pubData.teams.filter(t => t.category_id === currentPublicCatId);
@@ -965,7 +978,6 @@
       renderPublicSponsors();
     }
 
-    // RENDERIZADO PROFESIONAL ESTILO GOOGLE ADSENSE
     function renderPublicSponsors() {
       const grid = document.getElementById('publicSponsorsGrid');
       const container = document.getElementById('publicSponsorsContainer');
@@ -1192,7 +1204,8 @@
       const captureArea = document.getElementById(elementId);
       try {
         const cat = pubData.categories.find(c => c.id === currentPublicCatId);
-        const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
+        const catName = cat ? (cat.name || cat.nombre || 'Torneo') : 'Torneo';
+        const catNameClean = catName.replace(/[^a-zA-Z0-9]/g, '_');
         const filename = `${filePrefix}_${catNameClean}.png`;
 
         const originalWidth = captureArea.style.width;
@@ -1221,7 +1234,7 @@
               await navigator.share({
                 files: [file],
                 title: 'KanchaPro',
-                text: `⚽ *${cat ? cat.name : 'Torneo'}* — Compartido desde KanchaPro 🏆`
+                text: `⚽ *${catName}* — Compartido desde KanchaPro 🏆`
               });
               return;
             } catch (shareErr) {
@@ -1349,7 +1362,8 @@
 
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
       const logoUrl = cat && cat.logo ? cat.logo : FALLBACK_LOGO;
-      const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
+      const catName = cat ? (cat.name || cat.nombre || 'Torneo') : 'Torneo';
+      const catNameClean = catName.replace(/[^a-zA-Z0-9]/g, '_');
 
       container.innerHTML = sortedRoundNames.map((roundName, index) => {
         const safeRoundId = 'round-box-' + roundName.replace(/[^a-zA-Z0-9]/g, '_');
@@ -1434,8 +1448,9 @@
       const captureArea = document.getElementById('flyerCaptureArea');
       captureArea.style.background = randomBg;
 
-      document.getElementById('flyerTournamentTitle').textContent = cat ? cat.name.toUpperCase() : 'COPA PROMOCIONAL';
-      document.getElementById('flyerCategoryBadge').textContent = cat ? (cat.category_name || cat.name).toUpperCase() : 'CATEGORÍA B';
+      const catName = cat ? (cat.name || cat.nombre || 'COPA PROMOCIONAL') : 'COPA PROMOCIONAL';
+      document.getElementById('flyerTournamentTitle').textContent = catName.toUpperCase();
+      document.getElementById('flyerCategoryBadge').textContent = cat ? (cat.category_name || catName).toUpperCase() : 'CATEGORÍA B';
       document.getElementById('flyerRoundName').textContent = (match.round_name || 'FECHA 1').toUpperCase();
 
       document.getElementById('flyerHomeName').textContent = hTeam.name;
@@ -1603,7 +1618,8 @@
       }
 
       const cat = pubData.categories.find(c => c.id === currentPublicCatId);
-      const catNameClean = cat ? cat.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Torneo';
+      const catName = cat ? (cat.name || cat.nombre || 'Torneo') : 'Torneo';
+      const catNameClean = catName.replace(/[^a-zA-Z0-9]/g, '_');
 
       container.innerHTML = teams.map(team => {
         const teamPlayers = players.filter(p => p.team_id === team.id);
