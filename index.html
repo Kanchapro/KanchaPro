@@ -141,6 +141,27 @@
 
   <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
+  <!-- BANNER FLOTANTE DE INSTALACIÓN PWA -->
+  <div id="installBanner" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-5 sm:max-w-sm z-50 hidden glass-card p-4 rounded-2xl border border-emerald-500/50 shadow-2xl bg-[#030704]/95 backdrop-blur-xl flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-500/40 flex items-center justify-center shrink-0 shadow">
+        <img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" class="w-full h-full object-cover rounded-xl" alt="Icon">
+      </div>
+      <div class="min-w-0">
+        <h4 class="text-xs font-black text-white uppercase tracking-wider truncate">Instalar KanchaPro</h4>
+        <p id="installBannerText" class="text-[10px] text-slate-300 font-medium truncate">Accedé más rápido como una App oficial</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <button id="installAppBtn" class="bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-300 hover:to-green-400 text-black font-black text-[11px] px-3.5 py-2 rounded-xl transition shadow-lg">
+        Instalar
+      </button>
+      <button onclick="dismissInstallBanner()" class="text-slate-400 hover:text-white text-xs p-1.5 rounded-lg bg-emerald-950/40">
+        ✕
+      </button>
+    </div>
+  </div>
+
   <script>
     const SUPABASE_URL = "https://vjwiqdlmgjvuychmyiix.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqd2lxZGxtZ2p2dXljaG15aWl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMDg1NDcsImV4cCI6MjEwODU4NDU0N30.bGzlMNgBv-bfriA0SgYzPxNNdfc9REOjjHemtXSiDP0";
@@ -751,6 +772,56 @@
       }
     });
 
+    // ==========================================
+    // LÓGICA DE INSTALACIÓN PWA (ANDROID & iOS)
+    // ==========================================
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      if (!sessionStorage.getItem('pwa_install_dismissed')) {
+        document.getElementById('installBanner').classList.remove('hidden');
+      }
+    });
+
+    // Detección automática para dispositivos iOS (Safari)
+    document.addEventListener("DOMContentLoaded", () => {
+      const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+
+      if (isIos && !isInStandaloneMode && !sessionStorage.getItem('pwa_install_dismissed')) {
+        document.getElementById('installBannerText').textContent = "Tocá 📤 y luego 'Agregar a inicio'";
+        document.getElementById('installAppBtn').textContent = "Ver guía";
+        document.getElementById('installAppBtn').onclick = () => {
+          alert("Para instalar en iPhone/iPad:\n1. Tocá el botón Compartir (📤) en la barra de Safari.\n2. Buscá y seleccioná 'Agregar a inicio' (➕).");
+        };
+        document.getElementById('installBanner').classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('installAppBtn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`Resultado de instalación: ${outcome}`);
+      deferredPrompt = null;
+      document.getElementById('installBanner').classList.add('hidden');
+    });
+
+    function dismissInstallBanner() {
+      document.getElementById('installBanner').classList.add('hidden');
+      sessionStorage.setItem('pwa_install_dismissed', 'true');
+    }
+
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('installBanner').classList.add('hidden');
+      deferredPrompt = null;
+      showToast("¡Aplicación instalada con éxito!", "success");
+    });
+    // ==========================================
+
     function showSkeletons() {
       const select = document.getElementById('publicCategorySelect');
       select.innerHTML = '<option value="" disabled selected>Cargando torneos oficiales...</option>';
@@ -792,12 +863,7 @@
         if (requestedTorneoId && pubData.categories.some(c => c.id === requestedTorneoId)) {
           currentPublicCatId = requestedTorneoId;
         } else {
-          const savedFav = localStorage.getItem(STORAGE_FAV_KEY);
-          if (savedFav && pubData.categories.some(c => c.id === savedFav)) {
-            currentPublicCatId = savedFav;
-          } else if (pubData.categories.length > 0) {
-            currentPublicCatId = pubData.categories[0].id;
-          }
+          currentPublicCatId = null;
         }
 
         populatePublicCategorySelect();
@@ -828,26 +894,16 @@
         updateFavoriteButtonUI();
         renderPublicViews();
       } else {
-        const savedFav = localStorage.getItem(STORAGE_FAV_KEY);
-        if (!filteredCategories && savedFav && pubData.categories.some(c => c.id === savedFav)) {
-          currentPublicCatId = savedFav;
-          select.value = currentPublicCatId;
-          document.getElementById('welcomeFavoritesSection').classList.add('hidden');
-          document.getElementById('tournamentContentArea').classList.remove('hidden');
-          updateFavoriteButtonUI();
-          renderPublicViews();
-        } else {
-          currentPublicCatId = null;
-          select.value = "";
-          document.getElementById('welcomeFavoritesSection').classList.remove('hidden');
-          document.getElementById('tournamentContentArea').classList.add('hidden');
-          
-          const headerLogo = document.getElementById('headerTournamentLogo');
-          headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
-          document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
-          document.getElementById('headerInstagramBtn').classList.add('hidden');
-          renderPublicSponsors(); 
-        }
+        currentPublicCatId = null;
+        select.value = "";
+        document.getElementById('welcomeFavoritesSection').classList.remove('hidden');
+        document.getElementById('tournamentContentArea').classList.add('hidden');
+        
+        const headerLogo = document.getElementById('headerTournamentLogo');
+        headerLogo.innerHTML = `<img src="https://raw.githubusercontent.com/Kanchapro/KanchaPro/main/icon.png" alt="Logo" class="w-full h-full object-cover" onerror="this.src=FALLBACK_LOGO">`;
+        document.getElementById('headerTournamentTitle').innerHTML = `KANCHA<span class="text-white">PRO</span>`;
+        document.getElementById('headerInstagramBtn').classList.add('hidden');
+        renderPublicSponsors(); 
       }
     }
 
