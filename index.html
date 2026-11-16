@@ -750,18 +750,16 @@
         const rows = allData || [];
         console.log("Datos obtenidos de Supabase:", rows);
 
-        // CORRECCIÓN: Filtro flexible para asegurar que capture categorías/torneos sin importar variaciones en el campo 'type'
         pubData.categories = rows.filter(r => {
           const t = (r.type || '').toLowerCase();
           return t === 'category' || t === 'torneo' || t === 'categoria' || t === 'tournament' || t === '' || !r.type;
         });
 
-        // Si por alguna razón el filtro estricto deja fuera elementos, respaldamos tomando todo lo que no sea team/player/match/suspension/sponsor
         if (pubData.categories.length === 0 && rows.length > 0) {
           pubData.categories = rows.filter(r => !['team', 'player', 'match', 'suspension', 'sponsor'].includes((r.type || '').toLowerCase()));
         }
         if (pubData.categories.length === 0) {
-          pubData.categories = rows; // Fallback total para mostrar algo si la tabla solo tiene torneos
+          pubData.categories = rows; 
         }
 
         pubData.teams = rows.filter(r => (r.type || '').toLowerCase() === 'team');
