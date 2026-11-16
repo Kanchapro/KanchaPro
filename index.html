@@ -299,7 +299,7 @@
             📸 Compartir / Enviar a WhatsApp
           </button>
         </div>
-        <div id="captureAreaStandings" class="space-y-4 bg-[#030704] p-4 sm:p-5 rounded-2xl border border-emerald-900/60 shadow-2xl relative">
+        <div id="captureAreaStandings" class="space-y-4 bg-[#030704] p-4 sm:p-5 rounded-2xl border border-emerald-900/60 shadow-2xl relative w-full overflow-x-hidden">
           <div class="flex items-start justify-between border-b border-emerald-900/50 pb-3.5 mb-3 gap-3">
             <div class="flex items-start gap-3 min-w-0 flex-1">
               <div id="captureLogoStandings" class="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-500/50 flex items-center justify-center overflow-hidden shrink-0 mt-0.5 shadow">
@@ -311,7 +311,7 @@
               </div>
             </div>
           </div>
-          <div id="publicStandingsContainer" class="space-y-4"></div>
+          <div id="publicStandingsContainer" class="space-y-4 w-full"></div>
           <div class="text-right pt-3 border-t border-emerald-900/40 flex justify-between items-center">
             <span class="text-[9px] text-slate-500 font-bold tracking-widest uppercase">Estadísticas Oficiales</span>
             <span class="text-[9px] text-emerald-500 font-black tracking-widest uppercase">KANCHAPRO.COM</span>
@@ -1127,14 +1127,14 @@
           }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
           groupsHtml += `
-            <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-2.5 sm:p-4 space-y-2 shadow-xl">
+            <div class="bg-[#06120a] border border-emerald-900/50 rounded-2xl p-2.5 sm:p-4 space-y-2 shadow-xl w-full">
               <h4 class="text-xs sm:text-sm font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-900/40 pb-2">Zona / ${gName}</h4>
-              <div class="overflow-x-auto scrollbar-thin">
-                <table class="w-full text-[10px] sm:text-xs min-w-[320px] border-collapse">
+              <div class="w-full overflow-hidden">
+                <table class="w-full text-[10px] sm:text-xs border-collapse table-auto">
                   <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
                     <tr>
                       <th class="p-2 text-left w-6 align-middle">#</th>
-                      <th class="p-2 text-left align-middle">Equipo</th>
+                      <th class="p-2 text-left align-middle w-auto">Equipo</th>
                       <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
                       <th class="p-2 text-center w-7 align-middle">PJ</th>
                       <th class="p-2 text-center w-7 align-middle">G</th>
@@ -1147,10 +1147,10 @@
                     ${stats.map((t, idx) => `
                       <tr class="${idx < 2 ? 'bg-emerald-950/30 font-bold' : ''}">
                         <td class="p-2 font-black text-emerald-400 align-middle leading-normal">${idx + 1}</td>
-                        <td class="p-2 font-bold text-white align-middle leading-normal">
-                          <div class="flex items-center gap-2 py-0.5">
+                        <td class="p-2 font-bold text-white align-middle leading-normal max-w-[150px] sm:max-w-[220px]">
+                          <div class="flex items-center gap-2 py-0.5 min-w-0">
                             <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
-                            <span class="whitespace-nowrap overflow-hidden text-ellipsis">${t.name}</span>
+                            <span class="truncate">${t.name}</span>
                           </div>
                         </td>
                         <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle leading-normal">${t.points}</td>
@@ -1184,12 +1184,12 @@
         }).sort((a, b) => b.points - a.points || b.gd - a.gd);
 
         container.innerHTML = `
-          <div class="overflow-x-auto scrollbar-thin">
-            <table class="w-full text-[10px] sm:text-xs min-w-[320px] border-collapse">
+          <div class="w-full overflow-hidden">
+            <table class="w-full text-[10px] sm:text-xs border-collapse table-auto">
               <thead class="bg-[#030704] text-slate-400 uppercase text-[8px] sm:text-[9px] font-black tracking-wider">
                 <tr>
                   <th class="p-2 text-left w-6 align-middle">#</th>
-                  <th class="p-2 text-left align-middle">Equipo</th>
+                  <th class="p-2 text-left align-middle w-auto">Equipo</th>
                   <th class="p-2 text-center font-black text-emerald-400 w-8 align-middle">Pts</th>
                   <th class="p-2 text-center w-7 align-middle">PJ</th>
                   <th class="p-2 text-center w-7 align-middle">G</th>
@@ -1202,10 +1202,10 @@
                 ${stats.map((t, idx) => `
                   <tr class="${idx < 4 ? 'bg-emerald-950/30 font-bold' : ''}">
                     <td class="p-2 font-black text-emerald-400 align-middle leading-normal">${idx + 1}</td>
-                    <td class="p-2 font-bold text-white align-middle leading-normal">
-                      <div class="flex items-center gap-2 py-0.5">
+                    <td class="p-2 font-bold text-white align-middle leading-normal max-w-[150px] sm:max-w-[220px]">
+                      <div class="flex items-center gap-2 py-0.5 min-w-0">
                         <img src="${t.logo || FALLBACK_LOGO}" class="w-5 h-5 object-cover rounded-full border border-emerald-500/40 shrink-0 shadow" onerror="this.src=FALLBACK_LOGO">
-                        <span class="whitespace-nowrap overflow-hidden text-ellipsis">${t.name}</span>
+                        <span class="truncate">${t.name}</span>
                       </div>
                     </td>
                     <td class="p-2 text-center font-black text-emerald-400 text-xs sm:text-sm align-middle leading-normal">${t.points}</td>
